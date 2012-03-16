@@ -22,18 +22,44 @@ public class RestorationManager {
         }
 
         if(plug.getEconomy() != null && !(_player.hasPermission("scavenger.free"))) {
-             double fee = plug.getSConfig().getFee();
-                        EconomyResponse er = plug.getEconomy().withdrawPlayer(_player.getName(), fee);
-                        if(er.transactionSuccess()) {
-                            if (plug.getSConfig().shouldNotify()) {
-                                plug.getCommunicationManager().message(_player, "Saved your inventory for a small fee of "+fee);
-                            }
-                        } else {
-                            if (plug.getSConfig().shouldNotify()) {
-                                plug.getCommunicationManager().message(_player, "You do not have enough money to save your inventory.");
-                            }
-                            return;
-                        }
+            double restore_cost = plug.getSConfig().restoreCost(); 
+            double withdraw_amount = 0;
+            double player_balance = plug.getEconomy().getBalance(_player.getName());
+            double percent_cost = plug.getSConfig().percentCost();
+            double min_cost = plug.getSConfig().minCost();
+            EconomyResponse er;
+            String currency;
+            if (plug.getSConfig().percent()) {                                
+                withdraw_amount = player_balance * (percent_cost / 100.0);                
+                if (plug.getSConfig().addMin()) {
+                    withdraw_amount = withdraw_amount + min_cost;
+                } else if (withdraw_amount < min_cost) {
+                    withdraw_amount = min_cost;
+                }
+            } else {
+                withdraw_amount = restore_cost;
+            }                        
+            er = plug.getEconomy().withdrawPlayer(_player.getName(), withdraw_amount);
+            if(er.transactionSuccess()) {
+                if (withdraw_amount == 1) {
+                   currency = plug.getEconomy().currencyNameSingular();                
+                } else {
+                    currency = plug.getEconomy().currencyNamePlural();
+                }
+                if (plug.getSConfig().shouldNotify()) {
+                    plug.getCommunicationManager().message(_player, "Saved your inventory for a small fee of "+withdraw_amount+ " "+currency+".");
+                }
+            } else {
+                if (player_balance == 1) {
+                   currency = plug.getEconomy().currencyNameSingular();                
+                } else {
+                    currency = plug.getEconomy().currencyNamePlural();
+                }
+                if (plug.getSConfig().shouldNotify()) {
+                    plug.getCommunicationManager().message(_player, "Item recovery is "+withdraw_amount+" and you only have "+player_balance+" "+currency+".");
+                }
+                return;
+            }
         }
         if (plug.getSConfig().shouldNotify()) {
             plug.getCommunicationManager().message(_player, "Saving your inventory.");
@@ -66,12 +92,10 @@ public class RestorationManager {
                 
                 _player.getInventory().setContents(restoration.inventory);
                 _player.getInventory().setArmorContents(restoration.armour);
-
-                //if (Scavenger.get().getSConfig().shouldNotify()) {}
-                //    Scavenger.get().getCommunicationManager().message(_player, "Your inventory has been restored.");
-                if (plug.getSConfig().shouldNotify()) {}
+                
+                if (plug.getSConfig().shouldNotify()) {
                     plug.getCommunicationManager().message(_player, "Your inventory has been restored.");
-
+                }
                 restorations.remove(_player.getName());
             }
         }

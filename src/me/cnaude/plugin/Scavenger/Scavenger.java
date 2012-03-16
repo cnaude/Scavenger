@@ -1,6 +1,5 @@
 package me.cnaude.plugin.Scavenger;
 
-import net.milkbowl.vault.economy.Economy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
@@ -42,8 +41,16 @@ public class Scavenger extends JavaPlugin {
             if(x != null && x instanceof Vault) {
                 vault = (Vault) x;
                 if(setupEconomy()) {
-                    logInfo("Scavenger has linked to " + economy.getName() + " through Vault");
-                    logInfo("Item recovery fee: "+this.getSConfig().getFee());
+                    logInfo("Scavenger has linked to " + economy.getName() + " through Vault");                    
+                    if (this.getSConfig().percent()) {                                                 
+                        if (this.getSConfig().addMin()) {
+                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% + "+this.getSConfig().minCost());
+                        } else {
+                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% (Min: "+this.getSConfig().minCost()+")");                    
+                        }
+                    } else {
+                        logInfo("Item recovery fee: "+this.getSConfig().restoreCost());
+                    }                  
                 } else {
                     logError("Vault could not find an Economy plugin installed!");
                 }
