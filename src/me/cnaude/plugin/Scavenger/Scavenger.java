@@ -7,6 +7,8 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.garbagemule.MobArena.MobArena;
+import com.garbagemule.MobArena.MobArenaHandler;
 
 public class Scavenger extends JavaPlugin {
     public static final String PLUGIN_NAME = "Scavenger";
@@ -15,6 +17,7 @@ public class Scavenger extends JavaPlugin {
 
     private static Vault vault = null;
     private static Economy economy = null;
+    public static MobArenaHandler maHandler;
     
     private Logger log;    
     private ScavengerConfig config;    
@@ -61,7 +64,9 @@ public class Scavenger extends JavaPlugin {
             }
         } else {
             logInfo("Economy disabled. Item recovery will be free.");
-        }  
+        }
+        
+        setupMobArenaHandler();
         getServer().getPluginManager().registerEvents(eventListener, this);
     }
         
@@ -98,6 +103,16 @@ public class Scavenger extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         config = new ScavengerConfig(this);
+    }
+    
+    public void setupMobArenaHandler() {
+        Plugin maPlugin = (MobArena) getServer().getPluginManager().getPlugin("MobArena");
+
+        if (maPlugin == null)
+            return;
+
+        maHandler = new MobArenaHandler();
+        logInfo("MobArena detected. Player inventory restores ignored inside arenas.");
     }
    
 }

@@ -20,7 +20,7 @@ public class ScavengerEventListener implements Listener {
         if ((event.getEntity() instanceof Player)) {
             Player player = (Player)event.getEntity();
             if (player.hasPermission("scavenger.scavenge")) {
-                RestorationManager.collect(plugin, (Player)event.getEntity(), event.getDrops());
+                    RestorationManager.collect(plugin, (Player)event.getEntity(), event.getDrops());
             }
         }
     }

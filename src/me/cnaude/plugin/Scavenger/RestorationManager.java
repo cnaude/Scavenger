@@ -14,6 +14,13 @@ public class RestorationManager {
     }
 
     public static void collect(Scavenger plug, Player _player, List<ItemStack> _drops) {
+        if (Scavenger.maHandler != null && Scavenger.maHandler.isPlayerInArena(_player)) { 
+            if (plug.getSConfig().shouldNotify()) {
+                plug.getCommunicationManager().message(_player, "You are inside an arena. Scavenger will not save your inventory.");
+            }
+            return;
+        } 
+        
         if (hasRestoration(_player)) {
             if (plug.getSConfig().shouldNotify()) {
                 plug.getCommunicationManager().error(_player, "Restoration already exists, ignoring.");
