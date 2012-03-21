@@ -3,6 +3,7 @@ package me.cnaude.plugin.Scavenger;
 import java.util.HashMap;
 import java.util.List;
 import net.milkbowl.vault.economy.EconomyResponse;
+import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,6 +18,13 @@ public class RestorationManager {
         if (Scavenger.maHandler != null && Scavenger.maHandler.isPlayerInArena(_player)) { 
             if (plug.getSConfig().shouldNotify()) {
                 plug.getCommunicationManager().message(_player, "You are inside an arena. Scavenger will not save your inventory.");
+            }
+            return;
+        } 
+        
+        if (Scavenger.pvpHandler != null && !PVPArenaAPI.getArenaName(_player).equals("")) { 
+            if (plug.getSConfig().shouldNotify()) {
+                plug.getCommunicationManager().message(_player, "You are inside PVP arena "+PVPArenaAPI.getArenaName(_player)+". Scavenger will not save your inventory.");
             }
             return;
         } 

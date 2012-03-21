@@ -9,6 +9,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
+import net.slipcor.pvparena.*;
+import net.slipcor.pvparena.api.PVPArenaAPI;
 
 public class Scavenger extends JavaPlugin {
     public static final String PLUGIN_NAME = "Scavenger";
@@ -18,6 +20,7 @@ public class Scavenger extends JavaPlugin {
     private static Vault vault = null;
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
+    public static PVPArenaAPI pvpHandler;
     
     private Logger log;    
     private ScavengerConfig config;    
@@ -67,6 +70,7 @@ public class Scavenger extends JavaPlugin {
         }
         
         setupMobArenaHandler();
+        setupPVPArenaHandler();
         getServer().getPluginManager().registerEvents(eventListener, this);
     }
         
@@ -113,6 +117,16 @@ public class Scavenger extends JavaPlugin {
 
         maHandler = new MobArenaHandler();
         logInfo("MobArena detected. Player inventory restores ignored inside arenas.");
+    }
+    
+    public void setupPVPArenaHandler() {
+        Plugin pvpPlugin = (PVPArena) getServer().getPluginManager().getPlugin("pvparena");
+
+        if (pvpPlugin == null)
+            return;
+
+        pvpHandler = new PVPArenaAPI();
+        logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
    
 }

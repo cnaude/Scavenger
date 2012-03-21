@@ -19,7 +19,7 @@ public class ScavengerEventListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             Player player = (Player)event.getEntity();
-            if (player.hasPermission("scavenger.scavenge")) {
+            if (player.hasPermission("scavenger.scavenge") && !event.getDrops().isEmpty()) {
                     RestorationManager.collect(plugin, (Player)event.getEntity(), event.getDrops());
             }
         }
