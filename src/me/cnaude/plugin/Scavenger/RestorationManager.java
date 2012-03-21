@@ -30,7 +30,7 @@ public class RestorationManager {
 
         if(plug.getEconomy() != null && !(_player.hasPermission("scavenger.free"))) {
             double restore_cost = plug.getSConfig().restoreCost(); 
-            double withdraw_amount = 0;
+            double withdraw_amount;
             double player_balance = plug.getEconomy().getBalance(_player.getName());
             double percent_cost = plug.getSConfig().percentCost();
             double min_cost = plug.getSConfig().minCost();
