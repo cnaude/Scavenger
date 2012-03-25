@@ -1,8 +1,9 @@
 package me.cnaude.plugin.Scavenger;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 
-public class ScavengerConfig {
+public final class ScavengerConfig {
     private final Configuration config;
     
     private static final String SHOULD_NOTIFY       = "Global.Notify";
@@ -10,8 +11,11 @@ public class ScavengerConfig {
     private static final String ECONOMY_RESTORECOST = "Economy.RestoreCost";
     private static final String ECONOMY_PERCENT     = "Economy.Percent";
     private static final String ECONOMY_MINCOST     = "Economy.MinCost";
+    private static final String ECONOMY_MAXCOST     = "Economy.MaxCost";
     private static final String ECONOMY_PERCENTCOST = "Economy.PercentCost";
     private static final String ECONOMY_ADDMIN      = "Economy.AddMin";
+    private static final String GLOBAL_COLOR        = "Global.Color";
+    private static final String GLOBAL_TEXTCOLOR    = "Global.TextColor";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     
     private boolean shouldNotify;
@@ -19,18 +23,28 @@ public class ScavengerConfig {
     private boolean economyEnabled;
     private boolean percent;
     private double  minCost;
+    private double  maxCost;
     private double  percentCost;
     private boolean addMin;
+    private ChatColor headerColor;
+    private ChatColor textColor;
 
     public ScavengerConfig(Scavenger plug) {
-        config         = plug.getConfig();        
+        config = plug.getConfig();       
+        loadValues();
+    }
+    
+    public void loadValues() {
         economyEnabled = config.getBoolean(ECONOMY_ENABLED, false);
         shouldNotify   = config.getBoolean(SHOULD_NOTIFY, true);
         restoreCost    = config.getDouble(ECONOMY_RESTORECOST, 10.0);
         percent        = config.getBoolean(ECONOMY_PERCENT, false);
-        minCost        = config.getDouble(ECONOMY_MINCOST, 10.0);
+        minCost        = config.getDouble(ECONOMY_MINCOST, 5.0);
+        maxCost        = config.getDouble(ECONOMY_MAXCOST, 0.0);
         percentCost    = config.getDouble(ECONOMY_PERCENTCOST, 5.0);
         addMin         = config.getBoolean(ECONOMY_ADDMIN, false);
+        headerColor    = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
+        textColor      = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
     }
     
     public boolean shouldNotify() {
@@ -56,8 +70,20 @@ public class ScavengerConfig {
     public double minCost() {
         return minCost;
     }
+    
+    public double maxCost() {
+        return maxCost;
+    }
         
     public double percentCost() {
         return percentCost;
+    }
+    
+    public ChatColor headerColor() {
+        return headerColor;
+    }
+    
+    public ChatColor textColor() {
+        return textColor;
     }
 }

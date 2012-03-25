@@ -1,16 +1,21 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.garbagemule.MobArena.MobArena;
+import com.garbagemule.MobArena.MobArenaHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
+import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.api.PVPArenaAPI;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.garbagemule.MobArena.MobArena;
-import com.garbagemule.MobArena.MobArenaHandler;
-import net.slipcor.pvparena.*;
-import net.slipcor.pvparena.api.PVPArenaAPI;
 
 public class Scavenger extends JavaPlugin {
     public static final String PLUGIN_NAME = "Scavenger";
@@ -22,9 +27,10 @@ public class Scavenger extends JavaPlugin {
     public static MobArenaHandler maHandler;
     public static PVPArenaAPI pvpHandler;
     
+    public boolean configLoaded = false;
+    
     private Logger log;    
     private ScavengerConfig config;    
-    private CommunicationManager communicationManager;
     private RestorationManager restorationManager;
     private final ScavengerEventListener eventListener = new ScavengerEventListener(this);
 
@@ -33,51 +39,18 @@ public class Scavenger extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public void onEnable() {      
+        log = Logger.getLogger("Minecraft");
         this.loadConfig();
         
-        log = Logger.getLogger("Minecraft");
-
         Plugin plugin = getServer().getPluginManager().getPlugin(PLUGIN_NAME);           
-      
-        communicationManager = new CommunicationManager();  
-        
-        if (this.getSConfig().economyEnabled()) {
-            Plugin x = getServer().getPluginManager().getPlugin("Vault");
-            if(x != null && x instanceof Vault) {
-                vault = (Vault) x;
-                if(setupEconomy()) {
-                    logInfo("Scavenger has linked to " + economy.getName() + " through Vault");                    
-                    if (this.getSConfig().percent()) {                                                 
-                        if (this.getSConfig().addMin()) {
-                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% + "+this.getSConfig().minCost());
-                        } else {
-                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% (Min: "+this.getSConfig().minCost()+")");                    
-                        }
-                    } else {
-                        logInfo("Item recovery fee: "+this.getSConfig().restoreCost());
-                    }                  
-                } else {
-                    logError("Vault could not find an Economy plugin installed!");
-                }
-            } else {
-                logInfo("Scavenger relies on Vault for economy support and Vault isn't installed!");
-                logInfo("See http://dev.bukkit.org/server-mods/vault/");
-                logInfo("If you don't want economy support, set 'Economy: Enabled' to false in Scavenger config.");
-            }
-        } else {
-            logInfo("Economy disabled. Item recovery will be free.");
-        }
-        
+              
         setupMobArenaHandler();
         setupPVPArenaHandler();
+               
         getServer().getPluginManager().registerEvents(eventListener, this);
     }
-        
-    public CommunicationManager getCommunicationManager() {
-        return communicationManager;
-    }
-    
+           
     public Economy getEconomy() {
         return economy;
     }
@@ -94,7 +67,7 @@ public class Scavenger extends JavaPlugin {
     public void logInfo(String _message) {
         log.log(Level.INFO,LOG_HEADER + _message);
     }
-
+    
     public void logError(String _message) {
         log.log(Level.SEVERE,LOG_HEADER + _message);
     }
@@ -103,10 +76,47 @@ public class Scavenger extends JavaPlugin {
         return config;
     }
     
+    
     void loadConfig() {
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-        config = new ScavengerConfig(this);
+        if (!this.configLoaded) {
+            getConfig().options().copyDefaults(true);
+            saveConfig();
+            logInfo("Configuration loaded.");
+            config = new ScavengerConfig(this); 
+        } else {
+            reloadConfig();
+            getConfig().options().copyDefaults(false);
+            config = new ScavengerConfig(this);
+            logInfo("Configuration reloaded.");
+        }
+            
+        if (config.economyEnabled()) {
+            Plugin x = getServer().getPluginManager().getPlugin("Vault");
+            if(x != null && x instanceof Vault) {
+                vault = (Vault) x;
+                if(setupEconomy()) {
+                    logInfo("Scavenger has linked to " + economy.getName() + " through Vault");                    
+                    if (this.getSConfig().percent()) {                                                 
+                        if (this.getSConfig().addMin()) {
+                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% + "+this.getSConfig().minCost());
+                        } else {
+                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% (Min: "+this.getSConfig().minCost()+") (Max: "+this.getSConfig().maxCost()+")");                    
+                        }
+                    } else {
+                        logInfo("Item recovery fee: "+this.getSConfig().restoreCost());
+                    }                  
+                } else {
+                    logError("Vault could not find an Economy plugin installed!");
+                }
+            } else {
+                logInfo("Scavenger relies on Vault for economy support and Vault isn't installed!");
+                logInfo("See http://dev.bukkit.org/server-mods/vault/");
+                logInfo("If you don't want economy support, set 'Economy: Enabled' to false in Scavenger config.");
+            }
+        } else {
+            logInfo("Economy disabled. Item recovery will be free.");
+        }
+        configLoaded = true;
     }
     
     public void setupMobArenaHandler() {
@@ -127,6 +137,50 @@ public class Scavenger extends JavaPlugin {
 
         pvpHandler = new PVPArenaAPI();
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
+    }
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String commandlabel, String[] args){
+        if (sender instanceof Player) {
+            Player p = (Player) sender;
+            if (p.hasPermission("scavenger.reload")) {
+                if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
+                    this.loadConfig();
+                    message(p,"Configuration reloaded.");
+                    return true;
+                }
+            return true;
+            } else {
+                message(p,"No permission to reload scavenger config!");
+            }
+        }
+        if (sender instanceof ConsoleCommandSender) {
+            if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {               
+                this.loadConfig();                        
+                return true;
+            }
+        }
+        return true;
+    }
+    
+    private String headerStr() {
+        ChatColor headerColor = getSConfig().headerColor();
+        ChatColor textColor = getSConfig().textColor();
+        return textColor + "[" + headerColor + PLUGIN_NAME + textColor + "] " + textColor;
+    }
+    
+    public void message(Player _player, String _message) {
+        if (_player != null)
+            _player.sendMessage(headerStr() + _message);
+        else
+            logInfo(_message);
+    }
+
+    public void error(Player _player, String _message) {
+        if (_player != null)
+            _player.sendMessage(headerStr() + ChatColor.RED + "Error: " + _message);            
+        else
+            logError(_message);
     }
    
 }

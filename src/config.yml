@@ -2,6 +2,8 @@
 Global:
   # Whether or not to notify the player when their items are gathered and restored.
   Notify: true
+  Color: gold
+  TextColor: white
 Economy:
     # Whether or not to use an economy system with the plugin.
     Enabled: false
@@ -10,7 +12,9 @@ Economy:
     # The cost of restoring your inventory (if enabled).
     RestoreCost: 10.0
     # Minimum cost if using percent (0 for no min cost)
-    MinCost: 5.0
+    MinCost: 5.0    
+    # Maximum cost if using percent (0 for no max cost)
+    MaxCost: 0
     # Percentage to withdraw
     PercentCost: 5.0
     # Calculate cost as MinCost + RestoreCost

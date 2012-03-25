@@ -1,14 +1,22 @@
 name: Scavenger
 main: me.cnaude.plugin.Scavenger.Scavenger
-version: 1.6.3a
+version: 1.6.3c
 author: Chris Naudé 
 description: Item recovery on death. Based on SirHedgehog's code.
 website: http://dev.bukkit.org/server-mods/scavenger/
 softdepend: [Vault]
+commands:
+  scavengerreload:
+    description: Reload config
+    usage: /scavengerreload
+    aliases: scvr
 permissions:
   scavenger.scavenge:
     description: Allows players to automatically recover items on death.
     default: op
   scavenger.free:
     description: Free item recovery.
+    default: op
+  scavenger.reload:
+    description: Reload config.
     default: op
