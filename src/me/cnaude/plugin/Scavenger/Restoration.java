@@ -7,4 +7,6 @@ public class Restoration {
     //public List<ItemStack> drops;
     public ItemStack[] inventory;
     public ItemStack[] armour;
+    public int level;
+    public float exp;
 }
