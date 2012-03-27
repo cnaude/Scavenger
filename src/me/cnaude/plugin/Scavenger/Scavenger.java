@@ -98,9 +98,12 @@ public class Scavenger extends JavaPlugin {
                     logInfo("Scavenger has linked to " + economy.getName() + " through Vault");                    
                     if (this.getSConfig().percent()) {                                                 
                         if (this.getSConfig().addMin()) {
-                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% + "+this.getSConfig().minCost());
+                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+
+                                    "% + "+this.getSConfig().minCost());
                         } else {
-                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+"% (Min: "+this.getSConfig().minCost()+") (Max: "+this.getSConfig().maxCost()+")");                    
+                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+
+                                    "% (Min: "+this.getSConfig().minCost()+
+                                    ") (Max: "+this.getSConfig().maxCost()+")");                    
                         }
                     } else {
                         logInfo("Item recovery fee: "+this.getSConfig().restoreCost());
