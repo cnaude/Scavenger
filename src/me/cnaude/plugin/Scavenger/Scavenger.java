@@ -147,17 +147,13 @@ public class Scavenger extends JavaPlugin {
                 if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
                     this.loadConfig();
                     message(p,"Configuration reloaded.");
-                    return true;
                 }
-            return true;
             } else {
                 message(p,"No permission to reload scavenger config!");
             }
-        }
-        if (sender instanceof ConsoleCommandSender) {
+        } else if (sender instanceof ConsoleCommandSender) {
             if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {               
                 this.loadConfig();                        
-                return true;
             }
         }
         return true;
