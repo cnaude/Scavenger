@@ -31,7 +31,6 @@ public class Scavenger extends JavaPlugin {
     
     private Logger log;    
     private ScavengerConfig config;    
-    private RestorationManager restorationManager;
     private final ScavengerEventListener eventListener = new ScavengerEventListener(this);
 
     public static Scavenger get() {
@@ -39,12 +38,10 @@ public class Scavenger extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {      
+    public void onEnable() {   
         log = Logger.getLogger("Minecraft");
-        this.loadConfig();
-        
-        Plugin plugin = getServer().getPluginManager().getPlugin(PLUGIN_NAME);           
-              
+        loadConfig();
+                       
         setupMobArenaHandler();
         setupPVPArenaHandler();
                

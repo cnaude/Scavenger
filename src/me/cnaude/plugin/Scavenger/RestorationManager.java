@@ -91,6 +91,10 @@ public class RestorationManager {
 
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
+        plug.message(_player, "Saving level: "+_player.getLevel());
+        restoration.level = _player.getLevel();
+        plug.message(_player, "Saving exp: "+_player.getExp());
+        restoration.exp = _player.getExp();
 
         restorations.put(_player.getName(), restoration);
 
@@ -113,6 +117,11 @@ public class RestorationManager {
                 
                 _player.getInventory().setContents(restoration.inventory);
                 _player.getInventory().setArmorContents(restoration.armour);
+                _player.setLevel(restoration.level);
+                _player.setExp(restoration.exp);                
+                plug.message(_player, "Restoring level: "+restoration.level);
+                plug.message(_player, "Restoring exp: "+restoration.exp);
+        
                 
                 if (plug.getSConfig().shouldNotify()) {
                     plug.message(_player, "Your inventory has been restored.");
