@@ -5,6 +5,7 @@ import java.util.List;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class RestorationManager {
@@ -14,13 +15,16 @@ public class RestorationManager {
         return restorations.containsKey(_player.getName());
     }
 
-    public static void collect(Scavenger plug, Player _player, List<ItemStack> _drops) {
+    public static void collect(Scavenger plug, Player _player, List<ItemStack> _drops, EntityDeathEvent event) {
+        if (_drops.isEmpty() && _player.getExp() == 0 && _player.getLevel() == 0) {
+            return;
+        }
         if (Scavenger.maHandler != null && Scavenger.maHandler.isPlayerInArena(_player)) { 
             if (plug.getSConfig().shouldNotify()) {
                 plug.message(_player, "You are inside an arena. Scavenger will not save your inventory.");
             }
             return;
-        } 
+        }         
         
         if (Scavenger.pvpHandler != null && !PVPArenaAPI.getArenaName(_player).equals("")) { 
             if (plug.getSConfig().shouldNotify()) {
@@ -96,6 +100,7 @@ public class RestorationManager {
         }
         if (_player.hasPermission("scavenger.exp")) {            
             restoration.exp = _player.getExp();
+            event.setDroppedExp(0);
         }
 
         restorations.put(_player.getName(), restoration);
@@ -119,9 +124,12 @@ public class RestorationManager {
                 
                 _player.getInventory().setContents(restoration.inventory);
                 _player.getInventory().setArmorContents(restoration.armour);
-                _player.setLevel(restoration.level);
-                _player.setExp(restoration.exp);                       
-                
+                if (_player.hasPermission("scavenger.level")) {
+                    _player.setLevel(restoration.level);
+                }
+                if (_player.hasPermission("scavenger.exp")) {
+                    _player.setExp(restoration.exp);        
+                }                
                 if (plug.getSConfig().shouldNotify()) {
                     plug.message(_player, "Your inventory has been restored.");
                 }
