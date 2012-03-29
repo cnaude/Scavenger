@@ -16,12 +16,14 @@ public class RestorationManager {
     }
 
     public static void collect(Scavenger plug, Player _player, List<ItemStack> _drops, EntityDeathEvent event) {
+        //plug.logDebug("collect(): "+_player.getDisplayName());
         if (_drops.isEmpty() && _player.getExp() == 0 && _player.getLevel() == 0) {
             return;
         }
         if (Scavenger.maHandler != null && Scavenger.maHandler.isPlayerInArena(_player)) { 
             if (plug.getSConfig().shouldNotify()) {
                 plug.message(_player, "You are inside an arena. Scavenger will not save your inventory.");
+                //plug.logDebug("Inside MobArena: "+_player.getDisplayName());
             }
             return;
         }         
@@ -29,6 +31,7 @@ public class RestorationManager {
         if (Scavenger.pvpHandler != null && !PVPArenaAPI.getArenaName(_player).equals("")) { 
             if (plug.getSConfig().shouldNotify()) {
                 plug.message(_player, String.format("You are inside PVP arena %s. Scavenger will not save your inventory.",PVPArenaAPI.getArenaName(_player)));
+                //plug.logDebug("Inside PVP Arena: "+_player.getDisplayName());                
             }
             return;
         } 
@@ -36,11 +39,14 @@ public class RestorationManager {
         if (hasRestoration(_player)) {
             if (plug.getSConfig().shouldNotify()) {
                 plug.error(_player, "Restoration already exists, ignoring.");
+                //plug.logDebug("Restoration already exists: "+_player.getDisplayName());                
             }
             return;
         }
 
         if(plug.getEconomy() != null && !(_player.hasPermission("scavenger.free")) && plug.getSConfig().economyEnabled()) {
+            //plug.logDebug("Scavenging for a fee: "+_player.getDisplayName());
+            
             double restore_cost = plug.getSConfig().restoreCost(); 
             double withdraw_amount;
             double player_balance = plug.getEconomy().getBalance(_player.getName());
@@ -70,8 +76,8 @@ public class RestorationManager {
                     currency = plug.getEconomy().currencyNamePlural();
                 }
                 if (plug.getSConfig().shouldNotify()) {
-                    plug.message(_player, String.format("Saving your inventory for a small fee of %.2f %s.",withdraw_amount,currency));
-                    
+                    plug.message(_player, String.format("Saving your inventory for a small fee of %.2f %s.",withdraw_amount,currency));                    
+                    //plug.logDebug("Player has enough money for recovery: "+_player.getDisplayName());                
                 }
             } else {
                 if (player_balance == 1) {
@@ -81,12 +87,14 @@ public class RestorationManager {
                 }
                 if (plug.getSConfig().shouldNotify()) {
                     plug.message(_player, String.format("Item recovery cost is %.2f and you only have %.2f %s.",withdraw_amount,player_balance,currency));
+                    //plug.logDebug("Not enough money to recover items: "+_player.getDisplayName());                
                 }
                 return;
             }
         } else {
             if (plug.getSConfig().shouldNotify()) {
                 plug.message(_player, "Saving your inventory.");
+                //plug.logDebug("Scavenging for free: "+_player.getDisplayName());                
             }
         }
         Restoration restoration = new Restoration();
@@ -120,18 +128,22 @@ public class RestorationManager {
             Restoration restoration = restorations.get(_player.getName());
             
             if (restoration.enabled) {
+                //plug.logDebug("Clearing player inventory: "+_player.getDisplayName());                
                 _player.getInventory().clear();
-                
+
+                //plug.logDebug("Recovering player inventory: "+_player.getDisplayName());
                 _player.getInventory().setContents(restoration.inventory);
                 _player.getInventory().setArmorContents(restoration.armour);
                 if (_player.hasPermission("scavenger.level")) {
                     _player.setLevel(restoration.level);
+                    //plug.logDebug("Recovering level: "+_player.getDisplayName());                
                 }
                 if (_player.hasPermission("scavenger.exp")) {
                     _player.setExp(restoration.exp);        
                 }                
                 if (plug.getSConfig().shouldNotify()) {
                     plug.message(_player, "Your inventory has been restored.");
+                    //plug.logDebug("Recovering experience: "+_player.getDisplayName());                
                 }
                 restorations.remove(_player.getName());
             }

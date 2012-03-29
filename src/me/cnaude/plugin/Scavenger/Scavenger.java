@@ -65,6 +65,12 @@ public class Scavenger extends JavaPlugin {
         log.log(Level.INFO,LOG_HEADER + _message);
     }
     
+    //public void logDebug(String _message) {
+    //    if (getSConfig().debugEnabled()) {
+    //        log.log(Level.INFO,LOG_HEADER + "[DEBUG] " + _message);
+    //    }
+    //}
+    
     public void logError(String _message) {
         log.log(Level.SEVERE,LOG_HEADER + _message);
     }

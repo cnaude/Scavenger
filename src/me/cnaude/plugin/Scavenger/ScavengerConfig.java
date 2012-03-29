@@ -16,11 +16,13 @@ public final class ScavengerConfig {
     private static final String ECONOMY_ADDMIN      = "Economy.AddMin";
     private static final String GLOBAL_COLOR        = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR    = "Global.TextColor";
+    private static final String DEBUG_ENABLED       = "Global.Debug";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     
     private boolean shouldNotify;
     private double  restoreCost;
     private boolean economyEnabled;
+    private boolean debugEnabled;
     private boolean percent;
     private double  minCost;
     private double  maxCost;
@@ -36,6 +38,7 @@ public final class ScavengerConfig {
     
     public void loadValues() {
         economyEnabled = config.getBoolean(ECONOMY_ENABLED, false);
+        debugEnabled   = config.getBoolean(DEBUG_ENABLED, false);
         shouldNotify   = config.getBoolean(SHOULD_NOTIFY, true);
         restoreCost    = config.getDouble(ECONOMY_RESTORECOST, 10.0);
         percent        = config.getBoolean(ECONOMY_PERCENT, false);
@@ -57,6 +60,10 @@ public final class ScavengerConfig {
     
     public boolean economyEnabled() {
         return economyEnabled;
+    }
+    
+    public boolean debugEnabled() {
+        return debugEnabled;
     }
     
     public boolean percent() {
