@@ -2,8 +2,14 @@
 Global:
   # Whether or not to notify the player when their items are gathered and restored.
   Notify: true
+  # Message header color
   Color: gold
+  # Message text color
   TextColor: white
+  # Enable this for permission based per item exclusions. See online documentation for details.
+  SingleItemDrops: false
+  # If SingleItemDrops is true and SingleItemDropsOnly is false then only explicitely denied drops will be dropped. If this is true then you must explicetly allow players to keep each item and everything else is dropped.
+  SingleItemDropsOnly: false
   Debug: false
 Economy:
     # Whether or not to use an economy system with the plugin.

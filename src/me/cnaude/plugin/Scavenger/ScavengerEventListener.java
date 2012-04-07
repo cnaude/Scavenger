@@ -24,13 +24,18 @@ public class ScavengerEventListener implements Listener {
             }
         }
     }
-      
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         RestorationManager.enable(event.getPlayer());
         //RestorationManager.restore(plugin, event.getPlayer());
     } 
-    
+    /*
+    @EventHandler (priority = EventPriority.NORMAL)
+	public void onPlayerJoin(PlayerJoinEvent event){
+        RestorationManager.enable(event.getPlayer());
+    }
+    */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         //RestorationManager.enable(event.getPlayer());

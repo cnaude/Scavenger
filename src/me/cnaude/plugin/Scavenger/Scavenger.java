@@ -19,7 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Scavenger extends JavaPlugin {
     public static final String PLUGIN_NAME = "Scavenger";
-    public static final String LOG_HEADER = "[" + PLUGIN_NAME + "] ";
+    public static final String LOG_HEADER = "[" + PLUGIN_NAME + "]";
     private static Scavenger instance = null;
 
     private static Vault vault = null;
@@ -29,7 +29,7 @@ public class Scavenger extends JavaPlugin {
     
     public boolean configLoaded = false;
     
-    private Logger log;    
+    static final Logger log = Logger.getLogger("Minecraft");;    
     private ScavengerConfig config;    
     private final ScavengerEventListener eventListener = new ScavengerEventListener(this);
 
@@ -39,7 +39,6 @@ public class Scavenger extends JavaPlugin {
 
     @Override
     public void onEnable() {   
-        log = Logger.getLogger("Minecraft");
         loadConfig();
                        
         setupMobArenaHandler();
@@ -62,17 +61,17 @@ public class Scavenger extends JavaPlugin {
     }
     
     public void logInfo(String _message) {
-        log.log(Level.INFO,LOG_HEADER + _message);
+        log.log(Level.INFO,String.format("%s %s",LOG_HEADER,_message));
     }
     
-    //public void logDebug(String _message) {
-    //    if (getSConfig().debugEnabled()) {
-    //        log.log(Level.INFO,LOG_HEADER + "[DEBUG] " + _message);
-    //    }
-    //}
+    public void logDebug(String _message) {
+        if (getSConfig().debugEnabled()) {
+            log.log(Level.INFO,String.format("%s [DEBUG] %s",LOG_HEADER,_message));
+        }
+    }
     
     public void logError(String _message) {
-        log.log(Level.SEVERE,LOG_HEADER + _message);
+        log.log(Level.SEVERE,String.format("%s %s",LOG_HEADER,_message));
     }
     
     public ScavengerConfig getSConfig() {
@@ -172,14 +171,23 @@ public class Scavenger extends JavaPlugin {
     }
     
     public void message(Player _player, String _message) {
-        if (_player != null)
+        if (_player != null && getSConfig().shouldNotify())
             _player.sendMessage(headerStr() + _message);
         else
             logInfo(_message);
     }
+    
+    public void debugMessage(Player _player, String _message) {
+        if (getSConfig().debugEnabled()) {
+            if (_player != null)
+                _player.sendMessage(headerStr() + _message);
+            else
+                logInfo(_message);
+        }
+    }
 
     public void error(Player _player, String _message) {
-        if (_player != null)
+        if (_player != null && getSConfig().shouldNotify())
             _player.sendMessage(headerStr() + ChatColor.RED + "Error: " + _message);            
         else
             logError(_message);

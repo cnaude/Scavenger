@@ -17,6 +17,8 @@ public final class ScavengerConfig {
     private static final String GLOBAL_COLOR        = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR    = "Global.TextColor";
     private static final String DEBUG_ENABLED       = "Global.Debug";
+    private static final String GLOBAL_SIDROPS      = "Global.SingleItemDrops";
+    private static final String GLOBAL_SIDROPS_ONLY = "Global.SingleItemDropsOnly";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     
     private boolean shouldNotify;
@@ -30,6 +32,8 @@ public final class ScavengerConfig {
     private boolean addMin;
     private ChatColor headerColor;
     private ChatColor textColor;
+    private boolean singleItemDrops;
+    private boolean singleItemDropsOnly;
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();       
@@ -37,17 +41,19 @@ public final class ScavengerConfig {
     }
     
     public void loadValues() {
-        economyEnabled = config.getBoolean(ECONOMY_ENABLED, false);
-        debugEnabled   = config.getBoolean(DEBUG_ENABLED, false);
-        shouldNotify   = config.getBoolean(SHOULD_NOTIFY, true);
-        restoreCost    = config.getDouble(ECONOMY_RESTORECOST, 10.0);
-        percent        = config.getBoolean(ECONOMY_PERCENT, false);
-        minCost        = config.getDouble(ECONOMY_MINCOST, 5.0);
-        maxCost        = config.getDouble(ECONOMY_MAXCOST, 0.0);
-        percentCost    = config.getDouble(ECONOMY_PERCENTCOST, 5.0);
-        addMin         = config.getBoolean(ECONOMY_ADDMIN, false);
-        headerColor    = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
-        textColor      = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
+        economyEnabled      = config.getBoolean(ECONOMY_ENABLED, false);
+        debugEnabled        = config.getBoolean(DEBUG_ENABLED, false);
+        shouldNotify        = config.getBoolean(SHOULD_NOTIFY, true);
+        restoreCost         = config.getDouble(ECONOMY_RESTORECOST, 10.0);
+        percent             = config.getBoolean(ECONOMY_PERCENT, false);
+        minCost             = config.getDouble(ECONOMY_MINCOST, 5.0);
+        maxCost             = config.getDouble(ECONOMY_MAXCOST, 0.0);
+        percentCost         = config.getDouble(ECONOMY_PERCENTCOST, 5.0);
+        addMin              = config.getBoolean(ECONOMY_ADDMIN, false);
+        headerColor         = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
+        textColor           = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
+        singleItemDrops     = config.getBoolean(GLOBAL_SIDROPS, false);
+        singleItemDropsOnly = config.getBoolean(GLOBAL_SIDROPS_ONLY, false);
     }
     
     public boolean shouldNotify() {
@@ -92,5 +98,13 @@ public final class ScavengerConfig {
     
     public ChatColor textColor() {
         return textColor;
+    }
+    
+    public boolean singleItemDrops() {
+        return singleItemDrops;
+    }
+    
+    public boolean singleItemDropsOnly() {
+        return singleItemDropsOnly;
     }
 }
