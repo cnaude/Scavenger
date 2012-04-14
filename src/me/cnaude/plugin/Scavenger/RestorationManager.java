@@ -1,26 +1,15 @@
 package me.cnaude.plugin.Scavenger;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.slipcor.pvparena.api.PVPArenaAPI;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.Material;
-import java.io.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Arrays;
 
 public class RestorationManager implements Serializable {
     private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();    
@@ -89,14 +78,16 @@ public class RestorationManager implements Serializable {
             restoration.armour = new ItemStack[value.armour.size()];            
             for (int i = 0; i<value.inventory.size(); i++) {                
                 if (value.inventory.get(i) instanceof Map) {
+                    plug.debugMessage("Deserializing: "+value.inventory.get(i).toString());
                     restoration.inventory[i] = ItemStack.deserialize(value.inventory.get(i));
-                    plug.debugMessage("Deserializing: "+restoration.inventory[i].toString());     
+                    plug.debugMessage("Done: "+restoration.inventory[i].toString());
                 }
             }
             for (int i = 0; i<value.armour.size(); i++) {                
                 if (value.armour.get(i) instanceof Map) {
+                    plug.debugMessage("Deserializing: "+value.armour.get(i).toString()); 
                     restoration.armour[i] = ItemStack.deserialize(value.armour.get(i));
-                    plug.debugMessage("Deserializing: "+restoration.armour[i].toString());     
+                    plug.debugMessage("Done: "+restoration.armour[i].toString()); 
                 }
             }
             restoration.enabled = value.enabled;
