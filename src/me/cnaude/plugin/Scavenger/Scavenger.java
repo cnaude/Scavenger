@@ -45,8 +45,15 @@ public class Scavenger extends JavaPlugin {
         setupPVPArenaHandler();
                
         getServer().getPluginManager().registerEvents(eventListener, this);
+        
+        RestorationManager.load(this);
     }
-           
+    
+    @Override
+    public void onDisable() {
+        RestorationManager.save(this);
+    }
+    
     public Economy getEconomy() {
         return economy;
     }
@@ -184,6 +191,11 @@ public class Scavenger extends JavaPlugin {
             else
                 logInfo(_message);
         }
+    }
+    
+    public void debugMessage(String _message) {
+        if (getSConfig().debugEnabled()) 
+                logInfo(_message);
     }
 
     public void error(Player _player, String _message) {

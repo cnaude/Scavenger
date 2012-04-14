@@ -41,4 +41,6 @@ public class ScavengerEventListener implements Listener {
         //RestorationManager.enable(event.getPlayer());
         RestorationManager.restore(plugin, event.getPlayer());
     }
+    
+
 }

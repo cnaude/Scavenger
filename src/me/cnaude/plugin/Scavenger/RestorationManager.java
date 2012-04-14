@@ -8,10 +8,105 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
+import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Arrays;
 
-public class RestorationManager {
+public class RestorationManager implements Serializable {
     private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();    
 
+    public static void save(Scavenger plug) {
+        HashMap<String, RestorationS> res_s = new HashMap<String, RestorationS>(); 
+        for (Map.Entry<String, Restoration> entry : restorations.entrySet()) {            
+            String key = entry.getKey();
+            Restoration value = entry.getValue();
+            RestorationS restoration_s = new RestorationS();
+            for (ItemStack i : value.inventory) { 
+                if (i instanceof ItemStack) {
+                    plug.debugMessage("Serializing: "+i.toString());
+                    restoration_s.inventory.add(i.serialize());
+                    plug.debugMessage("Done: "+i.toString());
+                }
+            }
+            for (ItemStack i : value.armour) { 
+                if (i instanceof ItemStack) {
+                    plug.debugMessage("Serializing: "+i.toString());                
+                    restoration_s.armour.add(i.serialize());
+                    plug.debugMessage("Done: "+i.toString());
+                }
+            }
+            restoration_s.enabled = value.enabled;
+            restoration_s.level = value.level;
+            restoration_s.exp = value.exp;
+            res_s.put(key, restoration_s);
+            plug.logInfo("Saving "+key+"'s inventory to disk.");
+        }
+        try {
+            File file = new File("plugins/Scavenger/inv.ser"); 
+            FileOutputStream f_out = new FileOutputStream (file);
+            ObjectOutputStream obj_out = new ObjectOutputStream (f_out);
+            obj_out.writeObject (res_s);
+            obj_out.close();
+        }
+        catch(Exception e) {
+          plug.logError(e.getMessage());
+        }
+    }
+    
+    public static void load(Scavenger plug) {
+        HashMap<String, RestorationS> res_s;
+        File file = new File("plugins/Scavenger/inv.ser");
+        if (!file.exists()) {
+            plug.logInfo("Recovery file '"+file.getAbsolutePath()+"' does not exist.");
+            return;
+        }
+        try {                     
+            FileInputStream f_in = new FileInputStream(file);
+            ObjectInputStream obj_in = new ObjectInputStream (f_in);
+            res_s = (HashMap<String, RestorationS>) obj_in.readObject();
+            obj_in.close();            
+        }
+        catch(Exception e) {
+          plug.logError(e.getMessage());
+          return;
+        }
+        
+        for (Map.Entry<String, RestorationS> entry : res_s.entrySet()) {            
+            String key = entry.getKey();
+            RestorationS value = entry.getValue();                       
+            Restoration restoration = new Restoration();
+            restoration.inventory = new ItemStack[value.inventory.size()];
+            restoration.armour = new ItemStack[value.armour.size()];            
+            for (int i = 0; i<value.inventory.size(); i++) {                
+                if (value.inventory.get(i) instanceof Map) {
+                    restoration.inventory[i] = ItemStack.deserialize(value.inventory.get(i));
+                    plug.debugMessage("Deserializing: "+restoration.inventory[i].toString());     
+                }
+            }
+            for (int i = 0; i<value.armour.size(); i++) {                
+                if (value.armour.get(i) instanceof Map) {
+                    restoration.armour[i] = ItemStack.deserialize(value.armour.get(i));
+                    plug.debugMessage("Deserializing: "+restoration.armour[i].toString());     
+                }
+            }
+            restoration.enabled = value.enabled;
+            restoration.level = value.level;
+            restoration.exp = value.exp;
+            restorations.put(key, restoration);
+            plug.logInfo("Loading "+key+"'s inventory from disk.");
+        }
+    }
+    
     public static boolean hasRestoration(Player _player) {
         return restorations.containsKey(_player.getName());
     }
