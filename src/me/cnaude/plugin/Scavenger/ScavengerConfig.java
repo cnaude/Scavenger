@@ -19,7 +19,14 @@ public final class ScavengerConfig {
     private static final String DEBUG_ENABLED       = "Global.Debug";
     private static final String GLOBAL_SIDROPS      = "Global.SingleItemDrops";
     private static final String GLOBAL_SIDROPS_ONLY = "Global.SingleItemDropsOnly";
+    private static final String GLOBAL_PERMS        = "Global.Permissions";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
+    private static final String MSG_RECOVERED       = "Messages.MsgRecovered";
+    private static final String MSG_SAVING          = "Messages.MsgSaving";
+    private static final String MSG_SAVEFORFEE      = "Messages.MsgSaveForFee";
+    private static final String MSG_NOTENOUGHMONEY  = "Messages.MsgNotEnoughMoney";
+    private static final String MSG_INSIDEPA        = "Messages.MsgInsidePA";
+    private static final String MSG_INSIDEMA        = "Messages.MsgInsideMA";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -34,6 +41,13 @@ public final class ScavengerConfig {
     private ChatColor textColor;
     private boolean singleItemDrops;
     private boolean singleItemDropsOnly;
+    private boolean permsEnabled;
+    private String msgRecovered;
+    private String msgSaving;
+    private String msgSaveForFee;
+    private String msgNotEnoughMoney;
+    private String msgInsidePA;
+    private String msgInsideMA;
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();       
@@ -54,6 +68,13 @@ public final class ScavengerConfig {
         textColor           = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
         singleItemDrops     = config.getBoolean(GLOBAL_SIDROPS, false);
         singleItemDropsOnly = config.getBoolean(GLOBAL_SIDROPS_ONLY, false);
+        permsEnabled        = config.getBoolean(GLOBAL_PERMS, true);
+        msgRecovered        = config.getString(MSG_RECOVERED, "Your inventory has been restored.");
+        msgSaving           = config.getString(MSG_SAVING, "Saving your inventory.");
+        msgSaveForFee       = config.getString(MSG_SAVEFORFEE, "Saving your inventory for a small fee of %COST% %CURRENCY%.");
+        msgNotEnoughMoney   = config.getString(MSG_NOTENOUGHMONEY, "Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.");
+        msgInsidePA         = config.getString(MSG_INSIDEPA, "You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.");
+        msgInsideMA         = config.getString(MSG_INSIDEMA, "You are inside a Mob Arena arena. Scavenger will not save your inventory.");
     }
     
     public boolean shouldNotify() {
@@ -106,5 +127,33 @@ public final class ScavengerConfig {
     
     public boolean singleItemDropsOnly() {
         return singleItemDropsOnly;
+    }
+    
+    public boolean permsEnabled() {
+        return permsEnabled;
+    }
+    
+    public String msgRecovered() {
+        return msgRecovered;
+    }
+    
+    public String msgSaving() {
+        return msgSaving;
+    }
+    
+    public String msgSaveForFee() {
+        return msgSaveForFee;
+    }
+        
+    public String msgNotEnoughMoney() {
+        return msgNotEnoughMoney;
+    }
+    
+    public String msgInsidePA() {
+        return msgInsidePA;
+    }
+    
+    public String msgInsideMA() {
+        return msgInsideMA;
     }
 }

@@ -11,6 +11,14 @@ Global:
   # If SingleItemDrops is true and SingleItemDropsOnly is false then only explicitely denied drops will be dropped. If this is true then you must explicetly allow players to keep each item and everything else is dropped.
   SingleItemDropsOnly: false
   Debug: false
+  Permissions: true
+Messages:
+  MsgRecovered: Your inventory has been restored.
+  MsgSaving: Saving your inventory.
+  MsgSaveForFee: Saving your inventory for a small fee of %COST% %CURRENCY%.
+  MsgNotEnoughMoney: Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.
+  MsgInsidePA: You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.
+  MsgInsideMA: You are inside a Mob Arena. Scavenger will not save your inventory.
 Economy:
     # Whether or not to use an economy system with the plugin.
     Enabled: false
@@ -26,4 +34,3 @@ Economy:
     PercentCost: 5.0
     # Calculate cost as MinCost + RestoreCost
     AddMin: false
-
