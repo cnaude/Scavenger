@@ -2,6 +2,7 @@ package me.cnaude.plugin.Scavenger;
 
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
@@ -26,6 +27,7 @@ public class Scavenger extends JavaPlugin {
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
     public static PVPArenaAPI pvpHandler;
+    public static WorldGuardPlugin wgHandler;
     
     public boolean configLoaded = false;
     
@@ -43,6 +45,7 @@ public class Scavenger extends JavaPlugin {
                        
         setupMobArenaHandler();
         setupPVPArenaHandler();
+        setupWorldGuardHandler();
                
         getServer().getPluginManager().registerEvents(eventListener, this);
         
@@ -149,6 +152,18 @@ public class Scavenger extends JavaPlugin {
 
         pvpHandler = new PVPArenaAPI();
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
+    }
+    
+    public void setupWorldGuardHandler() {
+        if (getSConfig().wgPVPIgnore()) {
+            Plugin wgPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
+ 
+            if (wgPlugin == null)
+                return;
+        
+            wgHandler = new WorldGuardPlugin();
+            logInfo("WorldGuard detected. Scavenger will ignore drops in PVP zones.");
+        }
     }
     
     @Override

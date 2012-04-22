@@ -1,5 +1,8 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +109,18 @@ public class RestorationManager implements Serializable {
         if (_drops.isEmpty() && _player.getExp() == 0 && _player.getLevel() == 0) {
             return;
         }
+        
+        if (Scavenger.wgHandler != null && plug.getSConfig().wgPVPIgnore()) {                                
+            RegionManager regionManager = Scavenger.wgHandler.getRegionManager(_player.getWorld());       
+            ApplicableRegionSet set = regionManager.getApplicableRegions(_player.getLocation());
+            if (set.allows(DefaultFlag.PVP)) {
+                if (!plug.getSConfig().msgInsideWGPVP().isEmpty()) {
+                    plug.message(_player, plug.getSConfig().msgInsideWGPVP());
+                }
+                return;
+            }
+        }
+        
         if (Scavenger.maHandler != null && Scavenger.maHandler.isPlayerInArena(_player)) { 
             if (!plug.getSConfig().msgInsideMA().isEmpty()) {
                 plug.message(_player, plug.getSConfig().msgInsideMA());

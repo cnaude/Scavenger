@@ -12,6 +12,8 @@ Global:
   SingleItemDropsOnly: false
   Debug: false
   Permissions: true
+  # If true then Scavenger will not recover items in a WorldGuard PVP zone.
+  WorldGuardPVPIgnore: false
 Messages:
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.

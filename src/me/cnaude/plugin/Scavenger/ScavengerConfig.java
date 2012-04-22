@@ -20,6 +20,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_SIDROPS      = "Global.SingleItemDrops";
     private static final String GLOBAL_SIDROPS_ONLY = "Global.SingleItemDropsOnly";
     private static final String GLOBAL_PERMS        = "Global.Permissions";
+    private static final String GLOBAL_WGPVPIGNORE  = "Global.WorldGuardPVPIgnore";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED       = "Messages.MsgRecovered";
     private static final String MSG_SAVING          = "Messages.MsgSaving";
@@ -27,6 +28,7 @@ public final class ScavengerConfig {
     private static final String MSG_NOTENOUGHMONEY  = "Messages.MsgNotEnoughMoney";
     private static final String MSG_INSIDEPA        = "Messages.MsgInsidePA";
     private static final String MSG_INSIDEMA        = "Messages.MsgInsideMA";
+    private static final String MSG_INSIDEWGPVP     = "Messages.MsgInsideWGPVP";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -48,6 +50,8 @@ public final class ScavengerConfig {
     private String msgNotEnoughMoney;
     private String msgInsidePA;
     private String msgInsideMA;
+    private boolean wgPVPIgnore;
+    private String msgInsideWGPVP;
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();       
@@ -75,6 +79,8 @@ public final class ScavengerConfig {
         msgNotEnoughMoney   = config.getString(MSG_NOTENOUGHMONEY, "Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.");
         msgInsidePA         = config.getString(MSG_INSIDEPA, "You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.");
         msgInsideMA         = config.getString(MSG_INSIDEMA, "You are inside a Mob Arena arena. Scavenger will not save your inventory.");
+        msgInsideWGPVP      = config.getString(MSG_INSIDEWGPVP, "You are inside WorldGuard PVP zone. Scavenger will not save your inventory.");
+        wgPVPIgnore         = config.getBoolean(GLOBAL_WGPVPIGNORE, false);
     }
     
     public boolean shouldNotify() {
@@ -155,5 +161,13 @@ public final class ScavengerConfig {
     
     public String msgInsideMA() {
         return msgInsideMA;
+    }
+    
+    public String msgInsideWGPVP() {
+        return msgInsideWGPVP;
+    }
+    
+    public boolean wgPVPIgnore() {
+        return wgPVPIgnore;
     }
 }
