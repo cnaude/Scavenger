@@ -110,14 +110,18 @@ public class RestorationManager implements Serializable {
             return;
         }
         
-        if (Scavenger.wgHandler != null && plug.getSConfig().wgPVPIgnore()) {                                
-            RegionManager regionManager = Scavenger.wgHandler.getRegionManager(_player.getWorld());       
-            ApplicableRegionSet set = regionManager.getApplicableRegions(_player.getLocation());
-            if (set.allows(DefaultFlag.PVP)) {
-                if (!plug.getSConfig().msgInsideWGPVP().isEmpty()) {
-                    plug.message(_player, plug.getSConfig().msgInsideWGPVP());
+        if (Scavenger.wgHandler != null && plug.getSConfig().wgPVPIgnore()) {
+            if (Scavenger.wgHandler.getRegionManager(_player.getWorld()) != null) {
+                RegionManager regionManager = Scavenger.wgHandler.getRegionManager(_player.getWorld());       
+                ApplicableRegionSet set = regionManager.getApplicableRegions(_player.getLocation());
+                if (set.allows(DefaultFlag.PVP)) {
+                    if (!plug.getSConfig().msgInsideWGPVP().isEmpty()) {
+                        plug.message(_player, plug.getSConfig().msgInsideWGPVP());
+                    }
+                    return;
                 }
-                return;
+            } else {
+                plug.message(_player, "Reagion support disabled for '"+_player.getWorld().getName()+"'");
             }
         }
         
