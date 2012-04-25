@@ -79,7 +79,7 @@ public final class ScavengerConfig {
         msgNotEnoughMoney   = config.getString(MSG_NOTENOUGHMONEY, "Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.");
         msgInsidePA         = config.getString(MSG_INSIDEPA, "You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.");
         msgInsideMA         = config.getString(MSG_INSIDEMA, "You are inside a Mob Arena arena. Scavenger will not save your inventory.");
-        msgInsideWGPVP      = config.getString(MSG_INSIDEWGPVP, "You are inside WorldGuard PVP zone. Scavenger will not save your inventory.");
+        msgInsideWGPVP      = config.getString(MSG_INSIDEWGPVP, "You are inside WorldGuard PVP region. Scavenger will not save your inventory.");
         wgPVPIgnore         = config.getBoolean(GLOBAL_WGPVPIGNORE, false);
     }
     

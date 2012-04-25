@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+
 public class RestorationManager implements Serializable {
     private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();    
 
@@ -104,15 +105,16 @@ public class RestorationManager implements Serializable {
     public static boolean hasRestoration(Player _player) {
         return restorations.containsKey(_player.getName());
     }
-
+    
     public static void collect(Scavenger plug, Player _player, List<ItemStack> _drops, EntityDeathEvent event) {
         if (_drops.isEmpty() && _player.getExp() == 0 && _player.getLevel() == 0) {
             return;
         }
         
-        if (Scavenger.wgHandler != null && plug.getSConfig().wgPVPIgnore()) {
-            if (Scavenger.wgHandler.getRegionManager(_player.getWorld()) != null) {
-                RegionManager regionManager = Scavenger.wgHandler.getRegionManager(_player.getWorld());       
+        if (plug.getWorldGuard() != null && plug.getSConfig().wgPVPIgnore()) {
+            plug.logDebug("Checking region support for '"+_player.getWorld().getName()+"'");
+            if (plug.getWorldGuard().getRegionManager(_player.getWorld()) != null) {
+                RegionManager regionManager = plug.getWorldGuard().getRegionManager(_player.getWorld());       
                 ApplicableRegionSet set = regionManager.getApplicableRegions(_player.getLocation());
                 if (set.allows(DefaultFlag.PVP)) {
                     if (!plug.getSConfig().msgInsideWGPVP().isEmpty()) {
@@ -121,7 +123,7 @@ public class RestorationManager implements Serializable {
                     return;
                 }
             } else {
-                plug.message(_player, "Reagion support disabled for '"+_player.getWorld().getName()+"'");
+                plug.logDebug("Region support disabled for '"+_player.getWorld().getName()+"'");
             }
         }
         

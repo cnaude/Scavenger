@@ -27,7 +27,6 @@ public class Scavenger extends JavaPlugin {
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
     public static PVPArenaAPI pvpHandler;
-    public static WorldGuardPlugin wgHandler;
     
     public boolean configLoaded = false;
     
@@ -45,11 +44,17 @@ public class Scavenger extends JavaPlugin {
                        
         setupMobArenaHandler();
         setupPVPArenaHandler();
-        setupWorldGuardHandler();
+        checkForWorldGuard();
                
         getServer().getPluginManager().registerEvents(eventListener, this);
         
         RestorationManager.load(this);
+    }
+    
+    private void checkForWorldGuard() {
+        if (getWorldGuard() != null && getSConfig().wgPVPIgnore()) {
+            logInfo("WorldGuard detected. Scavenger will not recover items in PVP regions.");
+        }
     }
     
     @Override
@@ -68,6 +73,16 @@ public class Scavenger extends JavaPlugin {
         }
 
         return (economy != null);
+    }
+    
+    public WorldGuardPlugin getWorldGuard() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+
+        // WorldGuard may not be loaded
+        if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+            return null; // Maybe you want throw an exception instead
+        }
+        return (WorldGuardPlugin) plugin;
     }
     
     public void logInfo(String _message) {
@@ -154,18 +169,7 @@ public class Scavenger extends JavaPlugin {
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
     
-    public void setupWorldGuardHandler() {
-        if (getSConfig().wgPVPIgnore()) {
-            Plugin wgPlugin = getServer().getPluginManager().getPlugin("WorldGuard");
- 
-            if (wgPlugin == null)
-                return;
-        
-            wgHandler = new WorldGuardPlugin();
-            logInfo("WorldGuard detected. Scavenger will ignore drops in PVP zones.");
-        }
-    }
-    
+   
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandlabel, String[] args){
         if (sender instanceof Player) {
