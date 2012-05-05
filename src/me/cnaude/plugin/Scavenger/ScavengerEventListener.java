@@ -16,10 +16,14 @@ public class ScavengerEventListener implements Listener {
     }
     
     @EventHandler(priority = EventPriority.HIGH)
-    public void onEntityDeath(EntityDeathEvent event) {
-        if ((event.getEntity() instanceof Player)) {
+    public void onEntityDeath(EntityDeathEvent event) {        
+        if ((event.getEntity() instanceof Player)) {            
             Player player = (Player)event.getEntity();
-            if (player.hasPermission("scavenger.scavenge") || !plugin.getSConfig().permsEnabled()) {
+            if (ScavengerIgnoreList.isIgnored(player.getName()))
+                return;                 
+            if (player.hasPermission("scavenger.scavenge") 
+                    || !plugin.getSConfig().permsEnabled() 
+                    || (player.isOp() && plugin.getSConfig().opsAllPerms())) {
                     RestorationManager.collect(plugin, (Player)event.getEntity(), event.getDrops(), event);
             }
         }

@@ -21,6 +21,9 @@ public final class ScavengerConfig {
     private static final String GLOBAL_SIDROPS_ONLY = "Global.SingleItemDropsOnly";
     private static final String GLOBAL_PERMS        = "Global.Permissions";
     private static final String GLOBAL_WGPVPIGNORE  = "Global.WorldGuardPVPIgnore";
+    private static final String GLOBAL_WGPVPONLY    = "Global.WorldGuardPVPOnly";
+    private static final String GLOBAL_OPSALLPERMS  = "Global.OpsAllPerms";
+    
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED       = "Messages.MsgRecovered";
     private static final String MSG_SAVING          = "Messages.MsgSaving";
@@ -28,7 +31,9 @@ public final class ScavengerConfig {
     private static final String MSG_NOTENOUGHMONEY  = "Messages.MsgNotEnoughMoney";
     private static final String MSG_INSIDEPA        = "Messages.MsgInsidePA";
     private static final String MSG_INSIDEMA        = "Messages.MsgInsideMA";
+    private static final String MSG_INSIDEUA        = "Messages.MsgInsideUA";
     private static final String MSG_INSIDEWGPVP     = "Messages.MsgInsideWGPVP";
+    private static final String MSG_INSIDEWGPVPONLY = "Messages.MsgInsideWGPVPOnly";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -50,8 +55,13 @@ public final class ScavengerConfig {
     private String msgNotEnoughMoney;
     private String msgInsidePA;
     private String msgInsideMA;
+    private String msgInsideUA;
     private boolean wgPVPIgnore;
+    private boolean wgGuardPVPOnly;
     private String msgInsideWGPVP;
+    private String msgInsideWGPVPOnly;
+    private boolean opsAllPerms;
+    
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();       
@@ -78,9 +88,13 @@ public final class ScavengerConfig {
         msgSaveForFee       = config.getString(MSG_SAVEFORFEE, "Saving your inventory for a small fee of %COST% %CURRENCY%.");
         msgNotEnoughMoney   = config.getString(MSG_NOTENOUGHMONEY, "Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.");
         msgInsidePA         = config.getString(MSG_INSIDEPA, "You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.");
-        msgInsideMA         = config.getString(MSG_INSIDEMA, "You are inside a Mob Arena arena. Scavenger will not save your inventory.");
+        msgInsideMA         = config.getString(MSG_INSIDEMA, "You are inside a Mob Arena. Scavenger will not save your inventory.");
+        msgInsideUA         = config.getString(MSG_INSIDEUA, "You are inside an Ultimate Arena. Scavenger will not save your inventory.");
         msgInsideWGPVP      = config.getString(MSG_INSIDEWGPVP, "You are inside WorldGuard PVP region. Scavenger will not save your inventory.");
+        msgInsideWGPVPOnly  = config.getString(MSG_INSIDEWGPVPONLY, "You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.");
         wgPVPIgnore         = config.getBoolean(GLOBAL_WGPVPIGNORE, false);
+        wgGuardPVPOnly      = config.getBoolean(GLOBAL_WGPVPONLY, false);
+        opsAllPerms         = config.getBoolean(GLOBAL_OPSALLPERMS, true);
     }
     
     public boolean shouldNotify() {
@@ -163,11 +177,27 @@ public final class ScavengerConfig {
         return msgInsideMA;
     }
     
+    public String msgInsideUA() {
+        return msgInsideUA;
+    }
+    
     public String msgInsideWGPVP() {
         return msgInsideWGPVP;
     }
     
+    public String msgInsideWGPVPOnly() {
+        return msgInsideWGPVPOnly;
+    }
+    
     public boolean wgPVPIgnore() {
         return wgPVPIgnore;
+    }
+    
+    public boolean wgGuardPVPOnly() {
+        return wgGuardPVPOnly;
+    }
+    
+    public boolean opsAllPerms() {
+        return opsAllPerms;
     }
 }

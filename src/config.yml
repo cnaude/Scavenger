@@ -12,8 +12,11 @@ Global:
   SingleItemDropsOnly: false
   Debug: false
   Permissions: true
+  OpsAllPerms: false
   # If true then Scavenger will not recover items in a WorldGuard PVP zone.
   WorldGuardPVPIgnore: false
+  # If true then restores only work in PVP zones.
+  WorldGuardPVPOnly: false
 Messages:
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.
@@ -21,7 +24,8 @@ Messages:
   MsgNotEnoughMoney: Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.
   MsgInsidePA: You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.
   MsgInsideMA: You are inside a Mob Arena. Scavenger will not save your inventory.
-  MsgInsideWGPVP: You are inside WorldGuard PVP region. Scavenger will not save your inventory.
+  MsgInsideWGPVP: You are inside a WorldGuard PVP region. Scavenger will not save your inventory.
+  MsgInsideWGPVPOnly: You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.
 Economy:
     # Whether or not to use an economy system with the plugin.
     Enabled: false

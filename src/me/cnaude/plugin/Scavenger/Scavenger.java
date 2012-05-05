@@ -2,7 +2,12 @@ package me.cnaude.plugin.Scavenger;
 
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
+import com.orange451.UltimateArena.main;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
@@ -26,11 +31,11 @@ public class Scavenger extends JavaPlugin {
     private static Vault vault = null;
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
-    public static PVPArenaAPI pvpHandler;
+    public static PVPArenaAPI pvpHandler;    
     
     public boolean configLoaded = false;
     
-    static final Logger log = Logger.getLogger("Minecraft");;    
+    static final Logger log = Logger.getLogger("Minecraft");    
     private ScavengerConfig config;    
     private final ScavengerEventListener eventListener = new ScavengerEventListener(this);
 
@@ -49,6 +54,7 @@ public class Scavenger extends JavaPlugin {
         getServer().getPluginManager().registerEvents(eventListener, this);
         
         RestorationManager.load(this);
+        ScavengerIgnoreList.load(this);
     }
     
     private void checkForWorldGuard() {
@@ -57,9 +63,16 @@ public class Scavenger extends JavaPlugin {
         }
     }
     
+    private void checkForUltimateArena() {
+        if (getUltimateArena() != null) {
+            logInfo("UltimateArena detected. Scavenger will not recover items in an arena.");
+        }
+    }
+    
     @Override
     public void onDisable() {
         RestorationManager.save(this);
+        ScavengerIgnoreList.save(this);
     }
     
     public Economy getEconomy() {
@@ -83,6 +96,15 @@ public class Scavenger extends JavaPlugin {
             return null; // Maybe you want throw an exception instead
         }
         return (WorldGuardPlugin) plugin;
+    }
+    
+    public main getUltimateArena() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("UltimateArena");
+        
+        if (plugin == null || !(plugin instanceof main)) {
+            return null; 
+        }
+        return (main) plugin;
     }
     
     public void logInfo(String _message) {
@@ -174,13 +196,32 @@ public class Scavenger extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String commandlabel, String[] args){
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            if (p.hasPermission("scavenger.reload")) {
-                if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
+            if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
+                if (p.hasPermission("scavenger.reload")) {
+                
                     this.loadConfig();
                     message(p,"Configuration reloaded.");
+                } else {
+                    message(p,"No permission to reload scavenger config!");
+                }                
+            }
+            if(commandlabel.equalsIgnoreCase("scvron")) {
+                if (p.hasPermission("scavenger.self.on")
+                        || (p.isOp() && getSConfig().opsAllPerms())) {                
+                    ScavengerIgnoreList.removePlayer(sender.getName(), this);
+                    message(p,"You have enabled item recovery for yourself!");
+                } else {
+                    message(p,"No permission to do this!");
                 }
-            } else {
-                message(p,"No permission to reload scavenger config!");
+            }
+            if(commandlabel.equalsIgnoreCase("scvroff")) {
+                if (p.hasPermission("scavenger.self.off")
+                        || (p.isOp() && getSConfig().opsAllPerms())) {
+                    ScavengerIgnoreList.addPlayer(sender.getName(), this);
+                    message(p,"You have disabled item recovery for yourself!");
+                } else {
+                    message(p,"No permission to do this!");
+                }
             }
         } else if (sender instanceof ConsoleCommandSender) {
             if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {               
@@ -208,13 +249,13 @@ public class Scavenger extends JavaPlugin {
             if (_player != null)
                 _player.sendMessage(headerStr() + _message);
             else
-                logInfo(_message);
+                logDebug(_message);
         }
     }
     
     public void debugMessage(String _message) {
         if (getSConfig().debugEnabled()) 
-                logInfo(_message);
+                logDebug(_message);
     }
 
     public void error(Player _player, String _message) {
@@ -223,5 +264,6 @@ public class Scavenger extends JavaPlugin {
         else
             logError(_message);
     }
+    
    
 }

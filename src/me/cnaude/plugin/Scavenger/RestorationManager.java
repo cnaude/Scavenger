@@ -111,19 +111,36 @@ public class RestorationManager implements Serializable {
             return;
         }
         
-        if (plug.getWorldGuard() != null && plug.getSConfig().wgPVPIgnore()) {
+        if (plug.getWorldGuard() != null) {
             plug.logDebug("Checking region support for '"+_player.getWorld().getName()+"'");
             if (plug.getWorldGuard().getRegionManager(_player.getWorld()) != null) {
                 RegionManager regionManager = plug.getWorldGuard().getRegionManager(_player.getWorld());       
                 ApplicableRegionSet set = regionManager.getApplicableRegions(_player.getLocation());
-                if (set.allows(DefaultFlag.PVP)) {
+                if (set.allows(DefaultFlag.PVP) && plug.getSConfig().wgPVPIgnore()) {
+                    plug.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is "+plug.getSConfig().wgPVPIgnore());
                     if (!plug.getSConfig().msgInsideWGPVP().isEmpty()) {
-                        plug.message(_player, plug.getSConfig().msgInsideWGPVP());
+                        plug.message(_player, plug.getSConfig().msgInsideWGPVP());                        
+                    }
+                    return;
+                }
+                if (!set.allows(DefaultFlag.PVP) && plug.getSConfig().wgGuardPVPOnly()) {
+                    plug.logDebug("This is NOT a WorldGuard PVP zone and WorldGuardPVPOnly is "+plug.getSConfig().wgGuardPVPOnly());
+                    if (!plug.getSConfig().msgInsideWGPVP().isEmpty()) {
+                        plug.message(_player, plug.getSConfig().msgInsideWGPVPOnly());
                     }
                     return;
                 }
             } else {
                 plug.logDebug("Region support disabled for '"+_player.getWorld().getName()+"'");
+            }
+        }
+        
+        if (plug.getUltimateArena() != null) {
+            if (plug.getUltimateArena().isInArena(_player)) {
+                if (!plug.getSConfig().msgInsideUA().isEmpty()) {
+                    plug.message(_player, plug.getSConfig().msgInsideUA());
+                }
+                return;
             }
         }
         
@@ -148,7 +165,10 @@ public class RestorationManager implements Serializable {
             return;
         }
 
-        if(plug.getEconomy() != null && !(_player.hasPermission("scavenger.free")) && plug.getSConfig().economyEnabled()) {          
+        if(plug.getEconomy() != null 
+                && !(_player.hasPermission("scavenger.free") 
+                || (_player.isOp() && plug.getSConfig().opsAllPerms())) 
+                && plug.getSConfig().economyEnabled()) {          
             double restore_cost = plug.getSConfig().restoreCost(); 
             double withdraw_amount;
             double player_balance = plug.getEconomy().getBalance(_player.getName());
@@ -208,10 +228,14 @@ public class RestorationManager implements Serializable {
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
         
-        if (_player.hasPermission("scavenger.level") || !plug.getSConfig().permsEnabled()) {
+        if (_player.hasPermission("scavenger.level") 
+                || !plug.getSConfig().permsEnabled()
+                || (_player.isOp() && plug.getSConfig().opsAllPerms())) {
             restoration.level = _player.getLevel();
         }
-        if (_player.hasPermission("scavenger.exp") || !plug.getSConfig().permsEnabled()) {            
+        if (_player.hasPermission("scavenger.exp") 
+                || !plug.getSConfig().permsEnabled()
+                || (_player.isOp() && plug.getSConfig().opsAllPerms())) {            
             restoration.exp = _player.getExp();
             event.setDroppedExp(0);
         }
@@ -267,10 +291,14 @@ public class RestorationManager implements Serializable {
 
                 _player.getInventory().setContents(restoration.inventory);
                 _player.getInventory().setArmorContents(restoration.armour);
-                if (_player.hasPermission("scavenger.level") || !plug.getSConfig().permsEnabled()) {
+                if (_player.hasPermission("scavenger.level") 
+                        || !plug.getSConfig().permsEnabled()
+                        || (_player.isOp() && plug.getSConfig().opsAllPerms())) {
                     _player.setLevel(restoration.level);                              
                 }
-                if (_player.hasPermission("scavenger.exp") || !plug.getSConfig().permsEnabled()) {
+                if (_player.hasPermission("scavenger.exp") 
+                        || !plug.getSConfig().permsEnabled()
+                        || (_player.isOp() && plug.getSConfig().opsAllPerms())) {
                     _player.setExp(restoration.exp);        
                 }                
                 if (plug.getSConfig().shouldNotify()) {
