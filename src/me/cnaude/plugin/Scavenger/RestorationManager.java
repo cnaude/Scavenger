@@ -1,5 +1,8 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.onarandombox.multiverseinventories.*;
+import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -79,7 +82,8 @@ public class RestorationManager implements Serializable {
             RestorationS value = entry.getValue();                       
             Restoration restoration = new Restoration();
             restoration.inventory = new ItemStack[value.inventory.size()];
-            restoration.armour = new ItemStack[value.armour.size()];            
+            restoration.armour = new ItemStack[value.armour.size()];
+            
             for (int i = 0; i<value.inventory.size(); i++) {                
                 if (value.inventory.get(i) instanceof Map) {
                     plug.debugMessage("Deserializing: "+value.inventory.get(i).toString());
@@ -160,6 +164,7 @@ public class RestorationManager implements Serializable {
             return;
         } 
         
+        
         if (hasRestoration(_player)) {
             plug.error(_player, "Restoration already exists, ignoring.");              
             return;
@@ -227,6 +232,11 @@ public class RestorationManager implements Serializable {
 
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
+        GroupManager groupManager = new MultiverseInventories().getGroupManager();
+        List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
+        for (WorldGroupProfile i: groups) {
+            restoration.inventoryWorldGroups.add(i.getName());
+        }
         
         if (_player.hasPermission("scavenger.level") 
                 || !plug.getSConfig().permsEnabled()
@@ -286,7 +296,22 @@ public class RestorationManager implements Serializable {
         if (hasRestoration(_player)) {
             Restoration restoration = restorations.get(_player.getName());
             
-            if (restoration.enabled) {                              
+            GroupManager groupManager = new MultiverseInventories().getGroupManager();
+            List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
+            
+            boolean inGroup = false;
+            for (String i: restoration.inventoryWorldGroups) {
+                for (WorldGroupProfile j: groups) {
+                    if (i.equals(j.getName())) {
+                        inGroup = true;
+                    }
+                }
+            }
+            
+            if (inGroup == false) {
+                return;
+            }
+            if (restoration.enabled ) {                              
                 _player.getInventory().clear();          
 
                 _player.getInventory().setContents(restoration.inventory);
