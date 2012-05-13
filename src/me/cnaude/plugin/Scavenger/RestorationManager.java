@@ -161,7 +161,8 @@ public class RestorationManager implements Serializable {
         } 
         
         if (hasRestoration(_player)) {
-            plug.error(_player, "Restoration already exists, ignoring.");              
+            plug.error(_player, "Restoration already exists, ignoring."); 
+            restorations.remove(_player.getName());
             return;
         }
 
@@ -225,6 +226,7 @@ public class RestorationManager implements Serializable {
 
         restoration.enabled = false;
 
+        restoration.lastDeathLocation = event.getEntity().getLocation();
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
         

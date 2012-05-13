@@ -4,10 +4,6 @@ import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
 import com.orange451.UltimateArena.main;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
@@ -59,7 +55,7 @@ public class Scavenger extends JavaPlugin {
     
     private void checkForWorldGuard() {
         if (getWorldGuard() != null && getSConfig().wgPVPIgnore()) {
-            logInfo("WorldGuard detected. Scavenger will not recover items in PVP regions.");
+            logInfo("WorldGuard detected.");
         }
     }
     
