@@ -52,7 +52,8 @@ public class Scavenger extends JavaPlugin {
         setupMobArenaHandler();
         setupPVPArenaHandler();
         checkForWorldGuard();
-               
+        multiverseHandler = new MultiverseInventories();
+
         getServer().getPluginManager().registerEvents(eventListener, this);
         
         RestorationManager.load(this);
