@@ -3,6 +3,8 @@ package me.cnaude.plugin.Scavenger;
 import com.onarandombox.multiverseinventories.*;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -232,10 +234,14 @@ public class RestorationManager implements Serializable {
 
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
-        GroupManager groupManager = new MultiverseInventories().getGroupManager();
-        List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
-        for (WorldGroupProfile i: groups) {
-            restoration.inventoryWorldGroups.add(i.getName());
+        if (Scavenger.multiverseHandler != null ) {
+            GroupManager groupManager = new MultiverseInventories().getGroupManager();
+            List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
+            for (WorldGroupProfile i: groups) {
+                if (i.isSharing(Sharables.INVENTORY) && i.isSharing(Sharables.ARMOR) && i.isSharing(Sharables.LEVEL) && i.isSharing(Sharables.EXPERIENCE)){
+                    restoration.inventoryWorldGroups.add(i.getName());
+                }
+            }
         }
         
         if (_player.hasPermission("scavenger.level") 
@@ -295,9 +301,10 @@ public class RestorationManager implements Serializable {
     public static void restore(Scavenger plug, Player _player) {
         if (hasRestoration(_player)) {
             Restoration restoration = restorations.get(_player.getName());
+            if (Scavenger.multiverseHandler != null) {
+                GroupManager groupManager = new MultiverseInventories().getGroupManager();
+                List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
             
-            GroupManager groupManager = new MultiverseInventories().getGroupManager();
-            List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
             
             boolean inGroup = false;
             for (String i: restoration.inventoryWorldGroups) {
@@ -311,6 +318,8 @@ public class RestorationManager implements Serializable {
             if (inGroup == false) {
                 return;
             }
+            }
+        
             if (restoration.enabled ) {                              
                 _player.getInventory().clear();          
 

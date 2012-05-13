@@ -2,6 +2,7 @@ package me.cnaude.plugin.Scavenger;
 
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.main;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import java.io.File;
@@ -32,6 +33,7 @@ public class Scavenger extends JavaPlugin {
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
     public static PVPArenaAPI pvpHandler;    
+    public static MultiverseInventories multiverseHandler;
     
     public boolean configLoaded = false;
     
