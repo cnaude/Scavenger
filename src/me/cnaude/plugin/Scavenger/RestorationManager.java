@@ -110,7 +110,24 @@ public class RestorationManager implements Serializable {
     }
     
     public static boolean hasRestoration(Player _player) {
-        return restorations.containsKey(_player.getName());
+        if (Scavenger.get().getMultiverseInventories() != null) {
+            List<WorldGroupProfile> groupProfiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(_player.getWorld().getName());
+            List<String> groups = new ArrayList<String>();
+            for (WorldGroupProfile i: groupProfiles) {
+                if (restorations.containsKey(_player.getName())) {
+                    if (restorations.get(_player.getName()).inventoryWorldGroups.contains(i.getName())) {
+                        return true;
+                    }
+                    
+                }
+                
+            }
+            return false;
+            
+        }
+        else {
+            return restorations.containsKey(_player.getName());
+        }
     }
     
     public static void collect(Scavenger plug, Player _player, List<ItemStack> _drops, EntityDeathEvent event) {
