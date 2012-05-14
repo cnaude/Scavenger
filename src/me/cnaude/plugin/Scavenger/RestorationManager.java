@@ -9,6 +9,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +166,19 @@ public class RestorationManager implements Serializable {
             }
             return;
         } 
-        
+        List<String> tempRespawnGroups = new ArrayList<String>();
+        if (plug.getMultiverseInventories() != null) {
+            
+            if (plug.getMultiverseInventories().getGroupManager() != null) {
+                GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
+               
+                for (WorldGroupProfile i: groupManager.getGroupsForWorld(_player.getWorld().getName())) {
+                    if (i.isSharing(Sharables.ARMOR) && i.isSharing(Sharables.INVENTORY)) {
+                        tempRespawnGroups.add(i.getName());
+                    }
+                }
+            }
+        }
         
         if (hasRestoration(_player)) {
             plug.error(_player, "Restoration already exists, ignoring.");              
@@ -231,18 +244,13 @@ public class RestorationManager implements Serializable {
         Restoration restoration = new Restoration();
 
         restoration.enabled = false;
-
+        if (tempRespawnGroups != null) {
+            restoration.inventoryWorldGroups = tempRespawnGroups;
+        }
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
-        if (Scavenger.multiverseHandler != null ) {
-            GroupManager groupManager = new MultiverseInventories().getGroupManager();
-            List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
-            for (WorldGroupProfile i: groups) {
-                if (i.isSharing(Sharables.INVENTORY) && i.isSharing(Sharables.ARMOR) && i.isSharing(Sharables.LEVEL) && i.isSharing(Sharables.EXPERIENCE)){
-                    restoration.inventoryWorldGroups.add(i.getName());
-                }
-            }
-        }
+        
+        
         
         if (_player.hasPermission("scavenger.level") 
                 || !plug.getSConfig().permsEnabled()
@@ -301,25 +309,34 @@ public class RestorationManager implements Serializable {
     public static void restore(Scavenger plug, Player _player) {
         if (hasRestoration(_player)) {
             Restoration restoration = restorations.get(_player.getName());
-            if (Scavenger.multiverseHandler != null) {
-                GroupManager groupManager = new MultiverseInventories().getGroupManager();
-                List<WorldGroupProfile> groups = groupManager.getGroupsForWorld(_player.getWorld().getName());
             
-            
-            boolean inGroup = false;
-            for (String i: restoration.inventoryWorldGroups) {
-                for (WorldGroupProfile j: groups) {
-                    if (i.equals(j.getName())) {
-                        inGroup = true;
+        if (plug.getMultiverseInventories() != null) {
+            if (plug.getMultiverseInventories().getGroupManager() != null) {
+                GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
+                List<WorldGroupProfile> profiles = groupManager.getGroupsForWorld(_player.getWorld().getName());
+                List<String> groups = new ArrayList<String>();
+                for (WorldGroupProfile i: profiles) {
+                    groups.add(i.getName());
+                    
+                }
+                boolean isInGroup = false;
+                for (String i: groups) {
+                    if (restoration.inventoryWorldGroups.contains(i)) {
+                        isInGroup = true;
+                        break;
+                    }
+                    else if (restoration.inventoryWorldGroups == null) {
+                        isInGroup = true;
+                        break;
                     }
                 }
-            }
-            
-            if (inGroup == false) {
-                return;
-            }
-            }
-        
+                if  (isInGroup == false) {
+                    plug.message(_player, "You have to be in the same inventory group to get your inventory back.");
+                   
+                    return;
+                }
+             }
+        }
             if (restoration.enabled ) {                              
                 _player.getInventory().clear();          
 

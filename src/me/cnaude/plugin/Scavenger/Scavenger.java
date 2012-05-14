@@ -52,8 +52,7 @@ public class Scavenger extends JavaPlugin {
         setupMobArenaHandler();
         setupPVPArenaHandler();
         checkForWorldGuard();
-        multiverseHandler = new MultiverseInventories();
-
+        
         getServer().getPluginManager().registerEvents(eventListener, this);
         
         RestorationManager.load(this);
@@ -91,6 +90,14 @@ public class Scavenger extends JavaPlugin {
         return (economy != null);
     }
     
+    public MultiverseInventories getMultiverseInventories() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
+        
+        if (plugin == null || !(plugin instanceof MultiverseInventories)) {
+            return null;
+        }
+        return (MultiverseInventories) plugin;
+    }
     public WorldGuardPlugin getWorldGuard() {
         Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 
@@ -267,6 +274,8 @@ public class Scavenger extends JavaPlugin {
         else
             logError(_message);
     }
+
+    
     
    
 }

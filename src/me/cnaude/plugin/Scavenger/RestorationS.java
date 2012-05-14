@@ -15,7 +15,6 @@ import java.util.Map;
  */
 public class RestorationS implements Serializable {
     public boolean enabled;
-    public List<String> inventoryWorldGroups;
     public List<Map<String,Object>> inventory = new ArrayList<Map<String,Object>>();
     public List<Map<String,Object>> armour = new ArrayList<Map<String,Object>>();
     public int level;
