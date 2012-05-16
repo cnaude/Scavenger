@@ -117,7 +117,7 @@ public class RestorationManager implements Serializable {
                 if (restorations.containsKey(_player.getName())) {
                     Restoration restoration = restorations.get(_player.getName());
                     if (restoration != null) {
-                        if (restoration.inventoryWorldGroups.contains(i)) {
+                        if (restoration.inventoryWorldGroups.contains(i.getName()) == true) {
                             return true;
                         }
                     } 
