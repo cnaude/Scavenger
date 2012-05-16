@@ -329,6 +329,7 @@ public class RestorationManager implements Serializable {
             
         if (plug.getMultiverseInventories() != null) {
             if (plug.getMultiverseInventories().getGroupManager() != null) {
+                if ( plug.getMultiverseInventories().getGroupManager() != null) {
                 GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
                 List<WorldGroupProfile> profiles = groupManager.getGroupsForWorld(_player.getWorld().getName());
                 List<String> groups = new ArrayList<String>();
@@ -352,7 +353,8 @@ public class RestorationManager implements Serializable {
                    
                     return;
                 }
-             }
+             }   
+            }
         }
             if (restoration.enabled ) {                              
                 _player.getInventory().clear();          
