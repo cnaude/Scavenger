@@ -2,8 +2,13 @@ package me.cnaude.plugin.Scavenger;
 
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.main;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
@@ -28,6 +33,7 @@ public class Scavenger extends JavaPlugin {
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
     public static PVPArenaAPI pvpHandler;    
+    public static MultiverseInventories multiverseHandler;
     
     public boolean configLoaded = false;
     
@@ -46,7 +52,7 @@ public class Scavenger extends JavaPlugin {
         setupMobArenaHandler();
         setupPVPArenaHandler();
         checkForWorldGuard();
-               
+        
         getServer().getPluginManager().registerEvents(eventListener, this);
         
         RestorationManager.load(this);
@@ -55,7 +61,7 @@ public class Scavenger extends JavaPlugin {
     
     private void checkForWorldGuard() {
         if (getWorldGuard() != null && getSConfig().wgPVPIgnore()) {
-            logInfo("WorldGuard detected.");
+            logInfo("WorldGuard detected. Scavenger will not recover items in PVP regions.");
         }
     }
     
@@ -84,6 +90,14 @@ public class Scavenger extends JavaPlugin {
         return (economy != null);
     }
     
+    public MultiverseInventories getMultiverseInventories() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
+        
+        if (plugin == null || !(plugin instanceof MultiverseInventories)) {
+            return null;
+        }
+        return (MultiverseInventories) plugin;
+    }
     public WorldGuardPlugin getWorldGuard() {
         Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 
@@ -260,6 +274,8 @@ public class Scavenger extends JavaPlugin {
         else
             logError(_message);
     }
+
+    
     
    
 }

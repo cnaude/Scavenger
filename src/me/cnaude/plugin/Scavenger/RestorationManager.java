@@ -1,9 +1,15 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.onarandombox.multiverseinventories.*;
+import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +85,8 @@ public class RestorationManager implements Serializable {
             RestorationS value = entry.getValue();                       
             Restoration restoration = new Restoration();
             restoration.inventory = new ItemStack[value.inventory.size()];
-            restoration.armour = new ItemStack[value.armour.size()];            
+            restoration.armour = new ItemStack[value.armour.size()];
+            
             for (int i = 0; i<value.inventory.size(); i++) {                
                 if (value.inventory.get(i) instanceof Map) {
                     plug.debugMessage("Deserializing: "+value.inventory.get(i).toString());
@@ -103,7 +110,24 @@ public class RestorationManager implements Serializable {
     }
     
     public static boolean hasRestoration(Player _player) {
-        return restorations.containsKey(_player.getName());
+        if (Scavenger.get().getMultiverseInventories() != null) {
+            List<WorldGroupProfile> groupProfiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(_player.getWorld().getName());
+            List<String> groups = new ArrayList<String>();
+            for (WorldGroupProfile i: groupProfiles) {
+                if (restorations.containsKey(_player.getName())) {
+                    if (restorations.get(_player.getName()).inventoryWorldGroups.contains(i.getName())) {
+                        return true;
+                    }
+                    
+                }
+                
+            }
+            return false;
+            
+        }
+        else {
+            return restorations.containsKey(_player.getName());
+        }
     }
     
     public static void collect(Scavenger plug, Player _player, List<ItemStack> _drops, EntityDeathEvent event) {
@@ -159,10 +183,22 @@ public class RestorationManager implements Serializable {
             }
             return;
         } 
+        List<String> tempRespawnGroups = new ArrayList<String>();
+        if (plug.getMultiverseInventories() != null) {
+            
+            if (plug.getMultiverseInventories().getGroupManager() != null) {
+                GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
+               
+                for (WorldGroupProfile i: groupManager.getGroupsForWorld(_player.getWorld().getName())) {
+                    if (i.isSharing(Sharables.ARMOR) && i.isSharing(Sharables.INVENTORY)) {
+                        tempRespawnGroups.add(i.getName());
+                    }
+                }
+            }
+        }
         
         if (hasRestoration(_player)) {
-            plug.error(_player, "Restoration already exists, ignoring."); 
-            restorations.remove(_player.getName());
+            plug.error(_player, "Restoration already exists, ignoring.");              
             return;
         }
 
@@ -225,10 +261,13 @@ public class RestorationManager implements Serializable {
         Restoration restoration = new Restoration();
 
         restoration.enabled = false;
-
-        restoration.lastDeathLocation = event.getEntity().getLocation();
+        if (tempRespawnGroups != null) {
+            restoration.inventoryWorldGroups = tempRespawnGroups;
+        }
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
+        
+        
         
         if (_player.hasPermission("scavenger.level") 
                 || !plug.getSConfig().permsEnabled()
@@ -288,7 +327,34 @@ public class RestorationManager implements Serializable {
         if (hasRestoration(_player)) {
             Restoration restoration = restorations.get(_player.getName());
             
-            if (restoration.enabled) {                              
+        if (plug.getMultiverseInventories() != null) {
+            if (plug.getMultiverseInventories().getGroupManager() != null) {
+                GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
+                List<WorldGroupProfile> profiles = groupManager.getGroupsForWorld(_player.getWorld().getName());
+                List<String> groups = new ArrayList<String>();
+                for (WorldGroupProfile i: profiles) {
+                    groups.add(i.getName());
+                    
+                }
+                boolean isInGroup = false;
+                for (String i: groups) {
+                    if (restoration.inventoryWorldGroups.contains(i)) {
+                        isInGroup = true;
+                        break;
+                    }
+                    else if (restoration.inventoryWorldGroups == null) {
+                        isInGroup = true;
+                        break;
+                    }
+                }
+                if  (isInGroup == false) {
+                    plug.message(_player, "You have to be in the same inventory group to get your inventory back.");
+                   
+                    return;
+                }
+             }
+        }
+            if (restoration.enabled ) {                              
                 _player.getInventory().clear();          
 
                 _player.getInventory().setContents(restoration.inventory);
