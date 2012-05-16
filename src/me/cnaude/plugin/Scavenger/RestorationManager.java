@@ -1,8 +1,10 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.onarandombox.multiverseinventories.*;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -327,6 +329,7 @@ public class RestorationManager implements Serializable {
             
         if (plug.getMultiverseInventories() != null) {
             if (plug.getMultiverseInventories().getGroupManager() != null) {
+                if ( plug.getMultiverseInventories().getGroupManager() != null) {
                 GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
                 List<WorldGroupProfile> profiles = groupManager.getGroupsForWorld(_player.getWorld().getName());
                 List<String> groups = new ArrayList<String>();
@@ -350,7 +353,8 @@ public class RestorationManager implements Serializable {
                    
                     return;
                 }
-             }
+             }   
+            }
         }
             if (restoration.enabled ) {                              
                 _player.getInventory().clear();          
