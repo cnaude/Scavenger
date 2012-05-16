@@ -175,6 +175,7 @@ public class Scavenger extends JavaPlugin {
             logInfo("Economy disabled. Item recovery will be free.");
         }
         configLoaded = true;
+        instance = this;
     }
     
     public void setupMobArenaHandler() {
