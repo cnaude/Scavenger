@@ -115,10 +115,12 @@ public class RestorationManager implements Serializable {
             List<String> groups = new ArrayList<String>();
             for (WorldGroupProfile i: groupProfiles) {
                 if (restorations.containsKey(_player.getName())) {
-                    if (restorations.get(_player.getName()).inventoryWorldGroups.contains(i.getName())) {
-                        return true;
-                    }
-                    
+                    Restoration restoration = restorations.get(_player.getName());
+                    if (restoration != null) {
+                        if (restoration.inventoryWorldGroups.contains(i)) {
+                            return true;
+                        }
+                    } 
                 }
                 
             }
