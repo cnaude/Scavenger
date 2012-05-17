@@ -104,6 +104,7 @@ public class RestorationManager implements Serializable {
             restoration.enabled = value.enabled;
             restoration.level = value.level;
             restoration.exp = value.exp;
+            
             restorations.put(key, restoration);
             plug.logInfo("Loading "+key+"'s inventory from disk.");
         }
@@ -192,6 +193,7 @@ public class RestorationManager implements Serializable {
                 for (WorldGroupProfile i: groupManager.getGroupsForWorld(_player.getWorld().getName())) {
                     if (i.isSharing(Sharables.ARMOR) && i.isSharing(Sharables.INVENTORY)) {
                         tempRespawnGroups.add(i.getName());
+                        plug.message(_player, i.getName());
                     }
                 }
             }
@@ -313,7 +315,8 @@ public class RestorationManager implements Serializable {
                 }  
             }
         } 
-        restorations.put(_player.getName(), restoration);
+        restorations.put(_player.getName(), restoration); 
+       
     }
 
     public static void enable(Player _player) {
@@ -321,7 +324,7 @@ public class RestorationManager implements Serializable {
             Restoration restoration = restorations.get(_player.getName());
             restoration.enabled = true;
         }
-    }
+    } 
 
     public static void restore(Scavenger plug, Player _player) {
         if (hasRestoration(_player)) {
