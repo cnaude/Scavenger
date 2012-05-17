@@ -387,7 +387,7 @@ public class RestorationManager implements Serializable {
                 }
                 if (plug.getMultiverseInventories() != null) {
                      List<WorldGroupProfile> profiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(_player.getWorld().getName());
-                    restorations.remove(_player.getName()+profiles.get(0));
+                    restorations.remove(_player.getName()+profiles.get(0).getName());
                 } else {
                 restorations.remove(_player.getName());
                 }
