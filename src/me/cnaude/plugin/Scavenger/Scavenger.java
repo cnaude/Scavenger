@@ -178,6 +178,7 @@ public class Scavenger extends JavaPlugin {
         } else {
             logInfo("Economy disabled. Item recovery will be free.");
         }
+        instance = this;
         configLoaded = true;
     }
     
