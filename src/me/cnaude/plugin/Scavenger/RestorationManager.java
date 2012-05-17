@@ -113,17 +113,8 @@ public class RestorationManager implements Serializable {
     public static boolean hasRestoration(Player _player) {
         if (Scavenger.get().getMultiverseInventories() != null) {
             List<WorldGroupProfile> groupProfiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(_player.getWorld().getName());
-            List<String> groups = new ArrayList<String>();
-            for (WorldGroupProfile i: groupProfiles) {
-                if (restorations.containsKey(_player.getName())) {
-                    if (restorations.get(_player.getName()).inventoryWorldGroups.contains(i.getName())) {
-                        return true;
-                    }
-                    
-                }
-                
-            }
-            return false;
+                return restorations.containsKey(_player.getName() +groupProfiles.get(0).getName());
+            
             
         }
         else {
@@ -193,7 +184,7 @@ public class RestorationManager implements Serializable {
                 for (WorldGroupProfile i: groupManager.getGroupsForWorld(_player.getWorld().getName())) {
                     if (i.isSharing(Sharables.ARMOR) && i.isSharing(Sharables.INVENTORY)) {
                         tempRespawnGroups.add(i.getName());
-                        plug.message(_player, i.getName());
+                        
                     }
                 }
             }
@@ -315,21 +306,37 @@ public class RestorationManager implements Serializable {
                 }  
             }
         } 
-        restorations.put(_player.getName(), restoration); 
+        if (plug.getMultiverseInventories() != null) {
+        restorations.put(_player.getName() + tempRespawnGroups.get(0), restoration); 
        
     }
-
+    }
     public static void enable(Player _player) {
         if (hasRestoration(_player)) {
-            Restoration restoration = restorations.get(_player.getName());
+            Restoration restoration= new Restoration();
+            if (Scavenger.get().getMultiverseInventories() != null) {
+                List<WorldGroupProfile> profiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(_player.getWorld().getName());
+                restoration = restorations.get(_player.getName()+profiles.get(0).getName());
+        }
+            else {
+               restoration = restorations.get(_player.getName());
+            }
             restoration.enabled = true;
         }
+        
     } 
 
     public static void restore(Scavenger plug, Player _player) {
-        if (hasRestoration(_player)) {
-            Restoration restoration = restorations.get(_player.getName());
-            
+        boolean enabled2 = false;
+        Restoration restoration = new Restoration();
+        if (plug.getMultiverseInventories() != null) {
+            List<WorldGroupProfile> profiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(_player.getWorld().getName());
+            restoration = restorations.get(_player.getName()+profiles.get(0).getName());
+        } else if (hasRestoration(_player)) {
+            restoration = restorations.get(_player.getName());
+            enabled2 = true;
+        }
+        if (enabled2 == true) {
         if (plug.getMultiverseInventories() != null) {
             if (plug.getMultiverseInventories().getGroupManager() != null) {
                 GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
@@ -375,7 +382,12 @@ public class RestorationManager implements Serializable {
                 if (plug.getSConfig().shouldNotify()) {
                     plug.message(_player, plug.getSConfig().msgRecovered());                    
                 }
+                if (plug.getMultiverseInventories() != null) {
+                     List<WorldGroupProfile> profiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(_player.getWorld().getName());
+                    restorations.remove(_player.getName()+profiles.get(0));
+                } else {
                 restorations.remove(_player.getName());
+                }
             }
         }
     }
