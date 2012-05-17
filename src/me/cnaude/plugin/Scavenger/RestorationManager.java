@@ -351,14 +351,14 @@ public class RestorationManager implements Serializable {
                 }
                 boolean isInGroup = false;
                 for (String i: groups) {
-                    if (restoration.inventoryWorldGroups.contains(i)) {
+                    if (restoration.inventoryWorldGroups == null) {
+                        isInGroup = true;
+                        break;
+                    }else if (restoration.inventoryWorldGroups.contains(i)) {
                         isInGroup = true;
                         break;
                     }
-                    else if (restoration.inventoryWorldGroups == null) {
-                        isInGroup = true;
-                        break;
-                    }
+                   
                 }
                 if  (isInGroup == false) {
                     plug.message(_player, "You have to be in the same inventory group to get your inventory back.");
