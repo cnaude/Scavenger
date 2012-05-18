@@ -16,9 +16,11 @@ import java.util.Map;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.omg.PortableServer.THREAD_POLICY_ID;
 
 
 public class RestorationManager implements Serializable {
@@ -175,20 +177,8 @@ public class RestorationManager implements Serializable {
             }
             return;
         } 
-        List<String> tempRespawnGroups = new ArrayList<String>();
-        if (plug.getMultiverseInventories() != null) {
-            
-            if (plug.getMultiverseInventories().getGroupManager() != null) {
-                GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
-               
-                for (WorldGroupProfile i: groupManager.getGroupsForWorld(_player.getWorld().getName())) {
-                    if (i.isSharing(Sharables.ARMOR) && i.isSharing(Sharables.INVENTORY)) {
-                        tempRespawnGroups.add(i.getName());
-                        
-                    }
-                }
-            }
-        }
+        
+        List<String> tempRespawnGroups = getWorldGroups(plug, _player.getWorld());
         
         if (hasRestoration(_player)) {
             plug.error(_player, "Restoration already exists, ignoring.");              
@@ -254,9 +244,7 @@ public class RestorationManager implements Serializable {
         Restoration restoration = new Restoration();
 
         restoration.enabled = false;
-        if (tempRespawnGroups != null) {
-            restoration.inventoryWorldGroups = tempRespawnGroups;
-        }
+        
         restoration.inventory = _player.getInventory().getContents();
         restoration.armour = _player.getInventory().getArmorContents();
         
@@ -340,33 +328,7 @@ public class RestorationManager implements Serializable {
             enabled2 = true;
         }
         if (enabled2 == true) {
-        if (plug.getMultiverseInventories() != null) {
-            if (plug.getMultiverseInventories().getGroupManager() != null) {
-                GroupManager groupManager = plug.getMultiverseInventories().getGroupManager();
-                List<WorldGroupProfile> profiles = groupManager.getGroupsForWorld(_player.getWorld().getName());
-                List<String> groups = new ArrayList<String>();
-                for (WorldGroupProfile i: profiles) {
-                    groups.add(i.getName());
-                    
-                }
-                boolean isInGroup = false;
-                for (String i: groups) {
-                    if (restoration.inventoryWorldGroups == null) {
-                        isInGroup = true;
-                        break;
-                    }else if (restoration.inventoryWorldGroups.contains(i)) {
-                        isInGroup = true;
-                        break;
-                    }
-                   
-                }
-                if  (isInGroup == false) {
-                    plug.message(_player, "You have to be in the same inventory group to get your inventory back.");
-                   
-                    return;
-                }
-             }
-        }
+       
             if (restoration.enabled ) {                              
                 _player.getInventory().clear();          
 
@@ -393,5 +355,25 @@ public class RestorationManager implements Serializable {
                 }
             }
         }
+    }
+    
+    public static List<String> getWorldGroups(Scavenger plug,World world) {
+        List<String> returnData = new ArrayList<String>();
+        if (plug.getMultiverseInventories() != null) {
+            MultiverseInventories multiInv = plug.getMultiverseInventories();
+            if (multiInv.getGroupManager() != null) {
+                GroupManager groupManager = multiInv.getGroupManager();
+                if (groupManager.getGroupsForWorld(world.getName()) != null) {
+                    List<WorldGroupProfile> worldGroupProfiles = groupManager.getGroupsForWorld(world.getName());
+                    if (worldGroupProfiles != null) {
+                        for (WorldGroupProfile i: worldGroupProfiles) {
+                            returnData.add(i.getName());
+                        }
+                    }
+                }
+            
+            }
+        }
+        return returnData;
     }
 }
