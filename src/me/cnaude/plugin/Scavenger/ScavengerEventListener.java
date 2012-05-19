@@ -7,12 +7,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ScavengerEventListener implements Listener { 
     private final Scavenger plugin;
     
     public ScavengerEventListener(Scavenger Instance) {
         plugin = Instance;
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        RestorationManager.enable(event.getPlayer());
     }
     
     @EventHandler(priority = EventPriority.HIGH)
