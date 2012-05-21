@@ -118,8 +118,8 @@ public class RestorationManager implements Serializable {
     private static Restoration getRestoration(Player p) {
         if (Scavenger.get().getMultiverseInventories() != null) {
             List<WorldGroupProfile> groupProfiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(p.getWorld().getName());
-            if (restorations.containsKey(p.getName() + groupProfiles.get(0).getName())) {
-                return restorations.get(p.getName() + groupProfiles.get(0).getName());
+            if (restorations.containsKey(p.getName() + "." + groupProfiles.get(0).getName())) {
+                return restorations.get(p.getName() + "." + groupProfiles.get(0).getName());
             } else {
                 return restorations.get(p.getName());
             }
@@ -299,7 +299,7 @@ public class RestorationManager implements Serializable {
             }
         }
         if (Scavenger.get().getMultiverseInventories() != null) {
-            restorations.put(p.getName() + tempRespawnGroups.get(0), restoration);
+            restorations.put(p.getName() + "." + tempRespawnGroups.get(0), restoration);
         } else {
             restorations.put(p.getName(), restoration);
         }
@@ -343,8 +343,8 @@ public class RestorationManager implements Serializable {
         if (Scavenger.get().getMultiverseInventories() != null) {
             List<WorldGroupProfile> groupProfiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(p.getWorld().getName());
             if (restorations.containsKey(p.getName() + groupProfiles.get(0).getName())) {
-                restorations.remove(p.getName() + groupProfiles.get(0).getName());
-                Scavenger.get().logDebug("[I]Removing: "+p.getName() + groupProfiles.get(0).getName());
+                restorations.remove(p.getName() + "." + groupProfiles.get(0).getName());
+                Scavenger.get().logDebug("[I]Removing: "+p.getName() + "." + groupProfiles.get(0).getName());
             } else {
                 restorations.remove(p.getName());
                 Scavenger.get().logDebug("[I]Removing: "+p.getName());
