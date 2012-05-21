@@ -5,10 +5,6 @@ import com.garbagemule.MobArena.MobArenaHandler;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.main;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
@@ -38,8 +34,8 @@ public class Scavenger extends JavaPlugin {
     public boolean configLoaded = false;
     
     static final Logger log = Logger.getLogger("Minecraft");    
-    private ScavengerConfig config;    
-    private final ScavengerEventListener eventListener = new ScavengerEventListener(this);
+    private static ScavengerConfig config;    
+    private final ScavengerEventListener eventListener = new ScavengerEventListener();
 
     public static Scavenger get() {
         return instance;
@@ -55,8 +51,8 @@ public class Scavenger extends JavaPlugin {
         
         getServer().getPluginManager().registerEvents(eventListener, this);
         
-        RestorationManager.load(this);
-        ScavengerIgnoreList.load(this);
+        RestorationManager.load();
+        ScavengerIgnoreList.load();
     }
     
     private void checkForWorldGuard() {
@@ -73,8 +69,8 @@ public class Scavenger extends JavaPlugin {
     
     @Override
     public void onDisable() {
-        RestorationManager.save(this);
-        ScavengerIgnoreList.save(this);
+        RestorationManager.save();
+        ScavengerIgnoreList.save();
     }
     
     public Economy getEconomy() {
@@ -131,7 +127,7 @@ public class Scavenger extends JavaPlugin {
         log.log(Level.SEVERE,String.format("%s %s",LOG_HEADER,_message));
     }
     
-    public ScavengerConfig getSConfig() {
+    public static ScavengerConfig getSConfig() {
         return config;
     }
     
@@ -155,17 +151,17 @@ public class Scavenger extends JavaPlugin {
                 vault = (Vault) x;
                 if(setupEconomy()) {
                     logInfo("Scavenger has linked to " + economy.getName() + " through Vault");                    
-                    if (this.getSConfig().percent()) {                                                 
-                        if (this.getSConfig().addMin()) {
-                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+
-                                    "% + "+this.getSConfig().minCost());
+                    if (getSConfig().percent()) {                                                 
+                        if (getSConfig().addMin()) {
+                            logInfo("Item recovery fee: "+getSConfig().percentCost()+
+                                    "% + "+getSConfig().minCost());
                         } else {
-                            logInfo("Item recovery fee: "+this.getSConfig().percentCost()+
-                                    "% (Min: "+this.getSConfig().minCost()+
-                                    ") (Max: "+this.getSConfig().maxCost()+")");                    
+                            logInfo("Item recovery fee: "+getSConfig().percentCost()+
+                                    "% (Min: "+getSConfig().minCost()+
+                                    ") (Max: "+getSConfig().maxCost()+")");                    
                         }
                     } else {
-                        logInfo("Item recovery fee: "+this.getSConfig().restoreCost());
+                        logInfo("Item recovery fee: "+getSConfig().restoreCost());
                     }                  
                 } else {
                     logError("Vault could not find an Economy plugin installed!");
@@ -219,7 +215,7 @@ public class Scavenger extends JavaPlugin {
             if(commandlabel.equalsIgnoreCase("scvron")) {
                 if (p.hasPermission("scavenger.self.on")
                         || (p.isOp() && getSConfig().opsAllPerms())) {                
-                    ScavengerIgnoreList.removePlayer(sender.getName(), this);
+                    ScavengerIgnoreList.removePlayer(sender.getName());
                     message(p,"You have enabled item recovery for yourself!");
                 } else {
                     message(p,"No permission to do this!");
@@ -228,7 +224,7 @@ public class Scavenger extends JavaPlugin {
             if(commandlabel.equalsIgnoreCase("scvroff")) {
                 if (p.hasPermission("scavenger.self.off")
                         || (p.isOp() && getSConfig().opsAllPerms())) {
-                    ScavengerIgnoreList.addPlayer(sender.getName(), this);
+                    ScavengerIgnoreList.addPlayer(sender.getName());
                     message(p,"You have disabled item recovery for yourself!");
                 } else {
                     message(p,"No permission to do this!");

@@ -1,6 +1,5 @@
 package me.cnaude.plugin.Scavenger;
 
-import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
 public class Restoration {

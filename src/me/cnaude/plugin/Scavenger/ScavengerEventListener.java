@@ -10,12 +10,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ScavengerEventListener implements Listener { 
-    private final Scavenger plugin;
-    
-    public ScavengerEventListener(Scavenger Instance) {
-        plugin = Instance;
-    }
-    
+   
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         RestorationManager.enable(event.getPlayer());
@@ -28,9 +23,9 @@ public class ScavengerEventListener implements Listener {
             if (ScavengerIgnoreList.isIgnored(player.getName()))
                 return;                 
             if (player.hasPermission("scavenger.scavenge") 
-                    || !plugin.getSConfig().permsEnabled() 
-                    || (player.isOp() && plugin.getSConfig().opsAllPerms())) {
-                    RestorationManager.collect(plugin, (Player)event.getEntity(), event.getDrops(), event);
+                    || !Scavenger.getSConfig().permsEnabled() 
+                    || (player.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+                    RestorationManager.collect((Player)event.getEntity(), event.getDrops(), event);
             }
         }
     }
@@ -49,7 +44,7 @@ public class ScavengerEventListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         //RestorationManager.enable(event.getPlayer());
-        RestorationManager.restore(plugin, event.getPlayer());
+        RestorationManager.restore(event.getPlayer());
     }
     
 
