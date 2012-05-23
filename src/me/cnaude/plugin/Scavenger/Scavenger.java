@@ -25,11 +25,12 @@ public class Scavenger extends JavaPlugin {
     public static final String LOG_HEADER = "[" + PLUGIN_NAME + "]";
     private static Scavenger instance = null;
 
-    private static Vault vault = null;
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
     public static PVPArenaAPI pvpHandler;    
     public static MultiverseInventories multiverseHandler;
+    public static RestorationManager rm;
+    public static ScavengerIgnoreList ignoreList;
     
     public boolean configLoaded = false;
     
@@ -47,12 +48,15 @@ public class Scavenger extends JavaPlugin {
                        
         setupMobArenaHandler();
         setupPVPArenaHandler();
+        checkForUltimateArena();
         checkForWorldGuard();
         
         getServer().getPluginManager().registerEvents(eventListener, this);
         
-        RestorationManager.load();
-        ScavengerIgnoreList.load();
+        rm = new RestorationManager();
+        rm.load();
+        ignoreList = new ScavengerIgnoreList();
+        ignoreList.load();
     }
     
     private void checkForWorldGuard() {
@@ -69,8 +73,8 @@ public class Scavenger extends JavaPlugin {
     
     @Override
     public void onDisable() {
-        RestorationManager.save();
-        ScavengerIgnoreList.save();
+        rm.save();
+        ignoreList.save();
     }
     
     public Economy getEconomy() {
@@ -148,7 +152,6 @@ public class Scavenger extends JavaPlugin {
         if (config.economyEnabled()) {
             Plugin x = getServer().getPluginManager().getPlugin("Vault");
             if(x != null && x instanceof Vault) {
-                vault = (Vault) x;
                 if(setupEconomy()) {
                     logInfo("Scavenger has linked to " + economy.getName() + " through Vault");                    
                     if (getSConfig().percent()) {                                                 
@@ -206,7 +209,7 @@ public class Scavenger extends JavaPlugin {
             if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
                 if (p.hasPermission("scavenger.reload")) {
                 
-                    this.loadConfig();
+                    loadConfig();
                     message(p,"Configuration reloaded.");
                 } else {
                     message(p,"No permission to reload scavenger config!");
@@ -215,7 +218,7 @@ public class Scavenger extends JavaPlugin {
             if(commandlabel.equalsIgnoreCase("scvron")) {
                 if (p.hasPermission("scavenger.self.on")
                         || (p.isOp() && getSConfig().opsAllPerms())) {                
-                    ScavengerIgnoreList.removePlayer(sender.getName());
+                    ignoreList.removePlayer(sender.getName());
                     message(p,"You have enabled item recovery for yourself!");
                 } else {
                     message(p,"No permission to do this!");
@@ -224,15 +227,26 @@ public class Scavenger extends JavaPlugin {
             if(commandlabel.equalsIgnoreCase("scvroff")) {
                 if (p.hasPermission("scavenger.self.off")
                         || (p.isOp() && getSConfig().opsAllPerms())) {
-                    ScavengerIgnoreList.addPlayer(sender.getName());
+                    ignoreList.addPlayer(sender.getName());
                     message(p,"You have disabled item recovery for yourself!");
+                } else {
+                    message(p,"No permission to do this!");
+                }
+            }
+            if(commandlabel.equalsIgnoreCase("scvrlist")) {
+                if (p.hasPermission("scavenger.list")
+                        || (p.isOp() && getSConfig().opsAllPerms())) {                    
+                    rm.printRestorations(p);
                 } else {
                     message(p,"No permission to do this!");
                 }
             }
         } else if (sender instanceof ConsoleCommandSender) {
             if(commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {               
-                this.loadConfig();                        
+                loadConfig();                        
+            }
+            if(commandlabel.equalsIgnoreCase("scvrlist")) {
+                rm.printRestorations();
             }
         }
         return true;
@@ -271,8 +285,4 @@ public class Scavenger extends JavaPlugin {
         else
             logError(_message);
     }
-
-    
-    
-   
 }

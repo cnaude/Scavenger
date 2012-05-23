@@ -10,12 +10,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ScavengerEventListener implements Listener { 
-   
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        RestorationManager.enable(event.getPlayer());
-    }
-    
+       
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDeath(EntityDeathEvent event) {        
         if ((event.getEntity() instanceof Player)) {            
@@ -33,17 +28,10 @@ public class ScavengerEventListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         RestorationManager.enable(event.getPlayer());
-        //RestorationManager.restore(plugin, event.getPlayer());
     } 
-    /*
-    @EventHandler (priority = EventPriority.NORMAL)
-	public void onPlayerJoin(PlayerJoinEvent event){
-        RestorationManager.enable(event.getPlayer());
-    }
-    */
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
-        //RestorationManager.enable(event.getPlayer());
         RestorationManager.restore(event.getPlayer());
     }
     

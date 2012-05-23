@@ -15,7 +15,7 @@ public class ScavengerIgnoreList implements Serializable{
     private static ArrayList<String> ignoreList = new ArrayList<String>();
     private static final String IGNORE_FILE = "plugins/Scavenger/ignores.ser";
     
-    public static void load() {        
+    public void load() {        
         File file = new File(IGNORE_FILE);
         if (!file.exists()) {
             Scavenger.get().logInfo("Ignore file '"+file.getAbsolutePath()+"' does not exist.");
@@ -33,7 +33,7 @@ public class ScavengerIgnoreList implements Serializable{
         }
     }
     
-    public static void save() {
+    public void save() {
         try {
             File file = new File(IGNORE_FILE); 
             FileOutputStream f_out = new FileOutputStream (file);
@@ -47,14 +47,14 @@ public class ScavengerIgnoreList implements Serializable{
         }
     }
     
-    public static void addPlayer(String s) {
+    public void addPlayer(String s) {
         if (ignoreList.contains(s))
             return;
         Scavenger.get().logInfo("Adding " + s + " to ignore list.");
         ignoreList.add(s);
     }
     
-    public static void removePlayer(String s) {
+    public void removePlayer(String s) {
         Scavenger.get().logInfo("Removing " + s + " from ignore list.");
         ignoreList.remove(s);
     }

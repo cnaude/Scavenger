@@ -23,7 +23,7 @@ public class RestorationManager implements Serializable {
 
     private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();
 
-    public static void save() {
+    public void save() {
         HashMap<String, RestorationS> res_s = new HashMap<String, RestorationS>();
         for (Map.Entry<String, Restoration> entry : restorations.entrySet()) {
             String key = entry.getKey();
@@ -60,7 +60,7 @@ public class RestorationManager implements Serializable {
         }
     }
 
-    public static void load() {
+    public void load() {
         HashMap<String, RestorationS> res_s;
         File file = new File("plugins/Scavenger/inv.ser");
         if (!file.exists()) {
@@ -108,24 +108,33 @@ public class RestorationManager implements Serializable {
     }
 
     public static boolean hasRestoration(Player p) {
-        if (getRestoration(p) != null) {
-            return true;
-        } else {
-            return false;
+        if (Scavenger.get().getMultiverseInventories() != null) {
+            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            if (restorations.containsKey(keyName)) {
+                Scavenger.get().logDebug("Has: " + keyName);
+                return true;
+            }
         }
+        return restorations.containsKey(p.getName());
     }
 
     private static Restoration getRestoration(Player p) {
+        Restoration restoration = new Restoration();
+        restoration.enabled = false;
         if (Scavenger.get().getMultiverseInventories() != null) {
-            List<WorldGroupProfile> groupProfiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(p.getWorld().getName());
-            if (restorations.containsKey(p.getName() + "." + groupProfiles.get(0).getName())) {
-                return restorations.get(p.getName() + "." + groupProfiles.get(0).getName());
-            } else {
-                return restorations.get(p.getName());
+            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            if (restorations.containsKey(keyName)) {
+                Scavenger.get().logDebug("Getting: " + keyName);
+                restoration = restorations.get(keyName);
             }
-        } else {
-            return restorations.get(p.getName());
         }
+        if (!restoration.enabled) {
+            if (restorations.containsKey(p.getName())) {
+                Scavenger.get().logDebug("Getting: " + p.getName());
+                restoration = restorations.get(p.getName());
+            }
+        }
+        return restoration;
     }
 
     public static void collect(Player p, List<ItemStack> _drops, EntityDeathEvent event) {
@@ -181,8 +190,6 @@ public class RestorationManager implements Serializable {
             }
             return;
         }
-
-        List<String> tempRespawnGroups = getWorldGroups(p.getWorld());
 
         if (hasRestoration(p)) {
             Scavenger.get().error(p, "Restoration already exists, ignoring.");
@@ -245,14 +252,11 @@ public class RestorationManager implements Serializable {
         } else {
             Scavenger.get().message(p, Scavenger.getSConfig().msgSaving());
         }
+
         Restoration restoration = new Restoration();
-
         restoration.enabled = false;
-
         restoration.inventory = p.getInventory().getContents();
         restoration.armour = p.getInventory().getArmorContents();
-
-
 
         if (p.hasPermission("scavenger.level")
                 || !Scavenger.getSConfig().permsEnabled()
@@ -298,10 +302,31 @@ public class RestorationManager implements Serializable {
                 }
             }
         }
+        addRestoration(p, restoration);
+    }
+    
+    public void printRestorations(Player p) {
+        Scavenger.get().message(p, "Restorations:");
+        for (String key : restorations.keySet()) {
+            Scavenger.get().message(p, "  " + key);
+        }
+    }
+    
+    public void printRestorations() {
+        Scavenger.get().logInfo("Restorations:");
+        for (String key : restorations.keySet()) {
+            Scavenger.get().logInfo("  " + key);
+        }
+    }
+
+    public static void addRestoration(Player p, Restoration r) {
         if (Scavenger.get().getMultiverseInventories() != null) {
-            restorations.put(p.getName() + "." + tempRespawnGroups.get(0), restoration);
+            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            restorations.put(keyName, r);
+            Scavenger.get().debugMessage("Adding: " + keyName);
         } else {
-            restorations.put(p.getName(), restoration);
+            restorations.put(p.getName(), r);
+            Scavenger.get().debugMessage("Adding: " + p.getName());
         }
     }
 
@@ -309,49 +334,50 @@ public class RestorationManager implements Serializable {
         if (hasRestoration(p)) {
             Restoration restoration = getRestoration(p);
             restoration.enabled = true;
+            Scavenger.get().debugMessage(p, "Enabling: " + p.getName());
         }
     }
 
     public static void restore(Player p) {
-        if (hasRestoration(p)) {
-            Restoration restoration = getRestoration(p);
+        Restoration restoration = getRestoration(p);
 
-            if (restoration.enabled) {
-                p.getInventory().clear();
+        if (restoration.enabled) {
+            p.getInventory().clear();
 
-                p.getInventory().setContents(restoration.inventory);
-                p.getInventory().setArmorContents(restoration.armour);
-                if (p.hasPermission("scavenger.level")
-                        || !Scavenger.getSConfig().permsEnabled()
-                        || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
-                    p.setLevel(restoration.level);
-                }
-                if (p.hasPermission("scavenger.exp")
-                        || !Scavenger.getSConfig().permsEnabled()
-                        || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
-                    p.setExp(restoration.exp);
-                }
-                if (Scavenger.getSConfig().shouldNotify()) {
-                    Scavenger.get().message(p, Scavenger.getSConfig().msgRecovered());
-                }
-                removeRestoration(p);
+            p.getInventory().setContents(restoration.inventory);
+            p.getInventory().setArmorContents(restoration.armour);
+            if (p.hasPermission("scavenger.level")
+                    || !Scavenger.getSConfig().permsEnabled()
+                    || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+                p.setLevel(restoration.level);
+            }
+            if (p.hasPermission("scavenger.exp")
+                    || !Scavenger.getSConfig().permsEnabled()
+                    || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+                p.setExp(restoration.exp);
+            }
+            if (Scavenger.getSConfig().shouldNotify()) {
+                Scavenger.get().message(p, Scavenger.getSConfig().msgRecovered());
+            }
+            removeRestoration(p);
+            if (hasRestoration(p)) {
+                Scavenger.get().message(p, "Restore exists!!!");
             }
         }
+
     }
-    
+
     public static void removeRestoration(Player p) {
         if (Scavenger.get().getMultiverseInventories() != null) {
-            List<WorldGroupProfile> groupProfiles = Scavenger.get().getMultiverseInventories().getGroupManager().getGroupsForWorld(p.getWorld().getName());
-            if (restorations.containsKey(p.getName() + groupProfiles.get(0).getName())) {
-                restorations.remove(p.getName() + "." + groupProfiles.get(0).getName());
-                Scavenger.get().logDebug("[I]Removing: "+p.getName() + "." + groupProfiles.get(0).getName());
-            } else {
-                restorations.remove(p.getName());
-                Scavenger.get().logDebug("[I]Removing: "+p.getName());
+            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            if (restorations.containsKey(keyName)) {
+                restorations.remove(keyName);
+                Scavenger.get().logDebug("Removing: " + keyName);
             }
-        } else {
+        }
+        if (restorations.containsKey(p.getName())) {
             restorations.remove(p.getName());
-            Scavenger.get().logDebug("Removing: "+p.getName());
+            Scavenger.get().logDebug("Removing: " + p.getName());
         }
     }
 
