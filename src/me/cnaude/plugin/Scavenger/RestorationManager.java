@@ -122,21 +122,26 @@ public class RestorationManager implements Serializable {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
         if (Scavenger.get().getMultiverseInventories() != null) {
+            if (getWorldGroups(p.getWorld()) != null) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
                 Scavenger.get().logDebug("Getting: " + keyName);
                 restoration = restorations.get(keyName);
             }
-        }
-        if (!restoration.enabled) {
-            if (restorations.containsKey(p.getName())) {
-                Scavenger.get().logDebug("Getting: " + p.getName());
-                restoration = restorations.get(p.getName());
+        
+            if (!restoration.enabled) {
+                if (restorations.containsKey(p.getName())) {
+                    Scavenger.get().logDebug("Getting: " + p.getName());
+                    restoration = restorations.get(p.getName());
+                    }
+                }
             }
-        }
-        return restoration;
+        
+    
     }
-
+    return restoration;
+}
+        
     public static void collect(Player p, List<ItemStack> _drops, EntityDeathEvent event) {
         if (_drops.isEmpty() && p.getExp() == 0 && p.getLevel() == 0) {
             return;
