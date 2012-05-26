@@ -123,7 +123,7 @@ public class RestorationManager implements Serializable {
         restoration.enabled = false;
         if (Scavenger.get().getMultiverseInventories() != null) {
             if (getWorldGroups(p.getWorld()) != null) {
-                if (!getWorldGroups(p.getWorld()).get(0).isEmpty()) {
+                if (!getWorldGroups(p.getWorld()).isEmpty()) {
                     String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
                     if (restorations.containsKey(keyName)) {
                         Scavenger.get().logDebug("Getting: " + keyName);
