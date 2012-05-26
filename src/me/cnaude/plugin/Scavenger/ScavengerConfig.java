@@ -34,6 +34,7 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDEUA        = "Messages.MsgInsideUA";
     private static final String MSG_INSIDEWGPVP     = "Messages.MsgInsideWGPVP";
     private static final String MSG_INSIDEWGPVPONLY = "Messages.MsgInsideWGPVPOnly";
+    private static final String MSG_HEADER          = "Messages.MsgHeader";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -61,6 +62,7 @@ public final class ScavengerConfig {
     private String msgInsideWGPVP;
     private String msgInsideWGPVPOnly;
     private boolean opsAllPerms;
+    private String msgHeader;
     
 
     public ScavengerConfig(Scavenger plug) {
@@ -95,6 +97,7 @@ public final class ScavengerConfig {
         wgPVPIgnore         = config.getBoolean(GLOBAL_WGPVPIGNORE, false);
         wgGuardPVPOnly      = config.getBoolean(GLOBAL_WGPVPONLY, false);
         opsAllPerms         = config.getBoolean(GLOBAL_OPSALLPERMS, true);
+        msgHeader           = config.getString(MSG_HEADER, "Scavenger");
     }
     
     public boolean shouldNotify() {
@@ -187,6 +190,10 @@ public final class ScavengerConfig {
     
     public String msgInsideWGPVPOnly() {
         return msgInsideWGPVPOnly;
+    }
+    
+    public String msgHeader() {
+        return msgHeader;
     }
     
     public boolean wgPVPIgnore() {

@@ -255,7 +255,10 @@ public class Scavenger extends JavaPlugin {
     private String headerStr() {
         ChatColor headerColor = getSConfig().headerColor();
         ChatColor textColor = getSConfig().textColor();
-        return textColor + "[" + headerColor + PLUGIN_NAME + textColor + "] " + textColor;
+        if (Scavenger.getSConfig().msgHeader().isEmpty())
+            return textColor + "[" + headerColor + PLUGIN_NAME + textColor + "] " + textColor;
+        else
+            return textColor + "[" + headerColor + Scavenger.getSConfig().msgHeader() + textColor + "] " + textColor;
     }
     
     public void message(Player _player, String _message) {

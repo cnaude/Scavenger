@@ -121,7 +121,7 @@ public class RestorationManager implements Serializable {
     private static Restoration getRestoration(Player p) {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
-        if (Scavenger.get().getMultiverseInventories() != null) {
+        if (Scavenger.get().getMultiverseInventories() != null) { 
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
                 Scavenger.get().logDebug("Getting: " + keyName);
@@ -398,6 +398,8 @@ public class RestorationManager implements Serializable {
 
             }
         }
+        if (returnData.isEmpty())
+            returnData.add("");
         return returnData;
     }
 }
