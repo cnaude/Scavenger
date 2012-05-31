@@ -14,6 +14,7 @@ public final class ScavengerConfig {
     private static final String ECONOMY_MAXCOST     = "Economy.MaxCost";
     private static final String ECONOMY_PERCENTCOST = "Economy.PercentCost";
     private static final String ECONOMY_ADDMIN      = "Economy.AddMin";
+    private static final String ECONOMY_DROP_CHANCE = "Economy.ChanceToDrop";
     private static final String GLOBAL_COLOR        = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR    = "Global.TextColor";
     private static final String DEBUG_ENABLED       = "Global.Debug";
@@ -63,6 +64,7 @@ public final class ScavengerConfig {
     private String msgInsideWGPVPOnly;
     private boolean opsAllPerms;
     private String msgHeader;
+    private int chanceToDrop;
     
 
     public ScavengerConfig(Scavenger plug) {
@@ -98,6 +100,7 @@ public final class ScavengerConfig {
         wgGuardPVPOnly      = config.getBoolean(GLOBAL_WGPVPONLY, false);
         opsAllPerms         = config.getBoolean(GLOBAL_OPSALLPERMS, true);
         msgHeader           = config.getString(MSG_HEADER, "Scavenger");
+        chanceToDrop        = config.getInt(ECONOMY_DROP_CHANCE, 0);
     }
     
     public boolean shouldNotify() {
@@ -206,5 +209,9 @@ public final class ScavengerConfig {
     
     public boolean opsAllPerms() {
         return opsAllPerms;
+    }
+    
+    public int chanceToDrop() {
+        return chanceToDrop;
     }
 }

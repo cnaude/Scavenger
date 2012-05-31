@@ -7,10 +7,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.Material;
@@ -302,6 +299,27 @@ public class RestorationManager implements Serializable {
                 }
             }
         }
+        
+        if (Scavenger.getSConfig().chanceToDrop() > 0) {
+            ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+            for (ItemStack[] a : invAndArmour) {
+                for (ItemStack i : a) {
+                    if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
+                        Random randomGenerator = new Random();
+                        int randomInt = randomGenerator.nextInt(Scavenger.getSConfig().chanceToDrop()) + 1;
+                        Scavenger.get().debugMessage(p, "Random number is "+randomInt);
+                        if (randomInt == Scavenger.getSConfig().chanceToDrop()) {
+                            Scavenger.get().debugMessage(p, "Randomly dropping item " + i.getType());
+                            _drops.add(i.clone());
+                            i.setAmount(0);
+                        } else {
+                            Scavenger.get().debugMessage(p, "Randomly keeping item " + i.getType());
+                        }
+                    }
+                }
+            }
+        }
+        
         addRestoration(p, restoration);
     }
     

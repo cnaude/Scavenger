@@ -42,3 +42,5 @@ Economy:
     PercentCost: 5.0
     # Calculate cost as MinCost + RestoreCost
     AddMin: false
+    # Chance to drop item. Leave 0 for no chance. This is an integer value. If you enter 5 then the chance to drop is 1 out of 5.
+    ChanceToDrop: 0
