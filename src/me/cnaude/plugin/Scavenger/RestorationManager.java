@@ -144,8 +144,7 @@ public class RestorationManager implements Serializable {
 
         if (Scavenger.get().getFactions() != null) {
             Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
-            FPlayer fplayer = Scavenger.get().getFactions().get(p);
-            Scavenger.get().getFactions().getPlayersInFaction(null);
+            FPlayer fplayer = FPlayers.i.get(player);
             if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
                 Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
                 return;
