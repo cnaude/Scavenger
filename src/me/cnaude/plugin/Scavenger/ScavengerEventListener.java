@@ -17,6 +17,8 @@ public class ScavengerEventListener implements Listener {
             if (ScavengerIgnoreList.isIgnored(player.getName()))
                 return;                 
             if (player.hasPermission("scavenger.scavenge") 
+                    || player.hasPermission("scavenger.inv")
+                    || player.hasPermission("scavenger.armour")
                     || !Scavenger.getSConfig().permsEnabled() 
                     || (player.isOp() && Scavenger.getSConfig().opsAllPerms())) {
                     RestorationManager.collect((Player)event.getEntity(), event.getDrops(), event);

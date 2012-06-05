@@ -1,5 +1,8 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -139,6 +142,18 @@ public class RestorationManager implements Serializable {
             return;
         }
 
+        if (Scavenger.get().getFactions() != null) {
+            Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
+            FPlayer fplayer = Scavenger.get().getFactions().get(p);
+            Scavenger.get().getFactions().getPlayersInFaction(null);
+            if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
+                Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
+                return;
+            }
+        } else {
+            Scavenger.get().logDebug("No Factions detected");
+        }
+        
         if (Scavenger.get().getWorldGuard() != null) {
             Scavenger.get().logDebug("Checking region support for '" + p.getWorld().getName() + "'");
             if (Scavenger.get().getWorldGuard().getRegionManager(p.getWorld()) != null) {
@@ -251,8 +266,8 @@ public class RestorationManager implements Serializable {
         }
 
         Restoration restoration = new Restoration();
-        restoration.enabled = false;
-        restoration.inventory = p.getInventory().getContents();
+        restoration.enabled = false;       
+        restoration.inventory = p.getInventory().getContents();    
         restoration.armour = p.getInventory().getArmorContents();
 
         if (p.hasPermission("scavenger.level")
@@ -266,7 +281,7 @@ public class RestorationManager implements Serializable {
             restoration.exp = p.getExp();
             event.setDroppedExp(0);
         }
-
+        
         _drops.clear();
 
         if (Scavenger.getSConfig().singleItemDrops()) {

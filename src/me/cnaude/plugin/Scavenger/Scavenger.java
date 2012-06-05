@@ -19,6 +19,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.massivecraft.factions.Factions;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.P;
 
 public class Scavenger extends JavaPlugin {
     public static final String PLUGIN_NAME = "Scavenger";
@@ -50,6 +53,7 @@ public class Scavenger extends JavaPlugin {
         setupPVPArenaHandler();
         checkForUltimateArena();
         checkForWorldGuard();
+        checkForFactions();
         
         getServer().getPluginManager().registerEvents(eventListener, this);
         
@@ -68,6 +72,12 @@ public class Scavenger extends JavaPlugin {
     private void checkForUltimateArena() {
         if (getUltimateArena() != null) {
             logInfo("UltimateArena detected. Scavenger will not recover items in an arena.");
+        }
+    }
+    
+    private void checkForFactions() {
+        if (getFactions() != null) {
+            logInfo("Factions detected. Players will los items in enemy territory.");
         }
     }
     
@@ -98,6 +108,16 @@ public class Scavenger extends JavaPlugin {
         }
         return (MultiverseInventories) plugin;
     }
+    
+    public P getFactions() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("Factions");
+        
+        if (plugin == null || !(plugin instanceof P)) {
+            return null;
+        }
+        return (P) plugin;
+    }
+    
     public WorldGuardPlugin getWorldGuard() {
         Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 
