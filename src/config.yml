@@ -26,6 +26,7 @@ Messages:
   MsgInsideMA: You are inside a Mob Arena. Scavenger will not save your inventory.
   MsgInsideWGPVP: You are inside a WorldGuard PVP region. Scavenger will not save your inventory.
   MsgInsideWGPVPOnly: You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.
+  MsgInsideEnemyFaction: You died in enemy territory. Your items will be dropped!
   MsgHeader: Scavenger
 Economy:
     # Whether or not to use an economy system with the plugin.

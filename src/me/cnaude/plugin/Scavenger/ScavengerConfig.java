@@ -36,6 +36,7 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDEWGPVP     = "Messages.MsgInsideWGPVP";
     private static final String MSG_INSIDEWGPVPONLY = "Messages.MsgInsideWGPVPOnly";
     private static final String MSG_HEADER          = "Messages.MsgHeader";
+    private static final String MSG_INSIDEENEMYFACTION = "Messages.MsgInsideEnemyFaction";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -65,6 +66,7 @@ public final class ScavengerConfig {
     private boolean opsAllPerms;
     private String msgHeader;
     private int chanceToDrop;
+    private String msgInsideEnemyFaction;
     
 
     public ScavengerConfig(Scavenger plug) {
@@ -101,6 +103,7 @@ public final class ScavengerConfig {
         opsAllPerms         = config.getBoolean(GLOBAL_OPSALLPERMS, true);
         msgHeader           = config.getString(MSG_HEADER, "Scavenger");
         chanceToDrop        = config.getInt(ECONOMY_DROP_CHANCE, 0);
+        msgInsideEnemyFaction = config.getString(MSG_INSIDEENEMYFACTION, "You died in enemy territory. Your items will be dropped!");
     }
     
     public boolean shouldNotify() {
@@ -213,5 +216,9 @@ public final class ScavengerConfig {
     
     public int chanceToDrop() {
         return chanceToDrop;
+    }
+    
+    public String msgInsideEnemyFaction() {
+        return msgInsideEnemyFaction;
     }
 }
