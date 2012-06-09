@@ -6,37 +6,40 @@ import org.bukkit.configuration.Configuration;
 public final class ScavengerConfig {
     private final Configuration config;
     
-    private static final String SHOULD_NOTIFY       = "Global.Notify";
-    private static final String ECONOMY_ENABLED     = "Economy.Enabled";
-    private static final String ECONOMY_RESTORECOST = "Economy.RestoreCost";
-    private static final String ECONOMY_PERCENT     = "Economy.Percent";
-    private static final String ECONOMY_MINCOST     = "Economy.MinCost";
-    private static final String ECONOMY_MAXCOST     = "Economy.MaxCost";
-    private static final String ECONOMY_PERCENTCOST = "Economy.PercentCost";
-    private static final String ECONOMY_ADDMIN      = "Economy.AddMin";
-    private static final String ECONOMY_DROP_CHANCE = "Economy.ChanceToDrop";
-    private static final String GLOBAL_COLOR        = "Global.Color";
-    private static final String GLOBAL_TEXTCOLOR    = "Global.TextColor";
-    private static final String DEBUG_ENABLED       = "Global.Debug";
-    private static final String GLOBAL_SIDROPS      = "Global.SingleItemDrops";
-    private static final String GLOBAL_SIDROPS_ONLY = "Global.SingleItemDropsOnly";
-    private static final String GLOBAL_PERMS        = "Global.Permissions";
-    private static final String GLOBAL_WGPVPIGNORE  = "Global.WorldGuardPVPIgnore";
-    private static final String GLOBAL_WGPVPONLY    = "Global.WorldGuardPVPOnly";
-    private static final String GLOBAL_OPSALLPERMS  = "Global.OpsAllPerms";
+    private static final String SHOULD_NOTIFY             = "Global.Notify";
+    private static final String ECONOMY_ENABLED           = "Economy.Enabled";
+    private static final String ECONOMY_RESTORECOST       = "Economy.RestoreCost";
+    private static final String ECONOMY_PERCENT           = "Economy.Percent";
+    private static final String ECONOMY_MINCOST           = "Economy.MinCost";
+    private static final String ECONOMY_MAXCOST           = "Economy.MaxCost";
+    private static final String ECONOMY_PERCENTCOST       = "Economy.PercentCost";
+    private static final String ECONOMY_ADDMIN            = "Economy.AddMin";
+    private static final String ECONOMY_DROP_CHANCE       = "Economy.ChanceToDrop";
+    private static final String GLOBAL_COLOR              = "Global.Color";
+    private static final String GLOBAL_TEXTCOLOR          = "Global.TextColor";
+    private static final String DEBUG_ENABLED             = "Global.Debug";
+    private static final String GLOBAL_SIDROPS            = "Global.SingleItemDrops";
+    private static final String GLOBAL_SIDROPS_ONLY       = "Global.SingleItemDropsOnly";
+    private static final String GLOBAL_PERMS              = "Global.Permissions";
+    private static final String GLOBAL_WGPVPIGNORE        = "Global.WorldGuardPVPIgnore";
+    private static final String GLOBAL_WGPVPONLY          = "Global.WorldGuardPVPOnly";
+    private static final String GLOBAL_OPSALLPERMS        = "Global.OpsAllPerms";
+    private static final String GLOBAL_FACTIONENEMYDROPS  = "Global.FactionEnemyDrops";
+    private static final String GLOBAL_RESIDENCE          = "Global.Residence";
     
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
-    private static final String MSG_RECOVERED       = "Messages.MsgRecovered";
-    private static final String MSG_SAVING          = "Messages.MsgSaving";
-    private static final String MSG_SAVEFORFEE      = "Messages.MsgSaveForFee";
-    private static final String MSG_NOTENOUGHMONEY  = "Messages.MsgNotEnoughMoney";
-    private static final String MSG_INSIDEPA        = "Messages.MsgInsidePA";
-    private static final String MSG_INSIDEMA        = "Messages.MsgInsideMA";
-    private static final String MSG_INSIDEUA        = "Messages.MsgInsideUA";
-    private static final String MSG_INSIDEWGPVP     = "Messages.MsgInsideWGPVP";
-    private static final String MSG_INSIDEWGPVPONLY = "Messages.MsgInsideWGPVPOnly";
-    private static final String MSG_HEADER          = "Messages.MsgHeader";
+    private static final String MSG_RECOVERED          = "Messages.MsgRecovered";
+    private static final String MSG_SAVING             = "Messages.MsgSaving";
+    private static final String MSG_SAVEFORFEE         = "Messages.MsgSaveForFee";
+    private static final String MSG_NOTENOUGHMONEY     = "Messages.MsgNotEnoughMoney";
+    private static final String MSG_INSIDEPA           = "Messages.MsgInsidePA";
+    private static final String MSG_INSIDEMA           = "Messages.MsgInsideMA";
+    private static final String MSG_INSIDEUA           = "Messages.MsgInsideUA";
+    private static final String MSG_INSIDEWGPVP        = "Messages.MsgInsideWGPVP";
+    private static final String MSG_INSIDEWGPVPONLY    = "Messages.MsgInsideWGPVPOnly";
+    private static final String MSG_HEADER             = "Messages.MsgHeader";
     private static final String MSG_INSIDEENEMYFACTION = "Messages.MsgInsideEnemyFaction";
+    private static final String MSG_INSIDERES          = "Messages.MsgInsideRes";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -67,6 +70,9 @@ public final class ScavengerConfig {
     private String msgHeader;
     private int chanceToDrop;
     private String msgInsideEnemyFaction;
+    private boolean factionEnemyDrops;
+    private boolean residence;
+    private String msgInsideRes;
     
 
     public ScavengerConfig(Scavenger plug) {
@@ -104,6 +110,9 @@ public final class ScavengerConfig {
         msgHeader           = config.getString(MSG_HEADER, "Scavenger");
         chanceToDrop        = config.getInt(ECONOMY_DROP_CHANCE, 0);
         msgInsideEnemyFaction = config.getString(MSG_INSIDEENEMYFACTION, "You died in enemy territory. Your items will be dropped!");
+        factionEnemyDrops   = config.getBoolean(GLOBAL_FACTIONENEMYDROPS, false);
+        residence           = config.getBoolean(GLOBAL_RESIDENCE, false);
+        msgInsideRes        = config.getString(MSG_INSIDERES, "This residence does not allow item recovery! Dropping items!");
     }
     
     public boolean shouldNotify() {
@@ -220,5 +229,17 @@ public final class ScavengerConfig {
     
     public String msgInsideEnemyFaction() {
         return msgInsideEnemyFaction;
+    }
+
+    public boolean factionEnemyDrops() {
+        return factionEnemyDrops;
+    }
+    
+    public boolean residence() {
+        return residence;
+    }
+    
+    public String msgInsideRes() {
+        return msgInsideRes;
     }
 }

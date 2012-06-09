@@ -1,5 +1,6 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -19,9 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.massivecraft.factions.Factions;
-import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.P;
+import org.bukkit.plugin.PluginManager;
 
 public class Scavenger extends JavaPlugin {
     public static final String PLUGIN_NAME = "Scavenger";
@@ -54,6 +54,7 @@ public class Scavenger extends JavaPlugin {
         checkForUltimateArena();
         checkForWorldGuard();
         checkForFactions();
+        setupResidence();
         
         getServer().getPluginManager().registerEvents(eventListener, this);
         
@@ -116,6 +117,25 @@ public class Scavenger extends JavaPlugin {
             return null;
         }
         return (P) plugin;
+    }
+    
+    public void setupResidence() {       
+        if (getSConfig().residence()) {
+            PluginManager pm = getServer().getPluginManager();
+            Plugin p = pm.getPlugin("Residence");
+            if(p!=null) {
+                if(!p.isEnabled()) {
+                    logInfo("Manually Enabling Residence!");
+                    pm.enablePlugin(p);
+                    logInfo("Adding 'scavenger' flag to Residence!");
+                    FlagPermissions.addResidenceOnlyFlag("scavenger");
+                    FlagPermissions.addFlag("scavenger");
+                }
+            }
+            else {
+                logInfo("Residence NOT Installed!");
+            }
+        }
     }
     
     public WorldGuardPlugin getWorldGuard() {

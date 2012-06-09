@@ -1,8 +1,9 @@
 package me.cnaude.plugin.Scavenger;
 
+import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -142,17 +143,32 @@ public class RestorationManager implements Serializable {
             return;
         }
 
-        if (Scavenger.get().getFactions() != null) {
-            Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");            
-            FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
-            Scavenger.get().logDebug("Relation: "+fplayer.getRelationToLocation().name());
-            if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
-                Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
-                Scavenger.get().message(p, Scavenger.getSConfig().msgInsideEnemyFaction());
-                return;
+        if (Scavenger.getSConfig().residence()) {
+            ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());
+            ResidencePermissions perms = res.getPermissions();            
+            if(res!=null) {
+                if (perms.playerHas(p.getName(),"scavenger", true)) {                
+                    Scavenger.get().logDebug("Player '"+ p.getName() + "' is allowed to use Scavenger in this residence.");
+                } else {
+                    Scavenger.get().logDebug("Player '"+ p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
+                    Scavenger.get().message(p, Scavenger.getSConfig().msgInsideRes());
+                }               
             }
-        } else {
-            Scavenger.get().logDebug("No Factions detected");
+        }
+        
+        if (Scavenger.getSConfig().factionEnemyDrops()) {
+            if (Scavenger.get().getFactions() != null) {
+                Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");            
+                FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
+                Scavenger.get().logDebug("Relation: "+fplayer.getRelationToLocation().name());
+                if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
+                    Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
+                    Scavenger.get().message(p, Scavenger.getSConfig().msgInsideEnemyFaction());
+                    return;
+                }
+            } else {
+                Scavenger.get().logDebug("No Factions detected");
+            }
         }
         
         if (Scavenger.get().getWorldGuard() != null) {

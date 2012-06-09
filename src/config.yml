@@ -17,6 +17,10 @@ Global:
   WorldGuardPVPIgnore: false
   # If true then restores only work in PVP zones.
   WorldGuardPVPOnly: false
+  # If true then players drop items in enemy faction territory.
+  FactionEnemyDrops: false
+  # If true then Scavenger will attempt to hook into Residence and add the scavenger flag.
+  Residence: false
 Messages:
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.
@@ -28,6 +32,7 @@ Messages:
   MsgInsideWGPVPOnly: You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.
   MsgInsideEnemyFaction: You died in enemy territory. Your items will be dropped!
   MsgHeader: Scavenger
+  MsgInsideRes: This residence does not allow item recovery! Dropping items!
 Economy:
     # Whether or not to use an economy system with the plugin.
     Enabled: false

@@ -1,6 +1,6 @@
 name: Scavenger
 main: me.cnaude.plugin.Scavenger.Scavenger
-version: 1.7d
+version: 1.9
 author: cnaude, modwizcode, SirHedgehog
 description: Item recovery on death. Based on SirHedgehog's code.
 website: http://dev.bukkit.org/server-mods/scavenger/
@@ -47,9 +47,9 @@ permissions:
   scavenger.list:
     description: Allows players to list all pending recoveries.
     default: false
-  scavenger.inv:
+  scavenger.dropinv:
     description: Inventory recovery
-    default: true
-  scavenger.armour:
+    default: false
+  scavenger.droparmour:
     description: Armour recovery
-    default: true
+    default: false
