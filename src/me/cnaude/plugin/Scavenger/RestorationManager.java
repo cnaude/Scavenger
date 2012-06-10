@@ -144,16 +144,18 @@ public class RestorationManager implements Serializable {
         }
 
         if (Scavenger.getSConfig().residence()) {
-            ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());
-            ResidencePermissions perms = res.getPermissions();            
-            if(res!=null) {
-                if (perms.playerHas(p.getName(),"scavenger", true)) {                
-                    Scavenger.get().logDebug("Player '"+ p.getName() + "' is allowed to use Scavenger in this residence.");
-                } else {
+            ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());                       
+            if(res != null) {
+                ResidencePermissions perms = res.getPermissions(); 
+                if (perms.playerHas(p.getName(),"noscv", true)) {                
                     Scavenger.get().logDebug("Player '"+ p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
                     Scavenger.get().message(p, Scavenger.getSConfig().msgInsideRes());
+                    return;
+                } else {
+                    Scavenger.get().logDebug("Player '"+ p.getName() + "' is allowed to use Scavenger in this residence.");
+                    
                 }               
-            }
+            } 
         }
         
         if (Scavenger.getSConfig().factionEnemyDrops()) {

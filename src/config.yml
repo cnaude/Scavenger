@@ -19,7 +19,7 @@ Global:
   WorldGuardPVPOnly: false
   # If true then players drop items in enemy faction territory.
   FactionEnemyDrops: false
-  # If true then Scavenger will attempt to hook into Residence and add the scavenger flag.
+  # If true then Scavenger will attempt to hook into Residence and add the noscv flag.
   Residence: false
 Messages:
   MsgRecovered: Your inventory has been restored.

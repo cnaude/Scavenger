@@ -3,6 +3,7 @@ package me.cnaude.plugin.Scavenger;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
+import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.main;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -18,10 +19,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.massivecraft.factions.P;
-import org.bukkit.plugin.PluginManager;
 
 public class Scavenger extends JavaPlugin {
     public static final String PLUGIN_NAME = "Scavenger";
@@ -77,8 +77,8 @@ public class Scavenger extends JavaPlugin {
     }
     
     private void checkForFactions() {
-        if (getFactions() != null) {
-            logInfo("Factions detected. Players will los items in enemy territory.");
+        if (getFactions() != null && getSConfig().factionEnemyDrops()) {
+            logInfo("Factions detected. Players will drop items in enemy teritory!");
         }
     }
     
@@ -125,16 +125,17 @@ public class Scavenger extends JavaPlugin {
             Plugin p = pm.getPlugin("Residence");
             if(p!=null) {
                 if(!p.isEnabled()) {
-                    logInfo("Manually Enabling Residence!");
-                    pm.enablePlugin(p);
-                    logInfo("Adding 'scavenger' flag to Residence!");
-                    FlagPermissions.addResidenceOnlyFlag("scavenger");
-                    FlagPermissions.addFlag("scavenger");
+                    logInfo("Manually enabling Residence!");
+                    pm.enablePlugin(p);                    
                 }
-            }
-            else {
+                logInfo("Adding 'noscv' flag to Residence.");
+                FlagPermissions.addResidenceOnlyFlag("noscv");
+                FlagPermissions.addFlag("noscv");
+            } else {
                 logInfo("Residence NOT Installed!");
             }
+        } else {
+            logDebug("Residence support disabled via config.");
         }
     }
     
