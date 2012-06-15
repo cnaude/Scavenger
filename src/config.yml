@@ -21,6 +21,8 @@ Global:
   FactionEnemyDrops: false
   # If true then Scavenger will attempt to hook into Residence and add the noscv flag.
   Residence: false
+  # Flag name used with Residence
+  ResidenceFlag: noscv
 Messages:
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.

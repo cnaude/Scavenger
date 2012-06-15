@@ -26,6 +26,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_OPSALLPERMS        = "Global.OpsAllPerms";
     private static final String GLOBAL_FACTIONENEMYDROPS  = "Global.FactionEnemyDrops";
     private static final String GLOBAL_RESIDENCE          = "Global.Residence";
+    private static final String GLOBAL_RESFLAG            = "Global.ResidenceFlag";
     
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED          = "Messages.MsgRecovered";
@@ -73,6 +74,7 @@ public final class ScavengerConfig {
     private boolean factionEnemyDrops;
     private boolean residence;
     private String msgInsideRes;
+    private String resFlag;
     
 
     public ScavengerConfig(Scavenger plug) {
@@ -113,6 +115,7 @@ public final class ScavengerConfig {
         factionEnemyDrops   = config.getBoolean(GLOBAL_FACTIONENEMYDROPS, false);
         residence           = config.getBoolean(GLOBAL_RESIDENCE, false);
         msgInsideRes        = config.getString(MSG_INSIDERES, "This residence does not allow item recovery! Dropping items!");
+        resFlag             = config.getString(GLOBAL_RESFLAG, "noscv");
     }
     
     public boolean shouldNotify() {
@@ -241,5 +244,9 @@ public final class ScavengerConfig {
     
     public String msgInsideRes() {
         return msgInsideRes;
+    }
+    
+    public String resFlag() {
+        return resFlag;
     }
 }

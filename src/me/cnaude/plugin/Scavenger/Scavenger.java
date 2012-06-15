@@ -5,7 +5,7 @@ import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
 import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.orange451.UltimateArena.main;
+import com.orange451.UltimateArena.*;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -128,9 +128,9 @@ public class Scavenger extends JavaPlugin {
                     logInfo("Manually enabling Residence!");
                     pm.enablePlugin(p);                    
                 }
-                logInfo("Adding 'noscv' flag to Residence.");
-                FlagPermissions.addResidenceOnlyFlag("noscv");
-                FlagPermissions.addFlag("noscv");
+                logInfo("Adding '" + getSConfig().resFlag() + "' flag to Residence.");
+                FlagPermissions.addResidenceOnlyFlag(getSConfig().resFlag());
+                FlagPermissions.addFlag(getSConfig().resFlag());
             } else {
                 logInfo("Residence NOT Installed!");
             }
@@ -149,13 +149,13 @@ public class Scavenger extends JavaPlugin {
         return (WorldGuardPlugin) plugin;
     }
     
-    public main getUltimateArena() {
+    public UltimateArena getUltimateArena() {
         Plugin plugin = getServer().getPluginManager().getPlugin("UltimateArena");
         
-        if (plugin == null || !(plugin instanceof main)) {
+        if (plugin == null || !(plugin instanceof UltimateArena)) {
             return null; 
         }
-        return (main) plugin;
+        return (UltimateArena) plugin;
     }
     
     public void logInfo(String _message) {
@@ -302,11 +302,13 @@ public class Scavenger extends JavaPlugin {
             return textColor + "[" + headerColor + Scavenger.getSConfig().msgHeader() + textColor + "] " + textColor;
     }
     
-    public void message(Player _player, String _message) {
-        if (_player != null && getSConfig().shouldNotify())
-            _player.sendMessage(headerStr() + _message);
+    public void message(Player p, String msg) {        
+        msg = msg.replaceAll("%PLAYER%", p.getName());
+        msg = msg.replaceAll("%DPLAYER%", p.getDisplayName());
+        if (p != null && getSConfig().shouldNotify())
+            p.sendMessage(headerStr() + msg);
         else
-            logInfo(_message);
+            logInfo(msg);
     }
     
     public void debugMessage(Player _player, String _message) {

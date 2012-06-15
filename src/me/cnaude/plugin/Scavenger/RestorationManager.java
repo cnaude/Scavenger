@@ -147,7 +147,7 @@ public class RestorationManager implements Serializable {
             ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());                       
             if(res != null) {
                 ResidencePermissions perms = res.getPermissions(); 
-                if (perms.playerHas(p.getName(),"noscv", true)) {                
+                if (perms.playerHas(p.getName(),Scavenger.getSConfig().resFlag(), true)) {                
                     Scavenger.get().logDebug("Player '"+ p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
                     Scavenger.get().message(p, Scavenger.getSConfig().msgInsideRes());
                     return;
