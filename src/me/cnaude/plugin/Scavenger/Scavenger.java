@@ -30,7 +30,7 @@ public class Scavenger extends JavaPlugin {
 
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
-    public static PVPArenaAPI pvpHandler;    
+    public static PVPArenaAPI pvpHandler;        
     public static MultiverseInventories multiverseHandler;
     public static RestorationManager rm;
     public static ScavengerIgnoreList ignoreList;
@@ -147,16 +147,7 @@ public class Scavenger extends JavaPlugin {
             return null; // Maybe you want throw an exception instead
         }
         return (WorldGuardPlugin) plugin;
-    }
-    
-    public UltimateArena getUltimateArena() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("UltimateArena");
-        
-        if (plugin == null || !(plugin instanceof UltimateArena)) {
-            return null; 
-        }
-        return (UltimateArena) plugin;
-    }
+    }   
     
     public void logInfo(String _message) {
         log.log(Level.INFO,String.format("%s %s",LOG_HEADER,_message));
@@ -220,6 +211,15 @@ public class Scavenger extends JavaPlugin {
         }
         instance = this;
         configLoaded = true;
+    }
+    
+    public UltimateArenaAPI getUltimateArena() {
+        Plugin uaPlugin = getServer().getPluginManager().getPlugin("UltimateArena");
+
+        if (uaPlugin == null)
+            return null;
+        
+        return com.orange451.UltimateArena.UltimateArenaAPI.hookIntoUA();
     }
     
     public void setupMobArenaHandler() {

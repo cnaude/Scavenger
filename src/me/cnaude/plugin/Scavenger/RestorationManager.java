@@ -142,6 +142,13 @@ public class RestorationManager implements Serializable {
         if (_drops.isEmpty() && p.getExp() == 0 && p.getLevel() == 0) {
             return;
         }
+        
+        if (Scavenger.getSConfig().dropOnPVPDeath()){
+            if (p.getKiller() instanceof Player) {
+                Scavenger.get().message(p, Scavenger.getSConfig().msgPVPDeath());
+                return;
+            }
+        }
 
         if (Scavenger.getSConfig().residence()) {
             ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());                       
@@ -198,7 +205,7 @@ public class RestorationManager implements Serializable {
         }
 
         if (Scavenger.get().getUltimateArena() != null) {
-            if (Scavenger.get().getUltimateArena().isInArena(p)) {
+            if (Scavenger.get().getUltimateArena().hookIntoUA().isPlayerInArenaLocation(p)) {
                 if (!Scavenger.getSConfig().msgInsideUA().isEmpty()) {
                     Scavenger.get().message(p, Scavenger.getSConfig().msgInsideUA());
                 }
@@ -334,7 +341,8 @@ public class RestorationManager implements Serializable {
             }
         }
         
-        if (Scavenger.getSConfig().chanceToDrop() > 0) {
+        if (Scavenger.getSConfig().chanceToDrop() > 0 
+                && !p.hasPermission("scavenger.nochance")) {
             ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
             for (ItemStack[] a : invAndArmour) {
                 for (ItemStack i : a) {

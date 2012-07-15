@@ -27,6 +27,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_FACTIONENEMYDROPS  = "Global.FactionEnemyDrops";
     private static final String GLOBAL_RESIDENCE          = "Global.Residence";
     private static final String GLOBAL_RESFLAG            = "Global.ResidenceFlag";
+    private static final String GLOBAL_DROPONPVPDEATH     = "Global.DropOnPVPDeath";
     
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED          = "Messages.MsgRecovered";
@@ -41,6 +42,7 @@ public final class ScavengerConfig {
     private static final String MSG_HEADER             = "Messages.MsgHeader";
     private static final String MSG_INSIDEENEMYFACTION = "Messages.MsgInsideEnemyFaction";
     private static final String MSG_INSIDERES          = "Messages.MsgInsideRes";
+    private static final String MSG_PVPDEATH           = "messages.PVPDeath";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -75,6 +77,8 @@ public final class ScavengerConfig {
     private boolean residence;
     private String msgInsideRes;
     private String resFlag;
+    private boolean dropOnPVPDeath;
+    private String msgPVPDeath;
     
 
     public ScavengerConfig(Scavenger plug) {
@@ -116,6 +120,8 @@ public final class ScavengerConfig {
         residence           = config.getBoolean(GLOBAL_RESIDENCE, false);
         msgInsideRes        = config.getString(MSG_INSIDERES, "This residence does not allow item recovery! Dropping items!");
         resFlag             = config.getString(GLOBAL_RESFLAG, "noscv");
+        msgPVPDeath         = config.getString(MSG_PVPDEATH, "Killed by another player! Dropping items.");
+        dropOnPVPDeath      = config.getBoolean(GLOBAL_DROPONPVPDEATH, false);
     }
     
     public boolean shouldNotify() {
@@ -248,5 +254,13 @@ public final class ScavengerConfig {
     
     public String resFlag() {
         return resFlag;
+    }
+    
+    public boolean dropOnPVPDeath() {
+        return dropOnPVPDeath;
+    }
+    
+    public String msgPVPDeath() {
+        return msgPVPDeath;
     }
 }

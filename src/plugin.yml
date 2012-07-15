@@ -1,6 +1,6 @@
 name: Scavenger
 main: me.cnaude.plugin.Scavenger.Scavenger
-version: 1.9c
+version: 1.9f
 author: cnaude, modwizcode, SirHedgehog
 description: Item recovery on death. Based on SirHedgehog's code.
 website: http://dev.bukkit.org/server-mods/scavenger/
@@ -52,4 +52,7 @@ permissions:
     default: false
   scavenger.droparmour:
     description: Armour recovery
+    default: false
+  scavenger.nochance:
+    description: Override chance to drop
     default: false
