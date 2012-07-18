@@ -1,0 +1,9 @@
+MsgRecovered: 당신의 인벤토리는 복구되었습니다.
+MsgSaving: 사망시 가진 아이템들을 저장합니다.
+MsgSaveForFee: 당신은 죽었습니다. 하지만 %COST% 골드의 수수료를 내고 인벤토리를 저장합니다.
+MsgNotEnoughMoney: 아이템복구비용은 %COST% 골드입니다.  당신의 소유금액은 %BALANCE% 골드 이므로 아이템이 떨어집니다.
+MsgInsidePA: 당신은 PVP존에 있으므로, %ARENA%에선 무시됩니다.
+MsgInsideMA: 당신은 몹아레나에서 죽엇으므로. 복구비용이 들지 않습니다.
+MsgInsideWGPVP: 당신은 PVP존에 있으므로 아이템을 떨어트립니다.
+MsgInsideWGPVPOnly: 당신은 PVP존에있지 않으므로 아이템이 보호되지 않습니다.
+MsgHeader: 스케빈져

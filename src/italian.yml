@@ -1,0 +1,7 @@
+MsgRecovered: Il tuo inventario e' stato ripristinato.
+MsgSaving: Salvo il tuo Inventario...
+MsgSaveForFee: Salvo il tuo inventario per una piccola somma di %COST% %CURRENCY%.
+MsgNotEnoughMoney: Il costo del recupero dell'item e' di %COST% e hai solo %BALANCE% %CURRENCY%.
+MsgInsidePA: Sei in una PVP Arena(%ARENA%). Il tuo inventario non verra' salvato.
+MsgInsideMA: Sei in una Mob Arena. Il tuo inventario non verra' salvato.
+MsgInsideWGPVP: Sei morto in una PVP Zone. Il tuo inventario non verra' salvato.

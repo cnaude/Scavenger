@@ -1,10 +1,21 @@
 package me.cnaude.plugin.Scavenger;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
+import org.yaml.snakeyaml.Yaml;
 
 public final class ScavengerConfig {
     private final Configuration config;
+    
+    private static final String langDir = "plugins/Scavenger/Languages";
     
     private static final String SHOULD_NOTIFY             = "Global.Notify";
     private static final String ECONOMY_ENABLED           = "Economy.Enabled";
@@ -28,21 +39,36 @@ public final class ScavengerConfig {
     private static final String GLOBAL_RESIDENCE          = "Global.Residence";
     private static final String GLOBAL_RESFLAG            = "Global.ResidenceFlag";
     private static final String GLOBAL_DROPONPVPDEATH     = "Global.DropOnPVPDeath";
+    private static final String GLOBAL_LANGUAGE           = "Global.LanguageFile";
     
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
-    private static final String MSG_RECOVERED          = "Messages.MsgRecovered";
-    private static final String MSG_SAVING             = "Messages.MsgSaving";
-    private static final String MSG_SAVEFORFEE         = "Messages.MsgSaveForFee";
-    private static final String MSG_NOTENOUGHMONEY     = "Messages.MsgNotEnoughMoney";
-    private static final String MSG_INSIDEPA           = "Messages.MsgInsidePA";
-    private static final String MSG_INSIDEMA           = "Messages.MsgInsideMA";
-    private static final String MSG_INSIDEUA           = "Messages.MsgInsideUA";
-    private static final String MSG_INSIDEWGPVP        = "Messages.MsgInsideWGPVP";
-    private static final String MSG_INSIDEWGPVPONLY    = "Messages.MsgInsideWGPVPOnly";
-    private static final String MSG_HEADER             = "Messages.MsgHeader";
-    private static final String MSG_INSIDEENEMYFACTION = "Messages.MsgInsideEnemyFaction";
-    private static final String MSG_INSIDERES          = "Messages.MsgInsideRes";
-    private static final String MSG_PVPDEATH           = "messages.PVPDeath";
+    private static final String MSG_RECOVERED          = "MsgRecovered";
+    private static final String MSG_SAVING             = "MsgSaving";
+    private static final String MSG_SAVEFORFEE         = "MsgSaveForFee";
+    private static final String MSG_NOTENOUGHMONEY     = "MsgNotEnoughMoney";
+    private static final String MSG_INSIDEPA           = "MsgInsidePA";
+    private static final String MSG_INSIDEMA           = "MsgInsideMA";
+    private static final String MSG_INSIDEUA           = "MsgInsideUA";
+    private static final String MSG_INSIDEWGPVP        = "MsgInsideWGPVP";
+    private static final String MSG_INSIDEWGPVPONLY    = "MsgInsideWGPVPOnly";
+    private static final String MSG_HEADER             = "MsgHeader";
+    private static final String MSG_INSIDEENEMYFACTION = "MsgInsideEnemyFaction";
+    private static final String MSG_INSIDERES          = "MsgInsideRes";
+    private static final String MSG_PVPDEATH           = "PVPDeath";
+    
+    private static final String MSG_HEADER_DEF             = "Scavenger";
+    private static final String MSG_RECOVERED_DEF          = "Your inventory has been restored.";
+    private static final String MSG_SAVING_DEF             = "Saving your inventory.";
+    private static final String MSG_SAVEFORFEE_DEF         = "Saving your inventory for a small fee of %COST% %CURRENCY%.";
+    private static final String MSG_NOTENOUGHMONEY_DEF     = "Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.";
+    private static final String MSG_INSIDEPA_DEF           = "You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.";
+    private static final String MSG_INSIDEMA_DEF           = "You are inside a Mob Arena. Scavenger will not save your inventory.";
+    private static final String MSG_INSIDEUA_DEF           = "You are inside an Ultimate Arena. Scavenger will not save your inventory.";
+    private static final String MSG_INSIDEWGPVP_DEF        = "You are inside WorldGuard PVP region. Scavenger will not save your inventory.";
+    private static final String MSG_INSIDEWGPVPONLY_DEF    = "You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.";    
+    private static final String MSG_INSIDEENEMYFACTION_DEF = "You died in enemy territory. Your items will be dropped!";
+    private static final String MSG_INSIDERES_DEF          = "This residence does not allow item recovery! Dropping items!";
+    private static final String MSG_PVPDEATH_DEF           = "Killed by another player! Dropping items.";
     
     private boolean shouldNotify;
     private double  restoreCost;
@@ -79,49 +105,176 @@ public final class ScavengerConfig {
     private String resFlag;
     private boolean dropOnPVPDeath;
     private String msgPVPDeath;
+    private String languageFileName;
     
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();       
-        loadValues();
+        loadValues(plug);
     }
     
-    public void loadValues() {
-        economyEnabled      = config.getBoolean(ECONOMY_ENABLED, false);
+    public void loadValues(Scavenger plug) {
         debugEnabled        = config.getBoolean(DEBUG_ENABLED, false);
-        shouldNotify        = config.getBoolean(SHOULD_NOTIFY, true);
+        
+        economyEnabled      = config.getBoolean(ECONOMY_ENABLED, false);
         restoreCost         = config.getDouble(ECONOMY_RESTORECOST, 10.0);
         percent             = config.getBoolean(ECONOMY_PERCENT, false);
         minCost             = config.getDouble(ECONOMY_MINCOST, 5.0);
         maxCost             = config.getDouble(ECONOMY_MAXCOST, 0.0);
         percentCost         = config.getDouble(ECONOMY_PERCENTCOST, 5.0);
         addMin              = config.getBoolean(ECONOMY_ADDMIN, false);
-        headerColor         = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
-        textColor           = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
+        chanceToDrop        = config.getInt(ECONOMY_DROP_CHANCE, 0);        
+        
+        shouldNotify        = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops     = config.getBoolean(GLOBAL_SIDROPS, false);
         singleItemDropsOnly = config.getBoolean(GLOBAL_SIDROPS_ONLY, false);
-        permsEnabled        = config.getBoolean(GLOBAL_PERMS, true);
-        msgRecovered        = config.getString(MSG_RECOVERED, "Your inventory has been restored.");
-        msgSaving           = config.getString(MSG_SAVING, "Saving your inventory.");
-        msgSaveForFee       = config.getString(MSG_SAVEFORFEE, "Saving your inventory for a small fee of %COST% %CURRENCY%.");
-        msgNotEnoughMoney   = config.getString(MSG_NOTENOUGHMONEY, "Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.");
-        msgInsidePA         = config.getString(MSG_INSIDEPA, "You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.");
-        msgInsideMA         = config.getString(MSG_INSIDEMA, "You are inside a Mob Arena. Scavenger will not save your inventory.");
-        msgInsideUA         = config.getString(MSG_INSIDEUA, "You are inside an Ultimate Arena. Scavenger will not save your inventory.");
-        msgInsideWGPVP      = config.getString(MSG_INSIDEWGPVP, "You are inside WorldGuard PVP region. Scavenger will not save your inventory.");
-        msgInsideWGPVPOnly  = config.getString(MSG_INSIDEWGPVPONLY, "You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.");
+        permsEnabled        = config.getBoolean(GLOBAL_PERMS, true);        
         wgPVPIgnore         = config.getBoolean(GLOBAL_WGPVPIGNORE, false);
         wgGuardPVPOnly      = config.getBoolean(GLOBAL_WGPVPONLY, false);
         opsAllPerms         = config.getBoolean(GLOBAL_OPSALLPERMS, true);
-        msgHeader           = config.getString(MSG_HEADER, "Scavenger");
-        chanceToDrop        = config.getInt(ECONOMY_DROP_CHANCE, 0);
-        msgInsideEnemyFaction = config.getString(MSG_INSIDEENEMYFACTION, "You died in enemy territory. Your items will be dropped!");
         factionEnemyDrops   = config.getBoolean(GLOBAL_FACTIONENEMYDROPS, false);
-        residence           = config.getBoolean(GLOBAL_RESIDENCE, false);
-        msgInsideRes        = config.getString(MSG_INSIDERES, "This residence does not allow item recovery! Dropping items!");
-        resFlag             = config.getString(GLOBAL_RESFLAG, "noscv");
-        msgPVPDeath         = config.getString(MSG_PVPDEATH, "Killed by another player! Dropping items.");
-        dropOnPVPDeath      = config.getBoolean(GLOBAL_DROPONPVPDEATH, false);
+        residence           = config.getBoolean(GLOBAL_RESIDENCE, false);        
+        resFlag             = config.getString(GLOBAL_RESFLAG, "noscv");        
+        dropOnPVPDeath      = config.getBoolean(GLOBAL_DROPONPVPDEATH, false);                
+        headerColor         = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
+        textColor           = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());    
+        languageFileName    = config.getString(GLOBAL_LANGUAGE, "English.yml");
+        
+        initLangFiles(plug);
+        loadLanguage(plug);
+                
+    }
+    
+    private void initLangFiles(Scavenger plug) {
+        File dataFolder = new File(langDir);
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
+        }
+        ArrayList<String> langFiles = new ArrayList();
+        langFiles.add("german.yml");
+        langFiles.add("italian.yml");
+        langFiles.add("korean.yml");
+        langFiles.add("russian.yml");       
+        
+        for (String fName : langFiles) {
+            File file = new File(langDir + "/" + fName);        
+            if (!file.exists()) {            
+                try {
+                    InputStream in = Scavenger.class.getResourceAsStream("/" + fName);
+                    byte[] buf = new byte[1024];
+                    int len;
+                    OutputStream out = new FileOutputStream(file);
+                    while ((len = in.read(buf)) > 0){
+                        out.write(buf, 0, len);
+                    }
+                    out.close();
+                } 
+                catch (Exception ex) {
+                    plug.logError(ex.getMessage());
+                }
+            }
+        }
+    }
+    
+    private void loadLanguage(Scavenger plug) {
+        boolean success = false;
+        
+        File file = new File(langDir + "/" + languageFileName);
+        if (file.exists()) {
+            Yaml yaml = new Yaml();
+            try {
+                plug.logInfo("Loading language file: " + file.getAbsolutePath());   
+                Reader reader = new FileReader(file);
+                Map<String, String> map = (Map<String, String>)yaml.load(reader);                 
+                if (map.containsKey(MSG_HEADER)) {                    
+                    msgHeader = map.get(MSG_HEADER);                    
+                } else {                    
+                    msgHeader = config.getString("Messages." + MSG_HEADER, MSG_HEADER_DEF);                    
+                }
+                if (map.containsKey(MSG_INSIDEENEMYFACTION)) {
+                    msgInsideEnemyFaction = map.get(MSG_INSIDEENEMYFACTION);
+                } else {
+                    msgInsideEnemyFaction = config.getString("Messages." + MSG_INSIDEENEMYFACTION, MSG_INSIDEENEMYFACTION_DEF);
+                }
+                if (map.containsKey(MSG_INSIDERES)) {
+                    msgInsideRes          = map.get(MSG_INSIDERES);
+                } else {
+                    msgInsideRes          = config.getString("Messages." + MSG_INSIDERES, MSG_INSIDERES_DEF);
+                }
+                if (map.containsKey(MSG_PVPDEATH)) {
+                    msgPVPDeath           = map.get(MSG_PVPDEATH);
+                } else {
+                    msgPVPDeath           = config.getString("Messages." + MSG_PVPDEATH, MSG_PVPDEATH_DEF);
+                }
+                if (map.containsKey(MSG_RECOVERED)) {
+                    msgRecovered          = map.get(MSG_RECOVERED);
+                } else {
+                    msgRecovered          = config.getString("Messages." + MSG_RECOVERED, MSG_RECOVERED_DEF);
+                }
+                if (map.containsKey(MSG_SAVING)) {
+                    msgSaving             = map.get(MSG_SAVING);
+                } else {
+                    msgSaving             = config.getString("Messages." + MSG_SAVING, MSG_SAVING_DEF);
+                }
+                if (map.containsKey(MSG_SAVEFORFEE)) {
+                    msgSaveForFee         = map.get(MSG_SAVEFORFEE);
+                } else {
+                    msgSaveForFee         = config.getString("Messages." + MSG_SAVEFORFEE, MSG_SAVEFORFEE_DEF);
+                }
+                if (map.containsKey(MSG_NOTENOUGHMONEY)) {
+                    msgNotEnoughMoney     = map.get(MSG_NOTENOUGHMONEY);
+                } else {
+                    msgNotEnoughMoney     = config.getString("Messages." + MSG_NOTENOUGHMONEY, MSG_NOTENOUGHMONEY_DEF);                    
+                }
+                if (map.containsKey(MSG_INSIDEPA)) {
+                    msgInsidePA           = map.get(MSG_INSIDEPA);
+                } else {
+                    msgInsidePA           = config.getString("Messages." + MSG_INSIDEPA, MSG_INSIDEPA_DEF);
+                }
+                if (map.containsKey(MSG_INSIDEMA)) {
+                    msgInsideMA           = map.get(MSG_INSIDEMA);
+                } else {
+                    msgInsideMA           = config.getString("Messages." + MSG_INSIDEMA, MSG_INSIDEMA_DEF);
+                }
+                if (map.containsKey(MSG_INSIDEUA)) {
+                    msgInsideUA           = map.get(MSG_INSIDEUA);
+                } else {
+                    msgInsideUA           = config.getString("Messages." + MSG_INSIDEUA, MSG_INSIDEUA_DEF);
+                }
+                if (map.containsKey(MSG_INSIDEWGPVP)) {
+                    msgInsideWGPVP        = map.get(MSG_INSIDEWGPVP);
+                } else {
+                    msgInsideWGPVP        = config.getString("Messages." + MSG_INSIDEWGPVP, MSG_INSIDEWGPVP_DEF);
+                }
+                if (map.containsKey(MSG_INSIDEWGPVPONLY)) {
+                    msgInsideWGPVPOnly    = map.get(MSG_INSIDEWGPVPONLY);
+                } else {
+                    msgInsideWGPVPOnly    = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);                    
+                }
+                reader.close();
+                success = true;
+            }
+            catch (Exception ex) {
+                plug.logError("Error reading file: " + ex.getMessage());
+                success = false;
+            }            
+        } 
+        if (!success) {
+            // Fall back to our default config.
+            msgHeader             = config.getString("Messages." + MSG_HEADER, MSG_HEADER_DEF);
+            msgInsideEnemyFaction = config.getString("Messages." + MSG_INSIDEENEMYFACTION, MSG_INSIDEENEMYFACTION_DEF);
+            msgInsideRes          = config.getString("Messages." + MSG_INSIDERES, MSG_INSIDERES_DEF);
+            msgPVPDeath           = config.getString("Messages." + MSG_PVPDEATH, MSG_PVPDEATH_DEF);
+            msgRecovered          = config.getString("Messages." + MSG_RECOVERED, MSG_RECOVERED_DEF);
+            msgSaving             = config.getString("Messages." + MSG_SAVING, MSG_SAVING_DEF);
+            msgSaveForFee         = config.getString("Messages." + MSG_SAVEFORFEE, MSG_SAVEFORFEE_DEF);
+            msgNotEnoughMoney     = config.getString("Messages." + MSG_NOTENOUGHMONEY, MSG_NOTENOUGHMONEY_DEF);
+            msgInsidePA           = config.getString("Messages." + MSG_INSIDEPA, MSG_INSIDEPA_DEF);
+            msgInsideMA           = config.getString("Messages." + MSG_INSIDEMA, MSG_INSIDEMA_DEF);
+            msgInsideUA           = config.getString("Messages." + MSG_INSIDEUA, MSG_INSIDEUA_DEF);
+            msgInsideWGPVP        = config.getString("Messages." + MSG_INSIDEWGPVP, MSG_INSIDEWGPVP_DEF);
+            msgInsideWGPVPOnly    = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);                    
+        }
     }
     
     public boolean shouldNotify() {

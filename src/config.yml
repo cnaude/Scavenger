@@ -23,8 +23,9 @@ Global:
   Residence: false
   # Flag name used with Residence
   ResidenceFlag: noscv
-  UseLangFile: false
-  # LangFile: english.yml
+  # Load messages from a language. If the file does not exist just load defaults from this file.
+  LanguageFile: english.yml  
+  # Drop items when killed by another player.
   DropOnPVPDeath: false
 Messages:
   MsgRecovered: Your inventory has been restored.

@@ -1,0 +1,8 @@
+MsgRecovered: Ваш инвентарь восстановлен.
+MsgSaving: Ваш инвентарь будет сохранен.
+MsgSaveForFee: Ваш инвентарь будет сохранен за небольшую плату %COST% %CURRENCY%.
+MsgNotEnoughMoney: Восстановление инвентаря стоит %COST% %CURRENCY%, а у вас сейчас, к сожалению, %BALANCE% %CURRENCY%.
+MsgInsidePA: Вы сейчас на PVP-арене %ARENA%. Ваш инвентарь не будет восстановлен.
+MsgInsideMA: Вы сейчас на Моб-арене. Ваш инвентарь не будет восстановлен.
+MsgInsideWGPVP: Вы сейчас в PVP регионе WorldGuard. Ваш инвентарь не будет восстановлен.
+MsgInsideWGPVPOnly: Вы не в PVP регионе WorldGuard. Ваш инвентарь не будет восстановлен.
