@@ -141,25 +141,7 @@ public class RestorationManager implements Serializable {
     public static void collect(Player p, List<ItemStack> _drops, EntityDeathEvent event) {
         if (_drops.isEmpty() && p.getExp() == 0 && p.getLevel() == 0) {
             return;
-        }
-        
-        if (_drops.isEmpty() 
-                && (p.getExp() > 0 && (!(
-                        p.hasPermission("scavenger.exp")
-                        || !Scavenger.getSConfig().permsEnabled()
-                        || (p.isOp() && Scavenger.getSConfig().opsAllPerms())
-                    ))
-                )
-                && (p.getLevel() > 0 && (!(
-                        p.hasPermission("scavenger.level")
-                        || !Scavenger.getSConfig().permsEnabled()
-                        || (p.isOp() && Scavenger.getSConfig().opsAllPerms())
-                    ))
-                )
-                
-            ) {
-            return;
-        }
+        }        
         
         if (Scavenger.getSConfig().dropOnPVPDeath()){
             if (p.getKiller() instanceof Player) {
