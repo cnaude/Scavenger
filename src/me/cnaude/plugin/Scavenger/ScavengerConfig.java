@@ -160,7 +160,7 @@ public final class ScavengerConfig {
             File file = new File(langDir + "/" + fName);        
             if (!file.exists()) {            
                 try {
-                    InputStream in = Scavenger.class.getResourceAsStream("/" + fName);
+                    InputStream in = Scavenger.class.getResourceAsStream("/me/cnaude/plugin/Scavenger/Languages/" + fName);
                     byte[] buf = new byte[1024];
                     int len;
                     OutputStream out = new FileOutputStream(file);

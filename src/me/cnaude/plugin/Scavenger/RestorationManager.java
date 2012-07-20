@@ -143,6 +143,24 @@ public class RestorationManager implements Serializable {
             return;
         }
         
+        if (_drops.isEmpty() 
+                && (p.getExp() > 0 && (!(
+                        p.hasPermission("scavenger.exp")
+                        || !Scavenger.getSConfig().permsEnabled()
+                        || (p.isOp() && Scavenger.getSConfig().opsAllPerms())
+                    ))
+                )
+                && (p.getLevel() > 0 && (!(
+                        p.hasPermission("scavenger.level")
+                        || !Scavenger.getSConfig().permsEnabled()
+                        || (p.isOp() && Scavenger.getSConfig().opsAllPerms())
+                    ))
+                )
+                
+            ) {
+            return;
+        }
+        
         if (Scavenger.getSConfig().dropOnPVPDeath()){
             if (p.getKiller() instanceof Player) {
                 Scavenger.get().message(p, Scavenger.getSConfig().msgPVPDeath());
