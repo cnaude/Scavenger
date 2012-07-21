@@ -23,7 +23,7 @@ Global:
   Residence: false
   # Flag name used with Residence
   ResidenceFlag: noscv
-  # Load messages from a language. If the file does not exist just load defaults from this file.
+  # Load messages from a language. If the file does not exist just load defaults from this file. Check plugins/Scavenger/Languages for examples.
   LanguageFile: english.yml  
   # Drop items when killed by another player.
   DropOnPVPDeath: false

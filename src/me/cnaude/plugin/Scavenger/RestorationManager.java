@@ -122,7 +122,7 @@ public class RestorationManager implements Serializable {
     private static Restoration getRestoration(Player p) {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
-        if (Scavenger.get().getMultiverseInventories() != null) { 
+        if (Scavenger.get().getMultiverseInventories() != null) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
                 Scavenger.get().logDebug("Getting: " + keyName);
@@ -139,11 +139,11 @@ public class RestorationManager implements Serializable {
     }
 
     public static void collect(Player p, List<ItemStack> _drops, EntityDeathEvent event) {
-        if (_drops.isEmpty() && p.getExp() == 0 && p.getLevel() == 0) {
+        if (_drops.isEmpty() && !levelAllow(p) && !expAllow(p)) {
             return;
-        }        
-        
-        if (Scavenger.getSConfig().dropOnPVPDeath()){
+        }
+
+        if (Scavenger.getSConfig().dropOnPVPDeath()) {
             if (p.getKiller() instanceof Player) {
                 Scavenger.get().message(p, Scavenger.getSConfig().msgPVPDeath());
                 return;
@@ -151,25 +151,25 @@ public class RestorationManager implements Serializable {
         }
 
         if (Scavenger.getSConfig().residence()) {
-            ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());                       
-            if(res != null) {
-                ResidencePermissions perms = res.getPermissions(); 
-                if (perms.playerHas(p.getName(),Scavenger.getSConfig().resFlag(), true)) {                
-                    Scavenger.get().logDebug("Player '"+ p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
+            ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());
+            if (res != null) {
+                ResidencePermissions perms = res.getPermissions();
+                if (perms.playerHas(p.getName(), Scavenger.getSConfig().resFlag(), true)) {
+                    Scavenger.get().logDebug("Player '" + p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
                     Scavenger.get().message(p, Scavenger.getSConfig().msgInsideRes());
                     return;
                 } else {
-                    Scavenger.get().logDebug("Player '"+ p.getName() + "' is allowed to use Scavenger in this residence.");
-                    
-                }               
-            } 
+                    Scavenger.get().logDebug("Player '" + p.getName() + "' is allowed to use Scavenger in this residence.");
+
+                }
+            }
         }
-        
+
         if (Scavenger.getSConfig().factionEnemyDrops()) {
             if (Scavenger.get().getFactions() != null) {
-                Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");            
+                Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
                 FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
-                Scavenger.get().logDebug("Relation: "+fplayer.getRelationToLocation().name());
+                Scavenger.get().logDebug("Relation: " + fplayer.getRelationToLocation().name());
                 if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
                     Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
                     Scavenger.get().message(p, Scavenger.getSConfig().msgInsideEnemyFaction());
@@ -179,7 +179,7 @@ public class RestorationManager implements Serializable {
                 Scavenger.get().logDebug("No Factions detected");
             }
         }
-        
+
         if (Scavenger.get().getWorldGuard() != null) {
             Scavenger.get().logDebug("Checking region support for '" + p.getWorld().getName() + "'");
             if (Scavenger.get().getWorldGuard().getRegionManager(p.getWorld()) != null) {
@@ -292,22 +292,18 @@ public class RestorationManager implements Serializable {
         }
 
         Restoration restoration = new Restoration();
-        restoration.enabled = false;       
-        restoration.inventory = p.getInventory().getContents();    
+        restoration.enabled = false;
+        restoration.inventory = p.getInventory().getContents();
         restoration.armour = p.getInventory().getArmorContents();
 
-        if (p.hasPermission("scavenger.level")
-                || !Scavenger.getSConfig().permsEnabled()
-                || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+        if (levelAllow(p)) {
             restoration.level = p.getLevel();
         }
-        if (p.hasPermission("scavenger.exp")
-                || !Scavenger.getSConfig().permsEnabled()
-                || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+        if (expAllow(p)) {
             restoration.exp = p.getExp();
             event.setDroppedExp(0);
         }
-        
+
         _drops.clear();
 
         if (Scavenger.getSConfig().singleItemDrops()) {
@@ -340,8 +336,8 @@ public class RestorationManager implements Serializable {
                 }
             }
         }
-        
-        if (Scavenger.getSConfig().chanceToDrop() > 0 
+
+        if (Scavenger.getSConfig().chanceToDrop() > 0
                 && !p.hasPermission("scavenger.nochance")) {
             ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
             for (ItemStack[] a : invAndArmour) {
@@ -349,7 +345,7 @@ public class RestorationManager implements Serializable {
                     if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
                         Random randomGenerator = new Random();
                         int randomInt = randomGenerator.nextInt(Scavenger.getSConfig().chanceToDrop()) + 1;
-                        Scavenger.get().debugMessage(p, "Random number is "+randomInt);
+                        Scavenger.get().debugMessage(p, "Random number is " + randomInt);
                         if (randomInt == Scavenger.getSConfig().chanceToDrop()) {
                             Scavenger.get().debugMessage(p, "Randomly dropping item " + i.getType());
                             _drops.add(i.clone());
@@ -361,17 +357,37 @@ public class RestorationManager implements Serializable {
                 }
             }
         }
-        
+
         addRestoration(p, restoration);
     }
-    
+
+    public static boolean levelAllow(Player p) {
+        if ((p.hasPermission("scavenger.level")
+                || !Scavenger.getSConfig().permsEnabled()
+                || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) && p.getLevel() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean expAllow(Player p) {
+        if ((p.hasPermission("scavenger.exp")
+                || !Scavenger.getSConfig().permsEnabled()
+                || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) && p.getExhaustion() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void printRestorations(Player p) {
         Scavenger.get().message(p, "Restorations:");
         for (String key : restorations.keySet()) {
             Scavenger.get().message(p, "  " + key);
         }
     }
-    
+
     public void printRestorations() {
         Scavenger.get().logInfo("Restorations:");
         for (String key : restorations.keySet()) {
@@ -458,8 +474,9 @@ public class RestorationManager implements Serializable {
 
             }
         }
-        if (returnData.isEmpty())
+        if (returnData.isEmpty()) {
             returnData.add("");
+        }
         return returnData;
     }
 }
