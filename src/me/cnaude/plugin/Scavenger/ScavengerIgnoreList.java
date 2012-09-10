@@ -48,8 +48,9 @@ public class ScavengerIgnoreList implements Serializable{
     }
     
     public void addPlayer(String s) {
-        if (ignoreList.contains(s))
+        if (ignoreList.contains(s)) {
             return;
+        }
         Scavenger.get().logInfo("Adding " + s + " to ignore list.");
         ignoreList.add(s);
     }
@@ -60,9 +61,11 @@ public class ScavengerIgnoreList implements Serializable{
     }
     
     public static boolean isIgnored(String s) {
-        if (ignoreList.contains(s))
+        if (ignoreList.contains(s)) {
             return true;
-        else
+        }
+        else {
             return false;
+        }
     }
 }

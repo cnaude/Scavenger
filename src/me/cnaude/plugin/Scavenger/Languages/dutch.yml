@@ -1,0 +1,12 @@
+MsgRecovered: Uw inventaris is hersteld.
+MsgSaving: Het opslaan van uw inventaris.
+MsgSaveForFee: Het Redden van je inventaris kost je een kleine vergoeding van %COST% %CURRENCY%.
+MsgNotEnoughMoney: Item herstel kosten bedragen %COST% en je hebt alleen %BALANCE% %CURRENCY%.
+MsgInsidePA: Je bent in PVP Arena %ARENA%. Scavenger zal je je inventaris niet redden.
+MsgInsideMA: Je bent in een Mob Arena. Scavenger zal je inventaris niet redden.
+MsgInsideWGPVP: Je bent in een WorldGuard PVP gebied. Scavenger zal je inventaris niet redden.
+MsgInsideWGPVPOnly: Je bent niet in een WorldGuard PVP gebied. Scavenger zal je inventaris niet redden.
+MsgInsideEnemyFaction: Je stierf in vijandelijk gebied. Je items worden gedropt!
+MsgHeader: Scavenger
+MsgInsideRes: Deze residentie staat niet toe dat item herstelt word! Het laten vallen van je items!
+MsgPVPDeath: Vermoord door een andere speler! Het laten vallen van je items.

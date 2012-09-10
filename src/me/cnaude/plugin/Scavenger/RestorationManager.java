@@ -411,6 +411,8 @@ public class RestorationManager implements Serializable {
             Restoration restoration = getRestoration(p);
             restoration.enabled = true;
             Scavenger.get().debugMessage("Enabling: " + p.getName());
+        } else {
+            Scavenger.get().logDebug("Not enabling: " + p.getName());
         }
     }
 
