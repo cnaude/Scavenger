@@ -36,6 +36,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_WGPVPONLY          = "Global.WorldGuardPVPOnly";
     private static final String GLOBAL_OPSALLPERMS        = "Global.OpsAllPerms";
     private static final String GLOBAL_FACTIONENEMYDROPS  = "Global.FactionEnemyDrops";
+    private static final String GLOBAL_OFFLINEMODE        = "Global.OfflineMode";
     private static final String GLOBAL_RESIDENCE          = "Global.Residence";
     private static final String GLOBAL_RESFLAG            = "Global.ResidenceFlag";
     private static final String GLOBAL_DROPONPVPDEATH     = "Global.DropOnPVPDeath";
@@ -100,6 +101,7 @@ public final class ScavengerConfig {
     private int chanceToDrop;
     private String msgInsideEnemyFaction;
     private boolean factionEnemyDrops;
+    private boolean offlineMode;
     private boolean residence;
     private String msgInsideRes;
     private String resFlag;
@@ -133,6 +135,7 @@ public final class ScavengerConfig {
         wgGuardPVPOnly      = config.getBoolean(GLOBAL_WGPVPONLY, false);
         opsAllPerms         = config.getBoolean(GLOBAL_OPSALLPERMS, true);
         factionEnemyDrops   = config.getBoolean(GLOBAL_FACTIONENEMYDROPS, false);
+        offlineMode         = config.getBoolean(GLOBAL_OFFLINEMODE, false);
         residence           = config.getBoolean(GLOBAL_RESIDENCE, false);        
         resFlag             = config.getString(GLOBAL_RESFLAG, "noscv");        
         dropOnPVPDeath      = config.getBoolean(GLOBAL_DROPONPVPDEATH, false);                
@@ -150,7 +153,8 @@ public final class ScavengerConfig {
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
-        ArrayList<String> langFiles = new ArrayList();
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+		ArrayList<String> langFiles = new ArrayList();
         langFiles.add("german.yml");
         langFiles.add("italian.yml");
         langFiles.add("korean.yml");
@@ -185,7 +189,8 @@ public final class ScavengerConfig {
             try {
                 plug.logInfo("Loading language file: " + file.getAbsolutePath());   
                 Reader reader = new FileReader(file);
-                Map<String, String> map = (Map<String, String>)yaml.load(reader);                 
+                @SuppressWarnings("unchecked")
+				Map<String, String> map = (Map<String, String>)yaml.load(reader);                 
                 if (map.containsKey(MSG_HEADER)) {                    
                     msgHeader = map.get(MSG_HEADER);                    
                 } else {                    
@@ -395,6 +400,10 @@ public final class ScavengerConfig {
 
     public boolean factionEnemyDrops() {
         return factionEnemyDrops;
+    }
+
+	public boolean offlineMode() {
+    	return offlineMode;
     }
     
     public boolean residence() {

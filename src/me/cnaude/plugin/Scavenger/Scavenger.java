@@ -7,22 +7,30 @@ import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.*;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+
+import fr.areku.Authenticator.Authenticator;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.api.PVPArenaAPI;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
+@SuppressWarnings("unused")
 public class Scavenger extends JavaPlugin {
 
     public static final String PLUGIN_NAME = "Scavenger";
@@ -38,11 +46,11 @@ public class Scavenger extends JavaPlugin {
     static final Logger log = Logger.getLogger("Minecraft");
     private static ScavengerConfig config;
     private final ScavengerEventListener eventListener = new ScavengerEventListener();
-
-    public static Scavenger get() {
+    private final ScavengerEventListener_Online eventListenerOnline = new ScavengerEventListener_Online();
+    
+	public static Scavenger get() {
         return instance;
     }
-
     @Override
     public void onEnable() {
         loadConfig();
@@ -53,13 +61,34 @@ public class Scavenger extends JavaPlugin {
         checkForWorldGuard();
         checkForFactions();
         setupResidence();
-
-        getServer().getPluginManager().registerEvents(eventListener, this);
-
+        
+        
         rm = new RestorationManager();
         rm.load();
         ignoreList = new ScavengerIgnoreList();
         ignoreList.load();
+        if(getSConfig().offlineMode() == true) {
+        	Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator"); {
+        		if(p != null){ //if Authenticator is present..
+        			if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
+        				getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
+        				logInfo("Hook to Authenticator's API and your auth plugin.");
+        			}
+        			else {
+        				logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
+        				getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+        			}
+        		}
+        		else {
+        			logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
+        			getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+        		}
+        		}
+        	}
+        else {
+        	getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+        	logInfo("Offline-mode is set to false, no Authenticator Hook");
+        }
     }
 
     private void checkForWorldGuard() {

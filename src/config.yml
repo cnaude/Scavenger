@@ -19,6 +19,8 @@ Global:
   WorldGuardPVPOnly: false
   # If true then players drop items in enemy faction territory.
   FactionEnemyDrops: false
+  # If true Scavenger search Authenticator / Auth plugin and hooked to, if not found, Scavenger works without them.
+  OfflineMode: false
   # If true then Scavenger will attempt to hook into Residence and add the noscv flag.
   Residence: false
   # Flag name used with Residence
