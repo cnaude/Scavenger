@@ -11,11 +11,13 @@ import java.util.ArrayList;
  *
  * @author naudec
  */
+@SuppressWarnings("serial")
 public class ScavengerIgnoreList implements Serializable{
     private static ArrayList<String> ignoreList = new ArrayList<String>();
     private static final String IGNORE_FILE = "plugins/Scavenger/ignores.ser";
     
-    public void load() {        
+    @SuppressWarnings("unchecked")
+	public void load() {        
         File file = new File(IGNORE_FILE);
         if (!file.exists()) {
             Scavenger.get().logInfo("Ignore file '"+file.getAbsolutePath()+"' does not exist.");

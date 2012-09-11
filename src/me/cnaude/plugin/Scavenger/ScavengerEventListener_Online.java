@@ -5,13 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import fr.areku.Authenticator.Authenticator;
-import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 
-public class ScavengerEventListener implements Listener { 
+public class ScavengerEventListener_Online implements Listener { 
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {        
@@ -29,17 +28,19 @@ public class ScavengerEventListener implements Listener {
             }
         }        
     } 
+    
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerOfflineModeLogin(PlayerOfflineModeLogin event) {
+    public void onPlayerJoinEvent(PlayerJoinEvent event) {
         if ((event.getPlayer() instanceof Player)) {                        
             if (isScavengeAllowed(event.getPlayer())) {
                 RestorationManager.enable(event.getPlayer());
             }
         }        
-    }   
+    }
+    
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {                
-        if ((event.getPlayer() instanceof Player) && Authenticator.isPlayerLoggedIn(event.getPlayer())) {                        
+        if ((event.getPlayer() instanceof Player)) {                        
             if (isScavengeAllowed(event.getPlayer())) {
                 RestorationManager.restore(event.getPlayer());
             }
