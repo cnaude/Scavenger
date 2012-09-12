@@ -1,5 +1,7 @@
 package me.cnaude.plugin.Scavenger;
 
+import fr.areku.Authenticator.Authenticator;
+import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -7,9 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-
-import fr.areku.Authenticator.Authenticator;
-import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 
 public class ScavengerEventListener implements Listener { 
 
