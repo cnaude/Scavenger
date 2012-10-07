@@ -1,0 +1,12 @@
+MsgRecovered: Restauration de votre inventaire.
+MsgSaving: Sauvegarde de votre inventaire.
+MsgSaveForFee: Sauvegarde de votre inventaire pour une petite somme de %COST% %CURRENCY%.
+MsgNotEnoughMoney: La restauration de votre inventaire coute %COST% et vous avez seulement %BALANCE% %CURRENCY%.
+MsgInsidePA: Vous vous trouvez en PVP ARENA %ARENA%. Scavenger ne sauvegardera pas votre inventaire.
+MsgInsideMA: Vous vous trouvez en Mob Arena. Scavenger ne sauvegardera pas votre inventaire.
+MsgInsideWGPVP: Vous vous trouvez dans une region WorldGuard. Scavenger ne sauvegardera pas votre inventaire.
+MsgInsideWGPVPOnly: Vous vous trouvez dans une region PVP WorldGuard. Scavenger ne sauvegardera pas votre inventaire.
+MsgInsideEnemyFaction: Vous mourrez en territoire ennemi. Votre inventaire ne sera pas sauvegarder.
+MsgHeader: Scavenger
+MsgInsideRes: Cette residence refuse la restauration des inventaires. Votre inventaire est au sol!
+MsgPVPDeath: Tuer par un autre joueur! Votre inventaire est au sol!
