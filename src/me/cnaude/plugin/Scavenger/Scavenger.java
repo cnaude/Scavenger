@@ -7,28 +7,22 @@ import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.*;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-
-import fr.areku.Authenticator.Authenticator;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.api.PVPArenaAPI;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 @SuppressWarnings("unused")
 public class Scavenger extends JavaPlugin {
@@ -47,10 +41,11 @@ public class Scavenger extends JavaPlugin {
     private static ScavengerConfig config;
     private final ScavengerEventListener eventListener = new ScavengerEventListener();
     private final ScavengerEventListener_Online eventListenerOnline = new ScavengerEventListener_Online();
-    
-	public static Scavenger get() {
+
+    public static Scavenger get() {
         return instance;
     }
+
     @Override
     public void onEnable() {
         loadConfig();
@@ -61,33 +56,31 @@ public class Scavenger extends JavaPlugin {
         checkForWorldGuard();
         checkForFactions();
         setupResidence();
-        
-        
+
+
         rm = new RestorationManager();
         rm.load();
         ignoreList = new ScavengerIgnoreList();
         ignoreList.load();
-        if(getSConfig().offlineMode() == true) {
-        	Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator"); {
-        		if(p != null){ //if Authenticator is present..
-        			if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
-        				getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
-        				logInfo("Hook to Authenticator's API and your auth plugin.");
-        			}
-        			else {
-        				logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
-        				getServer().getPluginManager().registerEvents(eventListenerOnline, this);
-        			}
-        		}
-        		else {
-        			logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
-        			getServer().getPluginManager().registerEvents(eventListenerOnline, this);
-        		}
-        		}
-        	}
-        else {
-        	getServer().getPluginManager().registerEvents(eventListenerOnline, this);
-        	logInfo("Offline-mode is set to false, no Authenticator Hook");
+        if (getSConfig().offlineMode() == true) {
+            Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
+            {
+                if (p != null) { //if Authenticator is present..
+                    if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
+                        getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
+                        logInfo("Hook to Authenticator's API and your auth plugin.");
+                    } else {
+                        logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
+                        getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+                    }
+                } else {
+                    logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
+                    getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+                }
+            }
+        } else {
+            getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+            logInfo("Offline-mode is set to false, no Authenticator Hook");
         }
     }
 
@@ -276,8 +269,8 @@ public class Scavenger extends JavaPlugin {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
-                if (p.hasPermission("scavenger.reload")) {
-
+                if (p.hasPermission("scavenger.reload")
+                        || (p.isOp() && getSConfig().opsAllPerms())) {
                     loadConfig();
                     message(p, "Configuration reloaded.");
                 } else {
@@ -286,7 +279,8 @@ public class Scavenger extends JavaPlugin {
             }
             if (commandlabel.equalsIgnoreCase("scvron")) {
                 if (p.hasPermission("scavenger.self.on")
-                        || (p.isOp() && getSConfig().opsAllPerms())) {
+                        || (p.isOp() && getSConfig().opsAllPerms())
+                        || !getSConfig().permsEnabled()) {
                     ignoreList.removePlayer(sender.getName());
                     message(p, "You have enabled item recovery for yourself!");
                 } else {
@@ -295,7 +289,8 @@ public class Scavenger extends JavaPlugin {
             }
             if (commandlabel.equalsIgnoreCase("scvroff")) {
                 if (p.hasPermission("scavenger.self.off")
-                        || (p.isOp() && getSConfig().opsAllPerms())) {
+                        || (p.isOp() && getSConfig().opsAllPerms())
+                        || !getSConfig().permsEnabled()) {
                     ignoreList.addPlayer(sender.getName());
                     message(p, "You have disabled item recovery for yourself!");
                 } else {
@@ -304,7 +299,8 @@ public class Scavenger extends JavaPlugin {
             }
             if (commandlabel.equalsIgnoreCase("scvrlist")) {
                 if (p.hasPermission("scavenger.list")
-                        || (p.isOp() && getSConfig().opsAllPerms())) {
+                        || (p.isOp() && getSConfig().opsAllPerms())
+                        || !getSConfig().permsEnabled()) {
                     rm.printRestorations(p);
                 } else {
                     message(p, "No permission to do this!");
