@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
@@ -108,6 +109,7 @@ public final class ScavengerConfig {
     private boolean dropOnPVPDeath;
     private String msgPVPDeath;
     private String languageFileName;
+    private List<String> blacklistedworlds;
     
 
     public ScavengerConfig(Scavenger plug) {
@@ -142,6 +144,7 @@ public final class ScavengerConfig {
         headerColor         = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
         textColor           = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());    
         languageFileName    = config.getString(GLOBAL_LANGUAGE, "English.yml");
+        blacklistedworlds   = config.getStringList("BlacklistedWorlds");
         
         initLangFiles(plug);
         loadLanguage(plug);
@@ -426,5 +429,8 @@ public final class ScavengerConfig {
     
     public String msgPVPDeath() {
         return msgPVPDeath;
+    }
+    public List<String> blacklistedWorlds() {
+    	return blacklistedworlds;
     }
 }

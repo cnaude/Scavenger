@@ -59,3 +59,7 @@ Economy:
     AddMin: false
     # Chance to drop item. Leave 0 for no chance. This is an integer value. If you enter 5 then the chance to drop is 1 out of 5.
     ChanceToDrop: 0
+
+BlacklistedWorlds:
+- put_here_worlds
+- that_you_want_blacklisted

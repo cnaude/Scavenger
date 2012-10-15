@@ -24,6 +24,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
+import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
+import uk.co.tggl.pluckerpluck.multiinv.inventory.MIInventory;
+
 @SuppressWarnings("unused")
 public class Scavenger extends JavaPlugin {
 
@@ -34,6 +38,7 @@ public class Scavenger extends JavaPlugin {
     public static MobArenaHandler maHandler;
     public static PVPArenaAPI pvpHandler;
     public static MultiverseInventories multiverseHandler;
+    public static MultiInv multiinvHandler;
     public static RestorationManager rm;
     public static ScavengerIgnoreList ignoreList;
     public boolean configLoaded = false;
@@ -129,6 +134,15 @@ public class Scavenger extends JavaPlugin {
         }
         return (MultiverseInventories) plugin;
     }
+    
+   public MultiInv getMultiInvInventories() {
+	   Plugin plugin = getServer().getPluginManager().getPlugin("MultiInv");
+	   
+	   if ( plugin == null || !(plugin instanceof MultiInv)) {
+		   return null;
+	   }
+	   return (MultiInv) plugin;
+   }
 
     public P getFactions() {
         Plugin plugin = getServer().getPluginManager().getPlugin("Factions");
