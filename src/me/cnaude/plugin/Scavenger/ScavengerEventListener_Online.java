@@ -9,60 +9,49 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-
-public class ScavengerEventListener_Online implements Listener { 
+public class ScavengerEventListener_Online implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerDeathEvent(PlayerDeathEvent event) {        
+    public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
-    		for(String world : Scavenger.getSConfig().blacklistedWorlds()){
-    			if(!(event.getEntity().getWorld().getName().equalsIgnoreCase(world))){
-    				if (isScavengeAllowed(event.getEntity())) {
-    					RestorationManager.collect(event.getEntity(), event.getDrops(), event);
-    				}
-    			}
-    		}
+            if (isScavengeAllowed(event.getEntity())) {
+                RestorationManager.collect(event.getEntity(), event.getDrops(), event);
+            }
         }
     }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if ((event.getPlayer() instanceof Player)) { 
-    		for(String world : Scavenger.getSConfig().blacklistedWorlds()){
-    			if(!(event.getPlayer().getWorld().getName().equalsIgnoreCase(world))){
-    				if (isScavengeAllowed(event.getPlayer())) {
-    						RestorationManager.enable(event.getPlayer());
-    				}
-    			}
-    		}
-        }        
-    } 
+        if ((event.getPlayer() instanceof Player)) {
+            if (isScavengeAllowed(event.getPlayer())) {
+                RestorationManager.enable(event.getPlayer());
+            }
+
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        if ((event.getPlayer() instanceof Player)) {                        
-    		for(String world : Scavenger.getSConfig().blacklistedWorlds()){
-    			if(!(event.getPlayer().getWorld().getName().equalsIgnoreCase(world))){
-    					if (isScavengeAllowed(event.getPlayer())) {
-    						RestorationManager.enable(event.getPlayer());
-    					}
-    			}
+        if ((event.getPlayer() instanceof Player)) {
+            if (isScavengeAllowed(event.getPlayer())) {
+                RestorationManager.enable(event.getPlayer());
             }
-        }        
+        }
     }
-    
+
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerMove(PlayerMoveEvent event) {                
-        if ((event.getPlayer() instanceof Player)) {                        
-    		for(String world : Scavenger.getSConfig().blacklistedWorlds()){
-    			if(!(event.getPlayer().getWorld().getName().equalsIgnoreCase(world))){
-    				if (isScavengeAllowed(event.getPlayer())) {
-    					RestorationManager.restore(event.getPlayer());
-    				}
-    			}
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if ((event.getPlayer() instanceof Player)) {
+            if (isScavengeAllowed(event.getPlayer())) {
+                RestorationManager.restore(event.getPlayer());
             }
-        }        
+        }
     }
-    
-    private boolean isScavengeAllowed(Player player) {                              
+
+    private boolean isScavengeAllowed(Player player) {
+        if (Scavenger.getSConfig().blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
+            return false;
+        }
         if (ScavengerIgnoreList.isIgnored(player.getName())) {
             return false;
         }
@@ -79,8 +68,8 @@ public class ScavengerEventListener_Online implements Listener {
             return true;
         }
         if ((player.isOp() && Scavenger.getSConfig().opsAllPerms())) {
-                return true;
+            return true;
         }
         return false;
-    }    
+    }
 }

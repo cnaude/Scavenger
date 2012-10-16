@@ -25,8 +25,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
-import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
-import uk.co.tggl.pluckerpluck.multiinv.inventory.MIInventory;
 
 @SuppressWarnings("unused")
 public class Scavenger extends JavaPlugin {
@@ -67,7 +65,7 @@ public class Scavenger extends JavaPlugin {
         rm.load();
         ignoreList = new ScavengerIgnoreList();
         ignoreList.load();
-        if (getSConfig().offlineMode() == true) {
+        if (getSConfig().offlineMode()) {
             Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
             {
                 if (p != null) { //if Authenticator is present..
@@ -134,15 +132,15 @@ public class Scavenger extends JavaPlugin {
         }
         return (MultiverseInventories) plugin;
     }
-    
-   public MultiInv getMultiInvInventories() {
-	   Plugin plugin = getServer().getPluginManager().getPlugin("MultiInv");
-	   
-	   if ( plugin == null || !(plugin instanceof MultiInv)) {
-		   return null;
-	   }
-	   return (MultiInv) plugin;
-   }
+
+    public MultiInv getMultiInvInventories() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("MultiInv");
+
+        if (plugin == null || !(plugin instanceof MultiInv)) {
+            return null;
+        }
+        return (MultiInv) plugin;
+    }
 
     public P getFactions() {
         Plugin plugin = getServer().getPluginManager().getPlugin("Factions");
@@ -342,12 +340,14 @@ public class Scavenger extends JavaPlugin {
     }
 
     public void message(Player p, String msg) {
-        msg = msg.replaceAll("%PLAYER%", p.getName());
-        msg = msg.replaceAll("%DPLAYER%", p.getDisplayName());
-        if (p != null && getSConfig().shouldNotify()) {
-            p.sendMessage(headerStr() + msg);
-        } else {
-            logInfo(msg);
+        if (p instanceof Player) {
+            msg = msg.replaceAll("%PLAYER%", p.getName());
+            msg = msg.replaceAll("%DPLAYER%", p.getDisplayName());
+            if (getSConfig().shouldNotify()) {
+                p.sendMessage(headerStr() + msg);
+            } else {
+                logInfo(msg);
+            }
         }
     }
 
@@ -374,4 +374,5 @@ public class Scavenger extends JavaPlugin {
             logError(_message);
         }
     }
+  
 }

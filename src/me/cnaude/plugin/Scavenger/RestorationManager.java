@@ -24,7 +24,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import uk.co.tggl.pluckerpluck.multiinv.MIYamlFiles;
-import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 public class RestorationManager implements Serializable {
 
@@ -483,21 +482,19 @@ public class RestorationManager implements Serializable {
             }
         }
         if (Scavenger.get().getMultiInvInventories() != null) {
-        	String worldname = world.getName();
-        	MultiInv multiInv = (MultiInv) Scavenger.get().getMultiInvInventories();
+            String worldname = world.getName();
             if (MIYamlFiles.getGroups() != null) {
-                HashMap<String,String> groupManager = MIYamlFiles.getGroups();
+                HashMap<String, String> groupManager = MIYamlFiles.getGroups();
                 String groupname = groupManager.get(worldname);
                 if (groupname != null) {
                     for (World worlds : Bukkit.getWorlds()) {
-                    	String worldsname = worlds.getName();
-                    	String groupsname = groupManager.get(worldsname);
-                    	if ( groupsname == groupname) {
+                        String worldsname = worlds.getName();
+                        String groupsname = groupManager.get(worldsname);
+                        if (groupsname.equals(groupname)) {
                             returnData.add(worldsname);
-                    	}
+                        }
                     }
                 }
-
             }
         }
         if (returnData.isEmpty()) {
