@@ -47,6 +47,7 @@ public final class ScavengerConfig {
     private static final String MSG_SAVEFORFEE = "MsgSaveForFee";
     private static final String MSG_NOTENOUGHMONEY = "MsgNotEnoughMoney";
     private static final String MSG_INSIDEPA = "MsgInsidePA";
+    private static final String MSG_INSIDEBA = "MsgInsideBA";
     private static final String MSG_INSIDEMA = "MsgInsideMA";
     private static final String MSG_INSIDEUA = "MsgInsideUA";
     private static final String MSG_INSIDEWGPVP = "MsgInsideWGPVP";
@@ -61,6 +62,7 @@ public final class ScavengerConfig {
     private static final String MSG_SAVEFORFEE_DEF = "Saving your inventory for a small fee of %COST% %CURRENCY%.";
     private static final String MSG_NOTENOUGHMONEY_DEF = "Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.";
     private static final String MSG_INSIDEPA_DEF = "You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.";
+    private static final String MSG_INSIDEBA_DEF = "You are inside a Battle Arena. Scavenger will not save your inventory.";
     private static final String MSG_INSIDEMA_DEF = "You are inside a Mob Arena. Scavenger will not save your inventory.";
     private static final String MSG_INSIDEUA_DEF = "You are inside an Ultimate Arena. Scavenger will not save your inventory.";
     private static final String MSG_INSIDEWGPVP_DEF = "You are inside WorldGuard PVP region. Scavenger will not save your inventory.";
@@ -87,6 +89,7 @@ public final class ScavengerConfig {
     private String msgSaveForFee;
     private String msgNotEnoughMoney;
     private String msgInsidePA;
+    private String msgInsideBA;
     private String msgInsideMA;
     private String msgInsideUA;
     private boolean wgPVPIgnore;
@@ -238,6 +241,11 @@ public final class ScavengerConfig {
                 } else {
                     msgInsidePA = config.getString("Messages." + MSG_INSIDEPA, MSG_INSIDEPA_DEF);
                 }
+                if (map.containsKey(MSG_INSIDEBA)) {
+                    msgInsideBA = map.get(MSG_INSIDEBA);
+                } else {
+                    msgInsideBA = config.getString("Messages." + MSG_INSIDEBA, MSG_INSIDEBA_DEF);
+                }
                 if (map.containsKey(MSG_INSIDEMA)) {
                     msgInsideMA = map.get(MSG_INSIDEMA);
                 } else {
@@ -276,6 +284,7 @@ public final class ScavengerConfig {
             msgSaveForFee = config.getString("Messages." + MSG_SAVEFORFEE, MSG_SAVEFORFEE_DEF);
             msgNotEnoughMoney = config.getString("Messages." + MSG_NOTENOUGHMONEY, MSG_NOTENOUGHMONEY_DEF);
             msgInsidePA = config.getString("Messages." + MSG_INSIDEPA, MSG_INSIDEPA_DEF);
+            msgInsideBA = config.getString("Messages." + MSG_INSIDEBA, MSG_INSIDEBA_DEF);
             msgInsideMA = config.getString("Messages." + MSG_INSIDEMA, MSG_INSIDEMA_DEF);
             msgInsideUA = config.getString("Messages." + MSG_INSIDEUA, MSG_INSIDEUA_DEF);
             msgInsideWGPVP = config.getString("Messages." + MSG_INSIDEWGPVP, MSG_INSIDEWGPVP_DEF);
@@ -357,6 +366,10 @@ public final class ScavengerConfig {
 
     public String msgInsidePA() {
         return msgInsidePA;
+    }
+    
+    public String msgInsideBA() {
+        return msgInsideBA;
     }
 
     public String msgInsideMA() {

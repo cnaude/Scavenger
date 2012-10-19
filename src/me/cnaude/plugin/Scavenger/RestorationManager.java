@@ -12,6 +12,8 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import java.io.*;
 import java.util.*;
+import mc.alk.arena.BattleArena;
+import mc.alk.arena.competition.match.Match;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.slipcor.pvparena.api.PVPArenaAPI;
@@ -233,6 +235,21 @@ public class RestorationManager implements Serializable {
             }
             return;
         }
+
+        if (Scavenger.battleArena) {
+            mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(p);
+            if (ap != null) {
+                Match match = BattleArena.getBAC().getMatch(ap);
+                if (match != null && match.insideArena(ap)) {
+                    String x = Scavenger.getSConfig().msgInsideBA();
+                    if (!x.isEmpty()) {
+                        Scavenger.get().message(p, x);
+                    }
+                    return;
+                }
+            }
+        }
+
 
         if (hasRestoration(p)) {
             Scavenger.get().error(p, "Restoration already exists, ignoring.");

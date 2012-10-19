@@ -23,7 +23,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 @SuppressWarnings("unused")
@@ -38,6 +37,7 @@ public class Scavenger extends JavaPlugin {
     public static MultiverseInventories multiverseHandler;
     public static MultiInv multiinvHandler;
     public static RestorationManager rm;
+    public static boolean battleArena = false;
     public static ScavengerIgnoreList ignoreList;
     public boolean configLoaded = false;
     static final Logger log = Logger.getLogger("Minecraft");
@@ -56,10 +56,10 @@ public class Scavenger extends JavaPlugin {
         setupMobArenaHandler();
         setupPVPArenaHandler();
         checkForUltimateArena();
+        checkForBattleArena();
         checkForWorldGuard();
         checkForFactions();
         setupResidence();
-
 
         rm = new RestorationManager();
         rm.load();
@@ -96,6 +96,15 @@ public class Scavenger extends JavaPlugin {
     private void checkForUltimateArena() {
         if (getUltimateArena() != null) {
             logInfo("UltimateArena detected. Scavenger will not recover items in an arena.");
+        }
+    }
+    
+    private void checkForBattleArena() {
+        Plugin baPlugin = getServer().getPluginManager().getPlugin("BattleArena");
+
+        if (baPlugin != null) {
+            battleArena = true;
+            logInfo("BattleArena detected. Scavenger will not recover items in an arena.");
         }
     }
 

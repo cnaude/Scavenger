@@ -35,6 +35,7 @@ Messages:
   MsgSaveForFee: Saving your inventory for a small fee of %COST% %CURRENCY%.
   MsgNotEnoughMoney: Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.
   MsgInsidePA: You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.
+  MsgInsideBA: You are inside a Battle Arena. Scavenger will not save your inventory.
   MsgInsideMA: You are inside a Mob Arena. Scavenger will not save your inventory.
   MsgInsideWGPVP: You are inside a WorldGuard PVP region. Scavenger will not save your inventory.
   MsgInsideWGPVPOnly: You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.
