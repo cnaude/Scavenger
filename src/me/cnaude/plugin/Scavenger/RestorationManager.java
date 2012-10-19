@@ -14,18 +14,15 @@ import java.io.*;
 import java.util.*;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
-
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.slipcor.pvparena.api.PVPArenaAPI;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-
-import uk.co.tggl.pluckerpluck.multiinv.MIYamlFiles;
+import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 
 public class RestorationManager implements Serializable {
 
@@ -498,19 +495,12 @@ public class RestorationManager implements Serializable {
 
             }
         }
-        if (Scavenger.get().getMultiInvInventories() != null) {
+        if (Scavenger.get().getMultiInvInventories() != null) {            
             String worldname = world.getName();
-            if (MIYamlFiles.getGroups() != null) {
-                HashMap<String, String> groupManager = MIYamlFiles.getGroups();
-                String groupname = groupManager.get(worldname);
-                if (groupname != null) {
-                    for (World worlds : Bukkit.getWorlds()) {
-                        String worldsname = worlds.getName();
-                        String groupsname = groupManager.get(worldsname);
-                        if (groupsname.equals(groupname)) {
-                            returnData.add(worldsname);
-                        }
-                    }
+            MultiInvAPI multiInvAPI = Scavenger.get().getMultiInvInventories();
+            if (multiInvAPI.getGroups() != null) {  
+                if (multiInvAPI.getGroups().containsKey(worldname)) {
+                    returnData.add(multiInvAPI.getGroups().get(worldname));                    
                 }
             }
         }

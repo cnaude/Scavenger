@@ -24,6 +24,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
+import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 
 @SuppressWarnings("unused")
 public class Scavenger extends JavaPlugin {
@@ -142,13 +143,14 @@ public class Scavenger extends JavaPlugin {
         return (MultiverseInventories) plugin;
     }
 
-    public MultiInv getMultiInvInventories() {
+    public MultiInvAPI getMultiInvInventories() {
         Plugin plugin = getServer().getPluginManager().getPlugin("MultiInv");
-
-        if (plugin == null || !(plugin instanceof MultiInv)) {
-            return null;
+        MultiInvAPI multiInvAPI = null;
+        
+        if (plugin instanceof MultiInv) {
+            multiInvAPI = ((MultiInv) plugin).getAPI();
         }
-        return (MultiInv) plugin;
+        return multiInvAPI;
     }
 
     public P getFactions() {
