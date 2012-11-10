@@ -7,6 +7,7 @@ import com.massivecraft.factions.FPlayer;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.orange451.UltimateArena.UltimateArenaAPI;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -16,7 +17,6 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.slipcor.pvparena.api.PVPArenaAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,7 +26,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 
 public class RestorationManager implements Serializable {
 
-    private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();
+	private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();
 
     public void save() {
         HashMap<String, RestorationS> res_s = new HashMap<String, RestorationS>();
@@ -209,7 +209,8 @@ public class RestorationManager implements Serializable {
         }
 
         if (Scavenger.get().getUltimateArena() != null) {
-            if (Scavenger.get().getUltimateArena().hookIntoUA().isPlayerInArenaLocation(p)) {
+            Scavenger.get().getUltimateArena();
+			if (UltimateArenaAPI.hookIntoUA().isPlayerInArenaLocation(p)) {
                 if (!Scavenger.getSConfig().msgInsideUA().isEmpty()) {
                     Scavenger.get().message(p, Scavenger.getSConfig().msgInsideUA());
                 }
@@ -332,13 +333,13 @@ public class RestorationManager implements Serializable {
                     boolean dropIt;
                     if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
                         if (Scavenger.getSConfig().singleItemDropsOnly() == true) {
-                            if (p.hasPermission("scavenger.drop." + i.getTypeId())) {
+                            if ((p.hasPermission("scavenger.drop." + i.getTypeId())) || (p.hasPermission("scavenger.drop.*"))) {
                                 dropIt = false;
                             } else {
                                 dropIt = true;
                             }
                         } else {
-                            if (!p.hasPermission("scavenger.drop." + i.getTypeId())) {
+                            if (!(p.hasPermission("scavenger.drop." + i.getTypeId())) || (p.hasPermission("scavenger.drop.*"))) {
                                 dropIt = false;
                             } else {
                                 dropIt = true;
