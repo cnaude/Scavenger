@@ -146,9 +146,14 @@ public class Scavenger extends JavaPlugin {
     public MultiInvAPI getMultiInvInventories() {
         Plugin plugin = getServer().getPluginManager().getPlugin("MultiInv");
         MultiInvAPI multiInvAPI = null;
-        
-        if (plugin instanceof MultiInv) {
-            multiInvAPI = ((MultiInv) plugin).getAPI();
+
+        try {
+            if (plugin instanceof MultiInv) {
+                multiInvAPI = ((MultiInv) plugin).getAPI();
+            }
+        } 
+        catch (NoClassDefFoundError ex) {
+            
         }
         return multiInvAPI;
     }
