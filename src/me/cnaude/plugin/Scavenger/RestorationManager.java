@@ -11,6 +11,8 @@ import com.orange451.UltimateArena.UltimateArenaAPI;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.timvisee.DungeonMaze.API.DungeonMazeAPI;
+
 import java.io.*;
 import java.util.*;
 import mc.alk.arena.BattleArena;
@@ -182,6 +184,19 @@ public class RestorationManager implements Serializable {
             } else {
                 Scavenger.get().logDebug("No Factions detected");
             }
+        }
+        
+        if (Scavenger.getSConfig().dungeonMazeDrops()) {
+        	if (Scavenger.get().getDungeonMaze() != null) {
+        		Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in DungeonMaze.");
+        		if (DungeonMazeAPI.isInDMWorld(p)) {
+        			Scavenger.get().logDebug("Player '" + p.getName() + "' is in DungeonMaze.");
+        			Scavenger.get().message(p, Scavenger.getSConfig().msgInsideDungeonMaze());
+        			return;
+        		}
+        	} else {
+        		Scavenger.get().logDebug("No DungeonMaze plugin detected");
+        	}
         }
 
         if (Scavenger.get().getWorldGuard() != null) {
