@@ -7,6 +7,9 @@ import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.*;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.timvisee.DungeonMaze.DungeonMaze;
+import com.timvisee.DungeonMaze.API.DungeonMazeAPI;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
@@ -26,7 +29,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 
-@SuppressWarnings("unused")
 public class Scavenger extends JavaPlugin {
 
     public static final String PLUGIN_NAME = "Scavenger";
@@ -37,6 +39,7 @@ public class Scavenger extends JavaPlugin {
     public static PVPArenaAPI pvpHandler;
     public static MultiverseInventories multiverseHandler;
     public static MultiInv multiinvHandler;
+    public static DungeonMazeAPI dmHandler;
     public static RestorationManager rm;
     public static boolean battleArena = false;
     public static ScavengerIgnoreList ignoreList;
@@ -60,6 +63,7 @@ public class Scavenger extends JavaPlugin {
         checkForBattleArena();
         checkForWorldGuard();
         checkForFactions();
+        checkForDungeonMaze();
         setupResidence();
 
         rm = new RestorationManager();
@@ -114,8 +118,15 @@ public class Scavenger extends JavaPlugin {
             logInfo("Factions detected. Players will drop items in enemy teritory!");
         }
     }
+    
+    private void checkForDungeonMaze() {
+        if (getDungeonMaze() != null) {
+            logInfo("DungeonMaze detected, drop item in the dungeon maze worlds configs.");
+        }	
+    }
 
-    @Override
+
+	@Override
     public void onDisable() {
         rm.save();
         ignoreList.save();
@@ -165,6 +176,14 @@ public class Scavenger extends JavaPlugin {
             return null;
         }
         return (P) plugin;
+    }
+
+    public DungeonMaze getDungeonMaze() {
+    	Plugin plugin = getServer().getPluginManager().getPlugin("DungeonMaze");
+        if (plugin == null && !(plugin instanceof DungeonMaze)) {
+        	return null;
+         }
+    	return (DungeonMaze) plugin;
     }
 
     public void setupResidence() {
