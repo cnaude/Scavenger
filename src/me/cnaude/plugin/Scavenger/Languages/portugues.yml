@@ -1,0 +1,12 @@
+MsgRecovered: Seu inventario foi restaurado.
+MsgSaving: Salvando inventario
+MsgSaveForFee: Salvando inventario por um pequeno preco de %COST% %CURRENCY%..
+MsgInsidePA: Voce esta dentro da Arena PvP %ARENA%. Scavenger nao salvara seu inventario.
+MsgInsideBA: Voce esta dentor da Battle Arena. Scavenger nao Salvara seu inventarios.
+MsgInsideMA: Voce esta dentro da Mob Arena. Scavenger nao salvara seu inventario.
+MsgInsideWGPVP: Voce esta dentro de uma Area PvP. Scavenger nao salvara seu inventario.
+MsgInsideWGPVPOnly: Voce nao esta dentro de uma Area PvP. Scavenger nao salvara seu inventario.
+MsgInsideEnemyFaction: Voce morreu em territorio inimigo. Seus items forao dropados!
+MsgHeader: Scavenger
+MsgInsideRes: Nessa residencia nao é permitido recolher items! Dropando items!
+MsgPVPDeath: Morto por outro Player! Dropando items.

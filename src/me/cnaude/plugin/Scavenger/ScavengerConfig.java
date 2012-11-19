@@ -159,12 +159,14 @@ public final class ScavengerConfig {
         }
         @SuppressWarnings({"rawtypes", "unchecked"})
         ArrayList<String> langFiles = new ArrayList();
+        langFiles.add("dutch.yml");
+        langFiles.add("french.yml");
         langFiles.add("german.yml");
         langFiles.add("italian.yml");
         langFiles.add("korean.yml");
         langFiles.add("russian.yml");
-        langFiles.add("dutch.yml");
-        langFiles.add("french.yml");
+        langFiles.add("portugues.yml");
+        
 
         for (String fName : langFiles) {
             File file = new File(langDir + "/" + fName);

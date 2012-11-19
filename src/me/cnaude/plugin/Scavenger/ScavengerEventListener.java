@@ -2,7 +2,6 @@ package me.cnaude.plugin.Scavenger;
 
 import fr.areku.Authenticator.Authenticator;
 import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
