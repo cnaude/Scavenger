@@ -37,6 +37,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_OPSALLPERMS = "Global.OpsAllPerms";
     private static final String GLOBAL_FACTIONENEMYDROPS = "Global.FactionEnemyDrops";
     private static final String GLOBAL_OFFLINEMODE = "Global.OfflineMode";
+    private static final String GLOBAL_DUNGEONMAZE = "Global.DungeonMaze";
     private static final String GLOBAL_RESIDENCE = "Global.Residence";
     private static final String GLOBAL_RESFLAG = "Global.ResidenceFlag";
     private static final String GLOBAL_DROPONPVPDEATH = "Global.DropOnPVPDeath";
@@ -54,6 +55,7 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDEWGPVPONLY = "MsgInsideWGPVPOnly";
     private static final String MSG_HEADER = "MsgHeader";
     private static final String MSG_INSIDEENEMYFACTION = "MsgInsideEnemyFaction";
+    private static final String MSG_INSIDEDUNGEONMAZE = "MsgInsideDungeonMaze";
     private static final String MSG_INSIDERES = "MsgInsideRes";
     private static final String MSG_PVPDEATH = "PVPDeath";
     private static final String MSG_HEADER_DEF = "Scavenger";
@@ -68,6 +70,7 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDEWGPVP_DEF = "You are inside WorldGuard PVP region. Scavenger will not save your inventory.";
     private static final String MSG_INSIDEWGPVPONLY_DEF = "You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.";
     private static final String MSG_INSIDEENEMYFACTION_DEF = "You died in enemy territory. Your items will be dropped!";
+    private static final String MSG_INSIDEDUNGEONMAZE_DEF = "You died in a DungeonMaze. Your items will be dropped!";
     private static final String MSG_INSIDERES_DEF = "This residence does not allow item recovery! Dropping items!";
     private static final String MSG_PVPDEATH_DEF = "Killed by another player! Dropping items.";
     private boolean shouldNotify;
@@ -100,8 +103,10 @@ public final class ScavengerConfig {
     private String msgHeader;
     private int chanceToDrop;
     private String msgInsideEnemyFaction;
+    private String msgInsideDungeonMaze;
     private boolean factionEnemyDrops;
     private boolean offlineMode;
+    private boolean dungeonMaze;
     private boolean residence;
     private String msgInsideRes;
     private String resFlag;
@@ -136,6 +141,7 @@ public final class ScavengerConfig {
         opsAllPerms = config.getBoolean(GLOBAL_OPSALLPERMS, true);
         factionEnemyDrops = config.getBoolean(GLOBAL_FACTIONENEMYDROPS, false);
         offlineMode = config.getBoolean(GLOBAL_OFFLINEMODE, false);
+        dungeonMaze = config.getBoolean(GLOBAL_DUNGEONMAZE, false);
         residence = config.getBoolean(GLOBAL_RESIDENCE, false);
         resFlag = config.getString(GLOBAL_RESFLAG, "noscv");
         dropOnPVPDeath = config.getBoolean(GLOBAL_DROPONPVPDEATH, false);
@@ -208,6 +214,11 @@ public final class ScavengerConfig {
                 } else {
                     msgInsideEnemyFaction = config.getString("Messages." + MSG_INSIDEENEMYFACTION, MSG_INSIDEENEMYFACTION_DEF);
                 }
+                if (map.containsKey(MSG_INSIDEDUNGEONMAZE)) {
+                	msgInsideDungeonMaze = map.get(MSG_INSIDEDUNGEONMAZE);
+                } else {
+                	msgInsideDungeonMaze = config.getString("Messages." + MSG_INSIDEDUNGEONMAZE, MSG_INSIDEDUNGEONMAZE_DEF);
+                }
                 if (map.containsKey(MSG_INSIDERES)) {
                     msgInsideRes = map.get(MSG_INSIDERES);
                 } else {
@@ -279,6 +290,7 @@ public final class ScavengerConfig {
             // Fall back to our default config.
             msgHeader = config.getString("Messages." + MSG_HEADER, MSG_HEADER_DEF);
             msgInsideEnemyFaction = config.getString("Messages." + MSG_INSIDEENEMYFACTION, MSG_INSIDEENEMYFACTION_DEF);
+            msgInsideDungeonMaze = config.getString("Messages." + MSG_INSIDEDUNGEONMAZE, MSG_INSIDEDUNGEONMAZE_DEF);
             msgInsideRes = config.getString("Messages." + MSG_INSIDERES, MSG_INSIDERES_DEF);
             msgPVPDeath = config.getString("Messages." + MSG_PVPDEATH, MSG_PVPDEATH_DEF);
             msgRecovered = config.getString("Messages." + MSG_RECOVERED, MSG_RECOVERED_DEF);
@@ -412,6 +424,14 @@ public final class ScavengerConfig {
 
     public String msgInsideEnemyFaction() {
         return msgInsideEnemyFaction;
+    }
+    
+    public String msgInsideDungeonMaze() {
+    	return msgInsideDungeonMaze;
+    }
+    
+    public boolean dungeonMazeDrops() {
+    	return dungeonMaze;
     }
 
     public boolean factionEnemyDrops() {

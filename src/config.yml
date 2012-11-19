@@ -19,6 +19,8 @@ Global:
   WorldGuardPVPOnly: false
   # If true then players drop items in enemy faction territory.
   FactionEnemyDrops: false
+  # If true , drop items in DungeonMaze Worlds
+  DungeonMaze: false
   # If true Scavenger search Authenticator / Auth plugin and hooked to, if not found, Scavenger works without them.
   OfflineMode: false
   # If true then Scavenger will attempt to hook into Residence and add the noscv flag.
@@ -40,6 +42,7 @@ Messages:
   MsgInsideWGPVP: You are inside a WorldGuard PVP region. Scavenger will not save your inventory.
   MsgInsideWGPVPOnly: You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.
   MsgInsideEnemyFaction: You died in enemy territory. Your items will be dropped!
+  MsgInsideDungeonMaze: You died in a DungeonMaze. Your items will be dropped!
   MsgHeader: Scavenger
   MsgInsideRes: This residence does not allow item recovery! Dropping items!
   MsgPVPDeath: Killed by another player! Dropping items.
@@ -61,6 +64,7 @@ Economy:
     # Chance to drop item. Leave 0 for no chance. This is an integer value. If you enter 5 then the chance to drop is 1 out of 5.
     ChanceToDrop: 0
 
+# Drop item in these worlds
 BlacklistedWorlds:
 - put_here_worlds
 - that_you_want_blacklisted

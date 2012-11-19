@@ -7,6 +7,7 @@ MsgInsideMA: Vous vous trouvez en Mob Arena. Scavenger ne sauvegardera pas votre
 MsgInsideWGPVP: Vous vous trouvez dans une region WorldGuard. Scavenger ne sauvegardera pas votre inventaire.
 MsgInsideWGPVPOnly: Vous vous trouvez dans une region PVP WorldGuard. Scavenger ne sauvegardera pas votre inventaire.
 MsgInsideEnemyFaction: Vous mourrez en territoire ennemi. Votre inventaire ne sera pas sauvegarder.
+MsgInsideDungeonMaze: Vous mourrez dans un DungeonMaze. Votre inventaire ne sera pas sauvegarder.
 MsgHeader: Scavenger
 MsgInsideRes: Cette residence refuse la restauration des inventaires. Votre inventaire est au sol!
 MsgPVPDeath: Tuer par un autre joueur! Votre inventaire est au sol!
