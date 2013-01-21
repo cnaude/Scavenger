@@ -171,15 +171,20 @@ public class RestorationManager implements Serializable {
             }
         }
 
-        if (Scavenger.getSConfig().factionEnemyDrops()) {
-            if (Scavenger.get().getFactions() != null) {
-                Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
-                FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
-                Scavenger.get().logDebug("Relation: " + fplayer.getRelationToLocation().name());
-                if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
-                    Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
-                    Scavenger.get().message(p, Scavenger.getSConfig().msgInsideEnemyFaction());
-                    return;
+        if (Scavenger.getSConfig().factionEnemyDrops()) {             
+            if (Scavenger.get().getFactions() != null) {                                
+                try {
+                    Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
+                    FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);                
+                    Scavenger.get().logDebug("Relation: " + fplayer.getRelationToLocation().name());
+                    if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
+                        Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
+                        Scavenger.get().message(p, Scavenger.getSConfig().msgInsideEnemyFaction());
+                        return;
+                    }
+                } 
+                catch (NoSuchMethodError ex) {
+                    Scavenger.get().logDebug("ERROR: " + ex.getMessage());
                 }
             } else {
                 Scavenger.get().logDebug("No Factions detected");
