@@ -55,40 +55,47 @@ public class Scavenger extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        loadConfig();
+        if (!checkForProtocolLib()) {
+            logError("This plugin requires ProtocolLib. Please download the latest: http://dev.bukkit.org/server-mods/protocollib/");
+            Bukkit.getServer().getPluginManager().disablePlugin(this);
+        } else {
 
-        setupMobArenaHandler();
-        setupPVPArenaHandler();
-        checkForUltimateArena();
-        checkForBattleArena();
-        checkForWorldGuard();
-        checkForFactions();
-        checkForDungeonMaze();
-        setupResidence();
+            loadConfig();
 
-        rm = new RestorationManager();
-        rm.load();
-        ignoreList = new ScavengerIgnoreList();
-        ignoreList.load();
-        if (getSConfig().offlineMode()) {
-            Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
-            {
-                if (p != null) { //if Authenticator is present..
-                    if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
-                        getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
-                        logInfo("Hook to Authenticator's API and your auth plugin.");
+            setupMobArenaHandler();
+            setupPVPArenaHandler();
+            checkForUltimateArena();
+            checkForBattleArena();
+            checkForWorldGuard();
+            checkForFactions();
+            checkForDungeonMaze();
+            setupResidence();
+
+            rm = new RestorationManager();
+            rm.load(); // load old format and then delete
+            rm.load1(); // load new format
+            ignoreList = new ScavengerIgnoreList();
+            ignoreList.load();
+            if (getSConfig().offlineMode()) {
+                Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
+                {
+                    if (p != null) { //if Authenticator is present..
+                        if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
+                            getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
+                            logInfo("Hook to Authenticator's API and your auth plugin.");
+                        } else {
+                            logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
+                            getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+                        }
                     } else {
-                        logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
+                        logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
                         getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                     }
-                } else {
-                    logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
-                    getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                 }
+            } else {
+                getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+                logInfo("Offline-mode is set to false, no Authenticator Hook");
             }
-        } else {
-            getServer().getPluginManager().registerEvents(eventListenerOnline, this);
-            logInfo("Offline-mode is set to false, no Authenticator Hook");
         }
     }
 
@@ -103,7 +110,7 @@ public class Scavenger extends JavaPlugin {
             logInfo("UltimateArena detected. Scavenger will not recover items in an arena.");
         }
     }
-    
+
     private void checkForBattleArena() {
         Plugin baPlugin = getServer().getPluginManager().getPlugin("BattleArena");
 
@@ -118,18 +125,19 @@ public class Scavenger extends JavaPlugin {
             logInfo("Factions detected. Players will drop items in enemy teritory!");
         }
     }
-    
+
     private void checkForDungeonMaze() {
         if (getDungeonMaze() != null) {
             logInfo("DungeonMaze detected, drop item in the dungeon maze worlds configs.");
-        }	
+        }
     }
 
-
-	@Override
+    @Override
     public void onDisable() {
-        rm.save();
-        ignoreList.save();
+        if (checkForProtocolLib()) {
+            rm.save();
+            ignoreList.save();
+        }
     }
 
     public Economy getEconomy() {
@@ -162,9 +170,7 @@ public class Scavenger extends JavaPlugin {
             if (plugin instanceof MultiInv) {
                 multiInvAPI = ((MultiInv) plugin).getAPI();
             }
-        } 
-        catch (NoClassDefFoundError ex) {
-            
+        } catch (NoClassDefFoundError ex) {
         }
         return multiInvAPI;
     }
@@ -179,11 +185,20 @@ public class Scavenger extends JavaPlugin {
     }
 
     public DungeonMaze getDungeonMaze() {
-    	Plugin plugin = getServer().getPluginManager().getPlugin("DungeonMaze");
+        Plugin plugin = getServer().getPluginManager().getPlugin("DungeonMaze");
         if (plugin == null && !(plugin instanceof DungeonMaze)) {
-        	return null;
-         }
-    	return (DungeonMaze) plugin;
+            return null;
+        }
+        return (DungeonMaze) plugin;
+    }
+
+    public boolean checkForProtocolLib() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("ProtocolLib");
+        if (plugin == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void setupResidence() {
@@ -409,5 +424,4 @@ public class Scavenger extends JavaPlugin {
             logError(_message);
         }
     }
-  
 }
