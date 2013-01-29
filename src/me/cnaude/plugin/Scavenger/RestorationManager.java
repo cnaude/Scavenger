@@ -156,28 +156,42 @@ public class RestorationManager implements Serializable {
 
             for (int i = 0; i < value.inventory.size(); i++) {
                 if (value.inventory.get(i) instanceof String) {
-                    Scavenger.get().debugMessage("Deserializing: " + value.inventory.get(i).toString());                    
+                    ItemStack tmpStack = new ItemStack(Material.AIR);
+                    Scavenger.get().debugMessage("Deserializing: " + value.inventory.get(i).toString());
                     try {
-                        restoration.inventory[i] = serializer.deserializeItemStack(value.inventory.get(i));                                         
+                        tmpStack = serializer.deserializeItemStack(value.inventory.get(i));                                  
                     }
                     catch (IOException e) {
                         Scavenger.get().logError(e.getMessage());
+                    }
+                    if (tmpStack == null) {
+                        restoration.inventory[i] = new ItemStack(Material.AIR);
+                    } else {
+                        restoration.inventory[i] = tmpStack;
                     }
                     Scavenger.get().debugMessage("Done: " + restoration.inventory[i].toString());
                 }
             }
+            
             for (int i = 0; i < value.armour.size(); i++) {
                 if (value.armour.get(i) instanceof String) {
-                    Scavenger.get().debugMessage("Deserializing: " + value.armour.get(i).toString());                    
+                    ItemStack tmpStack = new ItemStack(Material.AIR);
+                    Scavenger.get().debugMessage("Deserializing: " + value.armour.get(i).toString());
                     try {
-                        restoration.armour[i] = serializer.deserializeItemStack(value.armour.get(i));                                         
+                        tmpStack = serializer.deserializeItemStack(value.armour.get(i));                                  
                     }
                     catch (IOException e) {
                         Scavenger.get().logError(e.getMessage());
                     }
+                    if (tmpStack == null) {
+                        restoration.armour[i] = new ItemStack(Material.AIR);
+                    } else {
+                        restoration.armour[i] = tmpStack;
+                    }
                     Scavenger.get().debugMessage("Done: " + restoration.armour[i].toString());
                 }
             }
+            
             restoration.enabled = value.enabled;
             restoration.level = value.level;
             restoration.exp = value.exp;
