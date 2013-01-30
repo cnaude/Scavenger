@@ -36,7 +36,7 @@ public class Scavenger extends JavaPlugin {
     private static Scavenger instance = null;
     private static Economy economy = null;
     public static MobArenaHandler maHandler;
-    public static PVPArenaAPI pvpHandler;
+    public static PVPArena pvpHandler;
     public static MultiverseInventories multiverseHandler;
     public static MultiInv multiinvHandler;
     public static DungeonMazeAPI dmHandler;
@@ -320,9 +320,10 @@ public class Scavenger extends JavaPlugin {
 
         if (pvpPlugin == null) {
             return;
-        }
-
-        pvpHandler = new PVPArenaAPI();
+        }                
+        
+        pvpHandler = net.slipcor.pvparena.PVPArena.instance;
+        
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
 

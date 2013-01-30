@@ -19,7 +19,6 @@ import java.util.*;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
 import net.milkbowl.vault.economy.EconomyResponse;
-import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -332,10 +331,10 @@ public class RestorationManager implements Serializable {
             return;
         }
 
-        if (Scavenger.pvpHandler != null && !PVPArenaAPI.getArenaName(p).equals("")) {
+        if (Scavenger.pvpHandler != null && !net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(p).equals("")) {
             String x = Scavenger.getSConfig().msgInsidePA();
             if (!x.isEmpty()) {
-                x = x.replaceAll("%ARENA%", PVPArenaAPI.getArenaName(p));
+                x = x.replaceAll("%ARENA%", net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(p));
                 Scavenger.get().message(p, x);
             }
             return;
