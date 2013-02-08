@@ -42,6 +42,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_RESFLAG = "Global.ResidenceFlag";
     private static final String GLOBAL_DROPONPVPDEATH = "Global.DropOnPVPDeath";
     private static final String GLOBAL_LANGUAGE = "Global.LanguageFile";
+    private static final String BLACKLISTED_WORLDS = "BlacklistedWorlds";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED = "MsgRecovered";
     private static final String MSG_SAVING = "MsgSaving";
@@ -113,7 +114,7 @@ public final class ScavengerConfig {
     private boolean dropOnPVPDeath;
     private String msgPVPDeath;
     private String languageFileName;
-    private List<String> blacklistedworlds;
+    private List<String> blacklistedworlds = new ArrayList<String>();
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();
@@ -148,9 +149,8 @@ public final class ScavengerConfig {
         headerColor = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
         textColor = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
         languageFileName = config.getString(GLOBAL_LANGUAGE, "English.yml");
-        blacklistedworlds = config.getStringList("BlacklistedWorlds");
-        for (String s : blacklistedworlds) {
-            s = s.toLowerCase();
+        for (String s : config.getStringList(BLACKLISTED_WORLDS)) {            
+            blacklistedworlds.add(s.toLowerCase());                            
         }
     
         initLangFiles(plug);

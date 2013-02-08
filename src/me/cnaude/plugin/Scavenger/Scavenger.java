@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -61,6 +60,10 @@ public class Scavenger extends JavaPlugin {
         } else {
 
             loadConfig();
+            
+            for (String s : getSConfig().blacklistedWorlds()) {
+                Scavenger.get().logDebug("BlackListedWorld: " + s);
+            }
 
             setupMobArenaHandler();
             setupPVPArenaHandler();

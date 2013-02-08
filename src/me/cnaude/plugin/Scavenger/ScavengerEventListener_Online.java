@@ -49,6 +49,7 @@ public class ScavengerEventListener_Online implements Listener {
     }
 
     private boolean isScavengeAllowed(Player player) {
+        Scavenger.get().logDebug("Player: " + player + "World: " + player.getWorld().getName().toLowerCase());
         if (Scavenger.getSConfig().blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
         }
