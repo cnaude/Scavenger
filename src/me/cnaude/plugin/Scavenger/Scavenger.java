@@ -45,8 +45,8 @@ public class Scavenger extends JavaPlugin {
     public boolean configLoaded = false;
     static final Logger log = Logger.getLogger("Minecraft");
     private static ScavengerConfig config;
-    private final ScavengerEventListener eventListener = new ScavengerEventListener();
-    private final ScavengerEventListener_Online eventListenerOnline = new ScavengerEventListener_Online();
+    private final ScavengerEventListenerOffline eventListener = new ScavengerEventListenerOffline();
+    private final ScavengerEventListenerOnline eventListenerOnline = new ScavengerEventListenerOnline();
 
     public static Scavenger get() {
         return instance;

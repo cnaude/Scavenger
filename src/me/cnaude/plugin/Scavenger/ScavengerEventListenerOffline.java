@@ -6,11 +6,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-public class ScavengerEventListener implements Listener {
+public class ScavengerEventListenerOffline implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
@@ -48,6 +49,9 @@ public class ScavengerEventListener implements Listener {
     }
 
     private boolean isScavengeAllowed(Player player) {
+        EntityDamageEvent.DamageCause dc = player.getLastDamageCause().getCause();        
+        Scavenger.get().logDebug("Player: " + player + "World: " 
+                + player.getWorld().getName().toLowerCase() + " DamageCause: " + dc.toString());
         if (!Authenticator.isPlayerLoggedIn(player)) {
             return false;
         }
@@ -61,6 +65,9 @@ public class ScavengerEventListener implements Listener {
             return true;
         }
         if (player.hasPermission("scavenger.scavenge")) {
+            return true;
+        }
+        if (player.hasPermission("scavenger.scavenge." + dc.toString())) {
             return true;
         }
         if (player.hasPermission("scavenger.inv")) {

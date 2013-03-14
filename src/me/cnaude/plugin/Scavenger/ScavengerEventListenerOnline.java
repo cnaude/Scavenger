@@ -4,12 +4,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-public class ScavengerEventListener_Online implements Listener {
+public class ScavengerEventListenerOnline implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
@@ -49,7 +50,9 @@ public class ScavengerEventListener_Online implements Listener {
     }
 
     private boolean isScavengeAllowed(Player player) {
-        Scavenger.get().logDebug("Player: " + player + "World: " + player.getWorld().getName().toLowerCase());
+        EntityDamageEvent.DamageCause dc = player.getLastDamageCause().getCause();        
+        Scavenger.get().logDebug("Player: " + player + "World: " 
+                + player.getWorld().getName().toLowerCase() + " DamageCause: " + dc.toString().toLowerCase());
         if (Scavenger.getSConfig().blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
         }
@@ -62,6 +65,9 @@ public class ScavengerEventListener_Online implements Listener {
         if (player.hasPermission("scavenger.scavenge")) {
             return true;
         }
+        if (player.hasPermission("scavenger.scavenge." + dc.toString().toLowerCase())) {
+            return true;
+        }        
         if (player.hasPermission("scavenger.inv")) {
             return true;
         }
