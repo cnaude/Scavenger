@@ -31,7 +31,7 @@ Global:
   LanguageFile: english.yml  
   # Drop items when killed by another player.
   DropOnPVPDeath: false
-  # Enabled slot based recovery. Players must have scavenger.slot.X where X is the slot number to recover.
+  # Enabled slot based recovery. Players must have scavenger.armour.X, or scavenger.inv.X, where X is the slot number to recover.
   SlotBasedRecovery: false
 Messages:
   MsgRecovered: Your inventory has been restored.
