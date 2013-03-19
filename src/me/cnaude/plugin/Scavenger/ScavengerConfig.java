@@ -43,6 +43,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_DROPONPVPDEATH = "Global.DropOnPVPDeath";
     private static final String GLOBAL_LANGUAGE = "Global.LanguageFile";
     private static final String BLACKLISTED_WORLDS = "BlacklistedWorlds";
+    private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED = "MsgRecovered";
     private static final String MSG_SAVING = "MsgSaving";
@@ -115,6 +116,7 @@ public final class ScavengerConfig {
     private String msgPVPDeath;
     private String languageFileName;
     private List<String> blacklistedworlds = new ArrayList<String>();
+    private boolean slotBasedRecovery;
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();
@@ -132,6 +134,7 @@ public final class ScavengerConfig {
         percentCost = config.getDouble(ECONOMY_PERCENTCOST, 5.0);
         addMin = config.getBoolean(ECONOMY_ADDMIN, false);
         chanceToDrop = config.getInt(ECONOMY_DROP_CHANCE, 0);
+        slotBasedRecovery = config.getBoolean(GLOBAL_SLOT_RECOVERY,false);
 
         shouldNotify = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops = config.getBoolean(GLOBAL_SIDROPS, false);
@@ -464,5 +467,9 @@ public final class ScavengerConfig {
 
     public List<String> blacklistedWorlds() {
         return blacklistedworlds;
+    }
+    
+    public boolean slotBasedRecovery() {
+        return slotBasedRecovery;
     }
 }

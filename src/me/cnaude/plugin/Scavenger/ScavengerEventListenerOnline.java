@@ -50,7 +50,19 @@ public class ScavengerEventListenerOnline implements Listener {
     }
 
     private boolean isScavengeAllowed(Player player) {
-        EntityDamageEvent.DamageCause dc = player.getLastDamageCause().getCause();        
+        if (player == null) {
+            Scavenger.get().logDebug("Player is null!");
+            return false;
+        }
+        if (player.getLastDamageCause() == null) {
+            Scavenger.get().logDebug("LastDamageCause is null!: " + player);
+            return false;
+        }
+        EntityDamageEvent.DamageCause dc = player.getLastDamageCause().getCause();  
+        if (dc == null) {
+            Scavenger.get().logDebug("DeathCause is null!: " + player);
+            return false;
+        }
         Scavenger.get().logDebug("Player: " + player + "World: " 
                 + player.getWorld().getName().toLowerCase() + " DamageCause: " + dc.toString().toLowerCase());
         if (Scavenger.getSConfig().blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
