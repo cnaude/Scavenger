@@ -337,8 +337,8 @@ public class RestorationManager implements Serializable {
 
         if (Scavenger.battleArena) {
             mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(p);
-            if (ap != null) {
-                Match match = BattleArena.getBAC().getMatch(ap);
+            if (ap != null) {                
+                Match match = BattleArena.getBAController().getMatch(ap);
                 if (match != null && match.insideArena(ap)) {
                     String x = Scavenger.getSConfig().msgInsideBA();
                     if (!x.isEmpty()) {
