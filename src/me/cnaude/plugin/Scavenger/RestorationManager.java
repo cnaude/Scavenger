@@ -207,7 +207,7 @@ public class RestorationManager implements Serializable {
         return restorations.containsKey(p.getName());
     }
 
-    private static Restoration getRestoration(Player p) {
+    public static Restoration getRestoration(Player p) {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
         if (Scavenger.get().getMultiverseInventories() != null || Scavenger.get().getMultiInvInventories() != null) {
