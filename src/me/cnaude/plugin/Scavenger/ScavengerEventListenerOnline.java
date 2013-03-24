@@ -56,9 +56,14 @@ public class ScavengerEventListenerOnline implements Listener {
     }
 
     private boolean isScavengeAllowed(Player player) {
-        DamageCause dc = player.getLastDamageCause().getCause();  
+        String dcString = "NULL";
+        if (player.getLastDamageCause() != null) {
+            if (player.getLastDamageCause().getCause() != null) {
+                dcString = player.getLastDamageCause().getCause().toString();
+            }
+        }
         Scavenger.get().logDebug("Player: " + player + "World: " 
-                + player.getWorld().getName().toLowerCase() + " DamageCause: " + dc.toString().toLowerCase());
+                + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
         if (Scavenger.getSConfig().blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
         }
@@ -71,7 +76,7 @@ public class ScavengerEventListenerOnline implements Listener {
         if (player.hasPermission("scavenger.scavenge")) {
             return true;
         }
-        if (player.hasPermission("scavenger.scavenge." + dc.toString().toLowerCase())) {
+        if (player.hasPermission("scavenger.scavenge." + dcString)) {
             return true;
         }        
         if (player.hasPermission("scavenger.inv")) {
