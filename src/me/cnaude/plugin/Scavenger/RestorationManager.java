@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
+import me.drayshak.WorldInventories.WorldInventories;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -196,8 +197,18 @@ public class RestorationManager implements Serializable {
         }
     }
 
+    public static boolean multipleInventories() {
+        if (Scavenger.get().getMultiverseInventories() != null 
+                || Scavenger.get().getMultiInvAPI() != null
+                || Scavenger.get().chkWorldInventories()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     public static boolean hasRestoration(Player p) {
-        if (Scavenger.get().getMultiverseInventories() != null || Scavenger.get().getMultiInvInventories() != null) {
+        if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
                 Scavenger.get().logDebug("Has: " + keyName);
@@ -210,7 +221,7 @@ public class RestorationManager implements Serializable {
     public static Restoration getRestoration(Player p) {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
-        if (Scavenger.get().getMultiverseInventories() != null || Scavenger.get().getMultiInvInventories() != null) {
+        if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
                 Scavenger.get().logDebug("Getting: " + keyName);
@@ -542,7 +553,7 @@ public class RestorationManager implements Serializable {
     }
 
     public static void addRestoration(Player p, Restoration r) {
-        if (Scavenger.get().getMultiverseInventories() != null || Scavenger.get().getMultiInvInventories() != null) {
+        if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             restorations.put(keyName, r);
             Scavenger.get().debugMessage("Adding: " + keyName);
@@ -592,7 +603,7 @@ public class RestorationManager implements Serializable {
     }
 
     public static void removeRestoration(Player p) {
-        if (Scavenger.get().getMultiverseInventories() != null || Scavenger.get().getMultiInvInventories() != null) {
+        if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
                 restorations.remove(keyName);
@@ -606,7 +617,7 @@ public class RestorationManager implements Serializable {
     }
 
     public static List<String> getWorldGroups(World world) {
-        List<String> returnData = new ArrayList<String>();
+        List<String> returnData = new ArrayList<String>();                      
         if (Scavenger.get().getMultiverseInventories() != null) {
             MultiverseInventories multiInv = Scavenger.get().getMultiverseInventories();
             if (multiInv.getGroupManager() != null) {
@@ -622,14 +633,17 @@ public class RestorationManager implements Serializable {
 
             }
         }
-        if (Scavenger.get().getMultiInvInventories() != null) {
+        if (Scavenger.get().getMultiInvAPI() != null) {
             String worldname = world.getName();
-            MultiInvAPI multiInvAPI = Scavenger.get().getMultiInvInventories();
+            MultiInvAPI multiInvAPI = Scavenger.get().getMultiInvAPI();
             if (multiInvAPI.getGroups() != null) {
                 if (multiInvAPI.getGroups().containsKey(worldname)) {
                     returnData.add(multiInvAPI.getGroups().get(worldname));
                 }
             }
+        }        
+        if (Scavenger.get().chkWorldInventories()) {            
+            returnData.add(WorldInventories.findFirstGroupThenDefault(world.getName()).getName()); 
         }
         if (returnData.isEmpty()) {
             returnData.add("");

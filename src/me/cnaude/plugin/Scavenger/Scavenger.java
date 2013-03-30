@@ -12,6 +12,7 @@ import com.timvisee.DungeonMaze.API.DungeonMazeAPI;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.drayshak.WorldInventories.WorldInventories;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
@@ -165,7 +166,7 @@ public class Scavenger extends JavaPlugin {
         return (MultiverseInventories) plugin;
     }
 
-    public MultiInvAPI getMultiInvInventories() {
+    public MultiInvAPI getMultiInvAPI() {
         Plugin plugin = getServer().getPluginManager().getPlugin("MultiInv");
         MultiInvAPI multiInvAPI = null;
 
@@ -176,6 +177,16 @@ public class Scavenger extends JavaPlugin {
         } catch (NoClassDefFoundError ex) {
         }
         return multiInvAPI;
+    }
+    
+    public boolean chkWorldInventories() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("WorldInventories");
+        
+        if (plugin != null ) {            
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public P getFactions() {
