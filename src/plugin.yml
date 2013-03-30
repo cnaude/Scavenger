@@ -20,6 +20,7 @@ softdepend:
   - Authenticator
   - DungeonMaze
   - Residence
+  - WorldInventories
 commands:
   scavengerreload:
     description: Reload config
