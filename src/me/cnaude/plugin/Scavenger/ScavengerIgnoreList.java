@@ -21,7 +21,7 @@ public class ScavengerIgnoreList implements Serializable {
     public void load() {
         File file = new File(IGNORE_FILE);
         if (!file.exists()) {
-            Scavenger.get().logInfo("Ignore file '" + file.getAbsolutePath() + "' does not exist.");
+            Scavenger.get().logDebug("Ignore file '" + file.getAbsolutePath() + "' does not exist.");
             return;
         }
         try {

@@ -9,6 +9,7 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.orange451.UltimateArena.UltimateArenaAPI;
+import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -18,7 +19,7 @@ import java.io.*;
 import java.util.*;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
-import me.drayshak.WorldInventories.WorldInventories;
+import me.drayshak.WorldInventories.api.WorldInventoriesAPI;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -82,7 +83,7 @@ public class RestorationManager implements Serializable {
         HashMap<String, RestorationS> res_s;
         File file = new File("plugins/Scavenger/inv.ser");
         if (!file.exists()) {
-            Scavenger.get().logInfo("Recovery file '" + file.getAbsolutePath() + "' does not exist. (Old format)");
+            Scavenger.get().logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist. (Old format)");
             return;
         }
         try {
@@ -132,7 +133,7 @@ public class RestorationManager implements Serializable {
         HashMap<String, RestorationS1> res_s;
         File file = new File("plugins/Scavenger/inv1.ser");
         if (!file.exists()) {
-            Scavenger.get().logInfo("Recovery file '" + file.getAbsolutePath() + "' does not exist. (New format)");
+            Scavenger.get().logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist. (New format)");
             return;
         }
         try {
@@ -200,7 +201,7 @@ public class RestorationManager implements Serializable {
     public static boolean multipleInventories() {
         if (Scavenger.get().getMultiverseInventories() != null 
                 || Scavenger.get().getMultiInvAPI() != null
-                || Scavenger.get().chkWorldInventories()) {
+                || Scavenger.get().getWorldInvAPI()) {
             return true;
         } else {
             return false;
@@ -359,7 +360,12 @@ public class RestorationManager implements Serializable {
                 }
             }
         }
-
+        
+        if (Scavenger.get().getMinigames() != null) {            
+            if (Scavenger.get().getMinigames().getPlayerData().playerInMinigame(p)) {
+                return;
+            }
+        }
 
         if (hasRestoration(p)) {
             Scavenger.get().error(p, "Restoration already exists, ignoring.");
@@ -642,8 +648,9 @@ public class RestorationManager implements Serializable {
                 }
             }
         }        
-        if (Scavenger.get().chkWorldInventories()) {            
-            returnData.add(WorldInventories.findFirstGroupThenDefault(world.getName()).getName()); 
+        if (Scavenger.get().getWorldInvAPI()) {   
+            String worldname = world.getName();
+            returnData.add(WorldInventoriesAPI.findGroup(worldname).getName()); 
         }
         if (returnData.isEmpty()) {
             returnData.add("");

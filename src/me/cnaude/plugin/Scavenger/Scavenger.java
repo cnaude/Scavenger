@@ -6,13 +6,14 @@ import com.garbagemule.MobArena.MobArenaHandler;
 import com.massivecraft.factions.P;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.*;
+import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.timvisee.DungeonMaze.DungeonMaze;
 import com.timvisee.DungeonMaze.API.DungeonMazeAPI;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import me.drayshak.WorldInventories.WorldInventories;
+import me.drayshak.WorldInventories.api.WorldInventoriesAPI;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
@@ -42,6 +43,7 @@ public class Scavenger extends JavaPlugin {
     public static DungeonMazeAPI dmHandler;
     public static RestorationManager rm;
     public static boolean battleArena = false;
+    public static boolean minigames = false;
     public static ScavengerIgnoreList ignoreList;
     public boolean configLoaded = false;
     static final Logger log = Logger.getLogger("Minecraft");
@@ -179,14 +181,22 @@ public class Scavenger extends JavaPlugin {
         return multiInvAPI;
     }
     
-    public boolean chkWorldInventories() {
+    public boolean getWorldInvAPI() {
         Plugin plugin = getServer().getPluginManager().getPlugin("WorldInventories");
-        
-        if (plugin != null ) {            
+        if (plugin != null) {
             return true;
         } else {
             return false;
         }
+    }
+    
+    public Minigames getMinigames(){
+        Plugin plugin = getServer().getPluginManager().getPlugin("Minigames");
+        Minigames mg = null;
+        if (plugin != null) {
+            mg = (Minigames) Bukkit.getServer().getPluginManager().getPlugin("Minigames");
+        }
+        return mg;
     }
 
     public P getFactions() {

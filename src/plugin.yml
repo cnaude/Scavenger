@@ -1,6 +1,6 @@
 name: Scavenger
 main: me.cnaude.plugin.Scavenger.Scavenger
-version: 1.20a
+version: 1.21a
 author: cnaude, modwizcode, SirHedgehog, Xephi
 description: Item recovery on death. Based on SirHedgehog's code.
 website: http://dev.bukkit.org/server-mods/scavenger/
@@ -21,6 +21,7 @@ softdepend:
   - DungeonMaze
   - Residence
   - WorldInventories
+  - Minigames
 commands:
   scavengerreload:
     description: Reload config
