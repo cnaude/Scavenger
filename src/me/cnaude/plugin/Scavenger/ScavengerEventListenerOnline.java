@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class ScavengerEventListenerOnline implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
@@ -20,24 +20,20 @@ public class ScavengerEventListenerOnline implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if ((event.getPlayer() instanceof Player)) {
             if (RestorationManager.hasRestoration(event.getPlayer())) {
-                //if (isScavengeAllowed(event.getPlayer())) {
-                    RestorationManager.enable(event.getPlayer());
-                //}
+                RestorationManager.enable(event.getPlayer());
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {        
         if ((event.getPlayer() instanceof Player)) {
             if (RestorationManager.hasRestoration(event.getPlayer())) {
-                //if (isScavengeAllowed(event.getPlayer())) {
-                    RestorationManager.enable(event.getPlayer());
-                //}
+                RestorationManager.enable(event.getPlayer());
             }
         }
     }
@@ -46,10 +42,7 @@ public class ScavengerEventListenerOnline implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if ((event.getPlayer() instanceof Player)) {
             if (RestorationManager.hasRestoration(event.getPlayer())) {
-                //if (isScavengeAllowed(event.getPlayer())) {
-                    RestorationManager.restore(event.getPlayer());
-                
-                //}
+                RestorationManager.restore(event.getPlayer());
             }
         }
     }

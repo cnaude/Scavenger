@@ -9,7 +9,6 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.orange451.UltimateArena.UltimateArenaAPI;
-import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -34,19 +33,26 @@ public class RestorationManager implements Serializable {
 
     public void save() {
         StreamSerializer serializer = new StreamSerializer();
-        HashMap<String, RestorationS1> res_s = new HashMap<String, RestorationS1>();
+        HashMap<String, RestorationS1> restorationsForDisk = new HashMap<String, RestorationS1>();
         for (Map.Entry<String, Restoration> entry : restorations.entrySet()) {
             String key = entry.getKey();
             Restoration value = entry.getValue();
-            RestorationS1 restoration_s = new RestorationS1();
+            RestorationS1 tmpRestoration = new RestorationS1();
             for (ItemStack i : value.inventory) {
+                boolean error = false;
                 if (i instanceof ItemStack) {
                     Scavenger.get().debugMessage("Serializing: " + i.toString());
-                    //restoration_s.inventory.add(i.serialize());
                     try {
-                        restoration_s.inventory.add(serializer.serializeItemStack(i));
+                        tmpRestoration.inventory.add(serializer.serializeItemStack(i));
                     } catch (IOException e) {
                         Scavenger.get().logError(e.getMessage());
+                        error = true;
+                    } catch (Exception e) {
+                        error = true;
+                        Scavenger.get().logError(e.getMessage());
+                    }
+                    if (error) {
+                        Scavenger.get().logError("Problem serializing item: " + i.toString());
                     }
                     Scavenger.get().debugMessage("Done: " + i.toString());
                 }
@@ -55,24 +61,26 @@ public class RestorationManager implements Serializable {
                 if (i instanceof ItemStack) {
                     Scavenger.get().debugMessage("Serializing: " + i.toString());
                     try {
-                        restoration_s.armour.add(serializer.serializeItemStack(i));
+                        tmpRestoration.armour.add(serializer.serializeItemStack(i));
                     } catch (IOException e) {
+                        Scavenger.get().logError(e.getMessage());
+                    } catch (Exception e) {
                         Scavenger.get().logError(e.getMessage());
                     }
                     Scavenger.get().debugMessage("Done: " + i.toString());
                 }
             }
-            restoration_s.enabled = value.enabled;
-            restoration_s.level = value.level;
-            restoration_s.exp = value.exp;
-            res_s.put(key, restoration_s);
-            Scavenger.get().logInfo("Saving " + key + "'s inventory to disk. (New format)");
+            tmpRestoration.enabled = value.enabled;
+            tmpRestoration.level = value.level;
+            tmpRestoration.exp = value.exp;
+            restorationsForDisk.put(key, tmpRestoration);
+            Scavenger.get().logInfo("Saving " + key + "'s inventory to disk.");
         }
         try {
             File file = new File("plugins/Scavenger/inv1.ser");
             FileOutputStream f_out = new FileOutputStream(file);
             ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
-            obj_out.writeObject(res_s);
+            obj_out.writeObject(restorationsForDisk);
             obj_out.close();
         } catch (Exception e) {
             Scavenger.get().logError(e.getMessage());
@@ -80,94 +88,53 @@ public class RestorationManager implements Serializable {
     }
 
     public void load() {
-        HashMap<String, RestorationS> res_s;
-        File file = new File("plugins/Scavenger/inv.ser");
-        if (!file.exists()) {
-            Scavenger.get().logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist. (Old format)");
-            return;
-        }
-        try {
-            FileInputStream f_in = new FileInputStream(file);
-            ObjectInputStream obj_in = new ObjectInputStream(f_in);
-            res_s = (HashMap<String, RestorationS>) obj_in.readObject();
-            obj_in.close();
-        } catch (Exception e) {
-            Scavenger.get().logError(e.getMessage());
-            file.delete();
-            return;
-        }
-
-        for (Map.Entry<String, RestorationS> entry : res_s.entrySet()) {
-            String key = entry.getKey();
-            RestorationS value = entry.getValue();
-            Restoration restoration = new Restoration();
-            restoration.inventory = new ItemStack[value.inventory.size()];
-            restoration.armour = new ItemStack[value.armour.size()];
-
-            for (int i = 0; i < value.inventory.size(); i++) {
-                if (value.inventory.get(i) instanceof Map) {
-                    Scavenger.get().debugMessage("Deserializing: " + value.inventory.get(i).toString());
-                    restoration.inventory[i] = ItemStack.deserialize(value.inventory.get(i));
-                    Scavenger.get().debugMessage("Done: " + restoration.inventory[i].toString());
-                }
-            }
-            for (int i = 0; i < value.armour.size(); i++) {
-                if (value.armour.get(i) instanceof Map) {
-                    Scavenger.get().debugMessage("Deserializing: " + value.armour.get(i).toString());
-                    restoration.armour[i] = ItemStack.deserialize(value.armour.get(i));
-                    Scavenger.get().debugMessage("Done: " + restoration.armour[i].toString());
-                }
-            }
-            restoration.enabled = value.enabled;
-            restoration.level = value.level;
-            restoration.exp = value.exp;
-
-            restorations.put(key, restoration);
-            Scavenger.get().logInfo("Loading " + key + "'s inventory from disk.");
-        }
-        file.renameTo(new File("plugins/Scavenger/inv.ser.old"));
-    }
-
-    public void load1() {
         StreamSerializer serializer = new StreamSerializer();
-        HashMap<String, RestorationS1> res_s;
+        HashMap<String, RestorationS1> restorationsFromDisk;
         File file = new File("plugins/Scavenger/inv1.ser");
         if (!file.exists()) {
-            Scavenger.get().logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist. (New format)");
+            Scavenger.get().logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist.");
             return;
         }
         try {
             FileInputStream f_in = new FileInputStream(file);
             ObjectInputStream obj_in = new ObjectInputStream(f_in);
-            res_s = (HashMap<String, RestorationS1>) obj_in.readObject();
+            restorationsFromDisk = (HashMap<String, RestorationS1>) obj_in.readObject();
             obj_in.close();
         } catch (Exception e) {
             Scavenger.get().logError(e.getMessage());
             return;
         }
 
-        for (Map.Entry<String, RestorationS1> entry : res_s.entrySet()) {
+        for (Map.Entry<String, RestorationS1> entry : restorationsFromDisk.entrySet()) {
             String key = entry.getKey();
             RestorationS1 value = entry.getValue();
-            Restoration restoration = new Restoration();
-            restoration.inventory = new ItemStack[value.inventory.size()];
-            restoration.armour = new ItemStack[value.armour.size()];
+            Restoration tmpRestoration = new Restoration();
+            tmpRestoration.inventory = new ItemStack[value.inventory.size()];
+            tmpRestoration.armour = new ItemStack[value.armour.size()];
 
             for (int i = 0; i < value.inventory.size(); i++) {
                 if (value.inventory.get(i) instanceof String) {
+                    boolean error = false;
                     ItemStack tmpStack = new ItemStack(Material.AIR);
                     Scavenger.get().debugMessage("Deserializing: " + value.inventory.get(i).toString());
                     try {
                         tmpStack = serializer.deserializeItemStack(value.inventory.get(i));
                     } catch (IOException e) {
                         Scavenger.get().logError(e.getMessage());
+                        error = true;
+                    } catch (Exception e) {
+                        Scavenger.get().logError(e.getMessage());
+                        error = true;
+                    }
+                    if (error) {
+                        Scavenger.get().logError("Problem deserializing item: " + value.inventory.get(i).toString());
                     }
                     if (tmpStack == null) {
-                        restoration.inventory[i] = new ItemStack(Material.AIR);
+                        tmpRestoration.inventory[i] = new ItemStack(Material.AIR);
                     } else {
-                        restoration.inventory[i] = tmpStack;
+                        tmpRestoration.inventory[i] = tmpStack;
                     }
-                    Scavenger.get().debugMessage("Done: " + restoration.inventory[i].toString());
+                    Scavenger.get().debugMessage("Done: " + tmpRestoration.inventory[i].toString());
                 }
             }
 
@@ -181,25 +148,25 @@ public class RestorationManager implements Serializable {
                         Scavenger.get().logError(e.getMessage());
                     }
                     if (tmpStack == null) {
-                        restoration.armour[i] = new ItemStack(Material.AIR);
+                        tmpRestoration.armour[i] = new ItemStack(Material.AIR);
                     } else {
-                        restoration.armour[i] = tmpStack;
+                        tmpRestoration.armour[i] = tmpStack;
                     }
-                    Scavenger.get().debugMessage("Done: " + restoration.armour[i].toString());
+                    Scavenger.get().debugMessage("Done: " + tmpRestoration.armour[i].toString());
                 }
             }
 
-            restoration.enabled = value.enabled;
-            restoration.level = value.level;
-            restoration.exp = value.exp;
+            tmpRestoration.enabled = value.enabled;
+            tmpRestoration.level = value.level;
+            tmpRestoration.exp = value.exp;
 
-            restorations.put(key, restoration);
+            restorations.put(key, tmpRestoration);
             Scavenger.get().logInfo("Loading " + key + "'s inventory from disk.");
         }
     }
 
     public static boolean multipleInventories() {
-        if (Scavenger.get().getMultiverseInventories() != null 
+        if (Scavenger.get().getMultiverseInventories() != null
                 || Scavenger.get().getMultiInvAPI() != null
                 || Scavenger.get().getWorldInvAPI()) {
             return true;
@@ -207,7 +174,7 @@ public class RestorationManager implements Serializable {
             return false;
         }
     }
-    
+
     public static boolean hasRestoration(Player p) {
         if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
@@ -238,8 +205,8 @@ public class RestorationManager implements Serializable {
         return restoration;
     }
 
-    public static void collect(Player p, List<ItemStack> _drops, EntityDeathEvent event) {
-        if (_drops.isEmpty() && !levelAllow(p) && !expAllow(p)) {
+    public static void collect(Player p, List<ItemStack> itemDrops, EntityDeathEvent event) {
+        if (itemDrops.isEmpty() && !levelAllow(p) && !expAllow(p)) {
             return;
         }
 
@@ -349,7 +316,7 @@ public class RestorationManager implements Serializable {
 
         if (Scavenger.battleArena) {
             mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(p);
-            if (ap != null) {                
+            if (ap != null) {
                 Match match = BattleArena.getBAController().getMatch(ap);
                 if (match != null && match.insideArena(ap)) {
                     String x = Scavenger.getSConfig().msgInsideBA();
@@ -360,9 +327,10 @@ public class RestorationManager implements Serializable {
                 }
             }
         }
-        
-        if (Scavenger.get().getMinigames() != null) {            
+
+        if (Scavenger.get().getMinigames() != null) {
             if (Scavenger.get().getMinigames().getPlayerData().playerInMinigame(p)) {
+                Scavenger.get().logInfo("Player '" + p.getName() + "' is in a Minigame. Not recovering items.");
                 return;
             }
         }
@@ -376,50 +344,50 @@ public class RestorationManager implements Serializable {
                 && !(p.hasPermission("scavenger.free")
                 || (p.isOp() && Scavenger.getSConfig().opsAllPerms()))
                 && Scavenger.getSConfig().economyEnabled()) {
-            double restore_cost = Scavenger.getSConfig().restoreCost();
-            double withdraw_amount;
-            double player_balance = Scavenger.get().getEconomy().getBalance(p.getName());
-            double percent_cost = Scavenger.getSConfig().percentCost();
-            double min_cost = Scavenger.getSConfig().minCost();
-            double max_cost = Scavenger.getSConfig().maxCost();
+            double restoreCost = Scavenger.getSConfig().restoreCost();
+            double withdrawAmount;
+            double playeBalance = Scavenger.get().getEconomy().getBalance(p.getName());
+            double percentCost = Scavenger.getSConfig().percentCost();
+            double minCost = Scavenger.getSConfig().minCost();
+            double maxCost = Scavenger.getSConfig().maxCost();
             EconomyResponse er;
             String currency;
             if (Scavenger.getSConfig().percent()) {
-                withdraw_amount = player_balance * (percent_cost / 100.0);
+                withdrawAmount = playeBalance * (percentCost / 100.0);
                 if (Scavenger.getSConfig().addMin()) {
-                    withdraw_amount = withdraw_amount + min_cost;
-                } else if (withdraw_amount < min_cost) {
-                    withdraw_amount = min_cost;
+                    withdrawAmount = withdrawAmount + minCost;
+                } else if (withdrawAmount < minCost) {
+                    withdrawAmount = minCost;
                 }
-                if (withdraw_amount > max_cost && max_cost > 0) {
-                    withdraw_amount = max_cost;
+                if (withdrawAmount > maxCost && maxCost > 0) {
+                    withdrawAmount = maxCost;
                 }
             } else {
-                withdraw_amount = restore_cost;
+                withdrawAmount = restoreCost;
             }
-            er = Scavenger.get().getEconomy().withdrawPlayer(p.getName(), withdraw_amount);
+            er = Scavenger.get().getEconomy().withdrawPlayer(p.getName(), withdrawAmount);
             if (er.transactionSuccess()) {
-                if (withdraw_amount == 1) {
+                if (withdrawAmount == 1) {
                     currency = Scavenger.get().getEconomy().currencyNameSingular();
                 } else {
                     currency = Scavenger.get().getEconomy().currencyNamePlural();
                 }
                 String x = Scavenger.getSConfig().msgSaveForFee();
                 if (!x.isEmpty()) {
-                    x = x.replaceAll("%COST%", String.format("%.2f", withdraw_amount));
+                    x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
                     Scavenger.get().message(p, x);
                 }
             } else {
-                if (player_balance == 1) {
+                if (playeBalance == 1) {
                     currency = Scavenger.get().getEconomy().currencyNameSingular();
                 } else {
                     currency = Scavenger.get().getEconomy().currencyNamePlural();
                 }
                 String x = Scavenger.getSConfig().msgNotEnoughMoney();
                 if (!x.isEmpty()) {
-                    x = x.replaceAll("%BALANCE%", String.format("%.2f", player_balance));
-                    x = x.replaceAll("%COST%", String.format("%.2f", withdraw_amount));
+                    x = x.replaceAll("%BALANCE%", String.format("%.2f", playeBalance));
+                    x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
                     Scavenger.get().message(p, x);
                 }
@@ -442,7 +410,7 @@ public class RestorationManager implements Serializable {
             event.setDroppedExp(0);
         }
 
-        _drops.clear();
+        itemDrops.clear();
 
         if (Scavenger.getSConfig().singleItemDrops()) {
             ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
@@ -465,7 +433,7 @@ public class RestorationManager implements Serializable {
                         }
                         if (dropIt) {
                             Scavenger.get().debugMessage(p, "Dropping item " + i.getType());
-                            _drops.add(i.clone());
+                            itemDrops.add(i.clone());
                             i.setAmount(0);
                         } else {
                             Scavenger.get().debugMessage(p, "Keeping item " + i.getType());
@@ -486,7 +454,7 @@ public class RestorationManager implements Serializable {
                         Scavenger.get().debugMessage(p, "Random number is " + randomInt);
                         if (randomInt == Scavenger.getSConfig().chanceToDrop()) {
                             Scavenger.get().debugMessage(p, "Randomly dropping item " + i.getType());
-                            _drops.add(i.clone());
+                            itemDrops.add(i.clone());
                             i.setAmount(0);
                         } else {
                             Scavenger.get().debugMessage(p, "Randomly keeping item " + i.getType());
@@ -496,15 +464,15 @@ public class RestorationManager implements Serializable {
             }
         }
 
-        if (Scavenger.getSConfig().slotBasedRecovery()) {            
-            checkSlots(p, "armour", restoration.armour,    _drops);
-            checkSlots(p, "inv",    restoration.inventory, _drops);
+        if (Scavenger.getSConfig().slotBasedRecovery()) {
+            checkSlots(p, "armour", restoration.armour, itemDrops);
+            checkSlots(p, "inv", restoration.inventory, itemDrops);
         }
-        
+
         addRestoration(p, restoration);
-    }      
-    
-    private static void checkSlots(Player p, String type, ItemStack[] itemStackArray, List<ItemStack> _drops) {
+    }
+
+    private static void checkSlots(Player p, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         for (int i = 0; i < itemStackArray.length; i++) {
             String itemType;
             if (itemStackArray[i] != null) {
@@ -512,18 +480,18 @@ public class RestorationManager implements Serializable {
             } else {
                 itemType = "NULL";
             }
-            Scavenger.get().debugMessage("[type:" + type + "] [p:" + p.getName() + "] [slot:" + i + "] [item:" 
+            Scavenger.get().debugMessage("[type:" + type + "] [p:" + p.getName() + "] [slot:" + i + "] [item:"
                     + itemType + "] [perm:" + p.hasPermission("scavenger." + type + "." + i) + "]");
             if (!p.hasPermission("scavenger." + type + "." + i) && !itemType.equals("NULL")) {
                 Scavenger.get().debugMessage(p, "Dropping: " + itemType);
-                _drops.add(itemStackArray[i].clone());
+                itemDrops.add(itemStackArray[i].clone());
                 itemStackArray[i].setAmount(0);
             } else {
                 Scavenger.get().debugMessage(p, "Keeping: " + itemType);
             }
         }
     }
-    
+
     public static boolean levelAllow(Player p) {
         if ((p.hasPermission("scavenger.level")
                 || !Scavenger.getSConfig().permsEnabled()
@@ -623,7 +591,7 @@ public class RestorationManager implements Serializable {
     }
 
     public static List<String> getWorldGroups(World world) {
-        List<String> returnData = new ArrayList<String>();                      
+        List<String> returnData = new ArrayList<String>();
         if (Scavenger.get().getMultiverseInventories() != null) {
             MultiverseInventories multiInv = Scavenger.get().getMultiverseInventories();
             if (multiInv.getGroupManager() != null) {
@@ -647,10 +615,13 @@ public class RestorationManager implements Serializable {
                     returnData.add(multiInvAPI.getGroups().get(worldname));
                 }
             }
-        }        
-        if (Scavenger.get().getWorldInvAPI()) {   
+        }
+        if (Scavenger.get().getWorldInvAPI()) {
             String worldname = world.getName();
-            returnData.add(WorldInventoriesAPI.findGroup(worldname).getName()); 
+            try {
+                returnData.add(WorldInventoriesAPI.findGroup(worldname).getName());
+            } catch (Exception ex) {
+            }
         }
         if (returnData.isEmpty()) {
             returnData.add("");
