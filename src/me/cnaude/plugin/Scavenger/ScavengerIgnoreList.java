@@ -12,16 +12,23 @@ import java.util.ArrayList;
  * @author naudec
  */
 @SuppressWarnings("serial")
-public class ScavengerIgnoreList implements Serializable {
+public final class ScavengerIgnoreList implements Serializable {
 
     private static ArrayList<String> ignoreList = new ArrayList<String>();
     private static final String IGNORE_FILE = "plugins/Scavenger/ignores.ser";
+    
+    Scavenger plugin;
+    
+    public ScavengerIgnoreList(Scavenger plugin) {
+        this.plugin = plugin;
+        this.load();
+    }
 
     @SuppressWarnings("unchecked")
     public void load() {
         File file = new File(IGNORE_FILE);
         if (!file.exists()) {
-            Scavenger.get().logDebug("Ignore file '" + file.getAbsolutePath() + "' does not exist.");
+            plugin.logDebug("Ignore file '" + file.getAbsolutePath() + "' does not exist.");
             return;
         }
         try {
@@ -29,9 +36,9 @@ public class ScavengerIgnoreList implements Serializable {
             ObjectInputStream obj_in = new ObjectInputStream(f_in);
             ignoreList = (ArrayList<String>) obj_in.readObject();
             obj_in.close();
-            Scavenger.get().logInfo("Loaded ignore list. (Count = " + ignoreList.size() + ")");
+            plugin.logInfo("Loaded ignore list. (Count = " + ignoreList.size() + ")");
         } catch (Exception e) {
-            Scavenger.get().logError(e.getMessage());
+            plugin.logError(e.getMessage());
         }
     }
 
@@ -42,9 +49,9 @@ public class ScavengerIgnoreList implements Serializable {
             ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
             obj_out.writeObject(ignoreList);
             obj_out.close();
-            Scavenger.get().logInfo("Saved ignore list. (Count = " + ignoreList.size() + ")");
+            plugin.logInfo("Saved ignore list. (Count = " + ignoreList.size() + ")");
         } catch (Exception e) {
-            Scavenger.get().logError(e.getMessage());
+            plugin.logError(e.getMessage());
         }
     }
 
@@ -52,12 +59,12 @@ public class ScavengerIgnoreList implements Serializable {
         if (ignoreList.contains(s)) {
             return;
         }
-        Scavenger.get().logInfo("Adding " + s + " to ignore list.");
+        plugin.logInfo("Adding " + s + " to ignore list.");
         ignoreList.add(s);
     }
 
     public void removePlayer(String s) {
-        Scavenger.get().logInfo("Removing " + s + " from ignore list.");
+        plugin.logInfo("Removing " + s + " from ignore list.");
         ignoreList.remove(s);
     }
 

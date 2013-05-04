@@ -6,47 +6,60 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class ScavengerEventListenerOnline implements Listener {
+    
+    Scavenger plugin;
+    RestorationManager rm;
+    
+    public ScavengerEventListenerOnline(Scavenger plugin, RestorationManager restorationManager) {
+        this.plugin = plugin;
+        this.rm = restorationManager;
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
-                RestorationManager.collect(event.getEntity(), event.getDrops(), event);
+                rm.collect(event.getEntity(), event.getDrops(), event);
             }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if ((event.getPlayer() instanceof Player)) {
-            if (RestorationManager.hasRestoration(event.getPlayer())) {
-                RestorationManager.enable(event.getPlayer());
-            }
+        final Player player = event.getPlayer();
+        if (rm.hasRestoration(event.getPlayer())) {
+            rm.enable(event.getPlayer());
+            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    rm.restore(player);
+                }
+            }, 20);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoinEvent(PlayerJoinEvent event) {        
+    public void onPlayerJoinEvent(PlayerJoinEvent event) {
         if ((event.getPlayer() instanceof Player)) {
-            if (RestorationManager.hasRestoration(event.getPlayer())) {
-                RestorationManager.enable(event.getPlayer());
+            if (rm.hasRestoration(event.getPlayer())) {
+                rm.enable(event.getPlayer());
+                rm.restore(event.getPlayer());
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if ((event.getPlayer() instanceof Player)) {
-            if (RestorationManager.hasRestoration(event.getPlayer())) {
-                RestorationManager.restore(event.getPlayer());
-            }
-        }
-    }
-
+    /*
+     @EventHandler(priority = EventPriority.NORMAL)
+     public void onPlayerMove(PlayerMoveEvent event) {
+     if (event.getFrom().distance(event.getTo()) >= 0.5f) {
+     if (restorationManager.hasRestoration(event.getPlayer())) {
+     restorationManager.restore(event.getPlayer());
+     }
+     }
+     }*/
     private boolean isScavengeAllowed(Player player) {
         String dcString = "NULL";
         if (player.getLastDamageCause() != null) {
@@ -54,15 +67,15 @@ public class ScavengerEventListenerOnline implements Listener {
                 dcString = player.getLastDamageCause().getCause().toString();
             }
         }
-        Scavenger.get().logDebug("Player: " + player + "World: " 
+        plugin.logDebug("Player: " + player + "World: "
                 + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
-        if (Scavenger.getSConfig().blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
+        if (plugin.config.blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
         }
         if (ScavengerIgnoreList.isIgnored(player.getName())) {
             return false;
         }
-        if (!Scavenger.getSConfig().permsEnabled()) {
+        if (!plugin.config.permsEnabled()) {
             return true;
         }
         if (player.hasPermission("scavenger.scavenge")) {
@@ -70,14 +83,14 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         if (player.hasPermission("scavenger.scavenge." + dcString)) {
             return true;
-        }        
+        }
         if (player.hasPermission("scavenger.inv")) {
             return true;
         }
         if (player.hasPermission("scavenger.armour")) {
             return true;
         }
-        if ((player.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+        if ((player.isOp() && plugin.config.opsAllPerms())) {
             return true;
         }
         return false;

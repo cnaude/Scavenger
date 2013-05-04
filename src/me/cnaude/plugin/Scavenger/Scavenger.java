@@ -32,27 +32,22 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 public class Scavenger extends JavaPlugin {
 
     public static final String PLUGIN_NAME = "Scavenger";
-    public static final String LOG_HEADER = "[" + PLUGIN_NAME + "]";
-    private static Scavenger instance = null;
-    private static Economy economy = null;
-    public static MobArenaHandler maHandler;
-    public static PVPArena pvpHandler;
-    public static MultiverseInventories multiverseHandler;
-    public static MultiInv multiinvHandler;
-    public static DungeonMazeAPI dmHandler;
-    public static RestorationManager rm;
-    public static boolean battleArena = false;
-    public static boolean minigames = false;
-    public static ScavengerIgnoreList ignoreList;
+    public static final String LOG_HEADER = "[" + PLUGIN_NAME + "]";    
+    private Economy economy = null;
+    public MobArenaHandler maHandler;
+    public PVPArena pvpHandler;
+    public MultiverseInventories multiverseHandler;
+    public MultiInv multiinvHandler;
+    public DungeonMazeAPI dmHandler;
+    public RestorationManager rm;
+    public boolean battleArena = false;
+    public boolean minigames = false;
+    public ScavengerIgnoreList ignoreList;
     public boolean configLoaded = false;
     static final Logger log = Logger.getLogger("Minecraft");
-    private static ScavengerConfig config;
-    private final ScavengerEventListenerOffline eventListener = new ScavengerEventListenerOffline();
-    private final ScavengerEventListenerOnline eventListenerOnline = new ScavengerEventListenerOnline();
-
-    public static Scavenger get() {
-        return instance;
-    }
+    public ScavengerConfig config;    
+    private ScavengerEventListenerOffline eventListener;
+    private ScavengerEventListenerOnline eventListenerOnline;
 
     @Override
     public void onEnable() {
@@ -63,8 +58,8 @@ public class Scavenger extends JavaPlugin {
 
             loadConfig();
             
-            for (String s : getSConfig().blacklistedWorlds()) {
-                Scavenger.get().logDebug("BlackListedWorld: " + s);
+            for (String s : config.blacklistedWorlds()) {
+                logDebug("BlackListedWorld: " + s);
             }
 
             setupMobArenaHandler();
@@ -76,11 +71,12 @@ public class Scavenger extends JavaPlugin {
             checkForDungeonMaze();
             setupResidence();
 
-            rm = new RestorationManager();
-            rm.load();
-            ignoreList = new ScavengerIgnoreList();
-            ignoreList.load();
-            if (getSConfig().offlineMode()) {
+            rm = new RestorationManager(this);
+            eventListener = new ScavengerEventListenerOffline(this,rm);
+            eventListenerOnline = new ScavengerEventListenerOnline(this,rm);
+            ignoreList = new ScavengerIgnoreList(this);
+
+            if (config.offlineMode()) {
                 Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
                 {
                     if (p != null) { //if Authenticator is present..
@@ -104,7 +100,7 @@ public class Scavenger extends JavaPlugin {
     }
 
     private void checkForWorldGuard() {
-        if (getWorldGuard() != null && getSConfig().wgPVPIgnore()) {
+        if (getWorldGuard() != null && config.wgPVPIgnore()) {
             logInfo("WorldGuard detected. Scavenger will not recover items in PVP regions.");
         }
     }
@@ -125,7 +121,7 @@ public class Scavenger extends JavaPlugin {
     }
 
     private void checkForFactions() {
-        if (getFactions() != null && getSConfig().factionEnemyDrops()) {
+        if (getFactions() != null && config.factionEnemyDrops()) {
             logInfo("Factions detected. Players will drop items in enemy teritory!");
         }
     }
@@ -225,7 +221,7 @@ public class Scavenger extends JavaPlugin {
     }
 
     public void setupResidence() {
-        if (getSConfig().residence()) {
+        if (config.residence()) {
             PluginManager pm = getServer().getPluginManager();
             Plugin p = pm.getPlugin("Residence");
             if (p != null) {
@@ -233,9 +229,9 @@ public class Scavenger extends JavaPlugin {
                     logInfo("Manually enabling Residence!");
                     pm.enablePlugin(p);
                 }
-                logInfo("Adding '" + getSConfig().resFlag() + "' flag to Residence.");
-                FlagPermissions.addResidenceOnlyFlag(getSConfig().resFlag());
-                FlagPermissions.addFlag(getSConfig().resFlag());
+                logInfo("Adding '" + config.resFlag() + "' flag to Residence.");
+                FlagPermissions.addResidenceOnlyFlag(config.resFlag());
+                FlagPermissions.addFlag(config.resFlag());
             } else {
                 logInfo("Residence NOT Installed!");
             }
@@ -259,17 +255,13 @@ public class Scavenger extends JavaPlugin {
     }
 
     public void logDebug(String _message) {
-        if (getSConfig().debugEnabled()) {
+        if (config.debugEnabled()) {
             log.log(Level.INFO, String.format("%s [DEBUG] %s", LOG_HEADER, _message));
         }
     }
 
     public void logError(String _message) {
         log.log(Level.SEVERE, String.format("%s %s", LOG_HEADER, _message));
-    }
-
-    public static ScavengerConfig getSConfig() {
-        return config;
     }
 
     void loadConfig() {
@@ -290,17 +282,17 @@ public class Scavenger extends JavaPlugin {
             if (x != null && x instanceof Vault) {
                 if (setupEconomy()) {
                     logInfo("Scavenger has linked to " + economy.getName() + " through Vault");
-                    if (getSConfig().percent()) {
-                        if (getSConfig().addMin()) {
-                            logInfo("Item recovery fee: " + getSConfig().percentCost()
-                                    + "% + " + getSConfig().minCost());
+                    if (config.percent()) {
+                        if (config.addMin()) {
+                            logInfo("Item recovery fee: " + config.percentCost()
+                                    + "% + " + config.minCost());
                         } else {
-                            logInfo("Item recovery fee: " + getSConfig().percentCost()
-                                    + "% (Min: " + getSConfig().minCost()
-                                    + ") (Max: " + getSConfig().maxCost() + ")");
+                            logInfo("Item recovery fee: " + config.percentCost()
+                                    + "% (Min: " + config.minCost()
+                                    + ") (Max: " + config.maxCost() + ")");
                         }
                     } else {
-                        logInfo("Item recovery fee: " + getSConfig().restoreCost());
+                        logInfo("Item recovery fee: " + config.restoreCost());
                     }
                 } else {
                     logError("Vault could not find an Economy plugin installed!");
@@ -312,8 +304,7 @@ public class Scavenger extends JavaPlugin {
             }
         } else {
             logInfo("Economy disabled. Item recovery will be free.");
-        }
-        instance = this;
+        }        
         configLoaded = true;
     }
 
@@ -356,7 +347,7 @@ public class Scavenger extends JavaPlugin {
             Player p = (Player) sender;
             if (commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
                 if (p.hasPermission("scavenger.reload")
-                        || (p.isOp() && getSConfig().opsAllPerms())) {
+                        || (p.isOp() && config.opsAllPerms())) {
                     loadConfig();
                     message(p, "Configuration reloaded.");
                 } else {
@@ -365,8 +356,8 @@ public class Scavenger extends JavaPlugin {
             }
             if (commandlabel.equalsIgnoreCase("scvron")) {
                 if (p.hasPermission("scavenger.self.on")
-                        || (p.isOp() && getSConfig().opsAllPerms())
-                        || !getSConfig().permsEnabled()) {
+                        || (p.isOp() && config.opsAllPerms())
+                        || !config.permsEnabled()) {
                     ignoreList.removePlayer(sender.getName());
                     message(p, "You have enabled item recovery for yourself!");
                 } else {
@@ -375,8 +366,8 @@ public class Scavenger extends JavaPlugin {
             }
             if (commandlabel.equalsIgnoreCase("scvroff")) {
                 if (p.hasPermission("scavenger.self.off")
-                        || (p.isOp() && getSConfig().opsAllPerms())
-                        || !getSConfig().permsEnabled()) {
+                        || (p.isOp() && config.opsAllPerms())
+                        || !config.permsEnabled()) {
                     ignoreList.addPlayer(sender.getName());
                     message(p, "You have disabled item recovery for yourself!");
                 } else {
@@ -385,8 +376,8 @@ public class Scavenger extends JavaPlugin {
             }
             if (commandlabel.equalsIgnoreCase("scvrlist")) {
                 if (p.hasPermission("scavenger.list")
-                        || (p.isOp() && getSConfig().opsAllPerms())
-                        || !getSConfig().permsEnabled()) {
+                        || (p.isOp() && config.opsAllPerms())
+                        || !config.permsEnabled()) {
                     rm.printRestorations(p);
                 } else {
                     message(p, "No permission to do this!");
@@ -404,12 +395,12 @@ public class Scavenger extends JavaPlugin {
     }
 
     private String headerStr() {
-        ChatColor headerColor = getSConfig().headerColor();
-        ChatColor textColor = getSConfig().textColor();
-        if (Scavenger.getSConfig().msgHeader().isEmpty()) {
+        ChatColor headerColor = config.headerColor();
+        ChatColor textColor = config.textColor();
+        if (config.msgHeader().isEmpty()) {
             return textColor + "[" + headerColor + PLUGIN_NAME + textColor + "] " + textColor;
         } else {
-            return textColor + "[" + headerColor + Scavenger.getSConfig().msgHeader() + textColor + "] " + textColor;
+            return textColor + "[" + headerColor + config.msgHeader() + textColor + "] " + textColor;
         }
     }
 
@@ -417,7 +408,7 @@ public class Scavenger extends JavaPlugin {
         if (p instanceof Player) {
             msg = msg.replaceAll("%PLAYER%", p.getName());
             msg = msg.replaceAll("%DPLAYER%", p.getDisplayName());
-            if (getSConfig().shouldNotify()) {
+            if (config.shouldNotify()) {
                 p.sendMessage(headerStr() + msg);
             } else {
                 logInfo(msg);
@@ -426,7 +417,7 @@ public class Scavenger extends JavaPlugin {
     }
 
     public void debugMessage(Player _player, String _message) {
-        if (getSConfig().debugEnabled()) {
+        if (config.debugEnabled()) {
             if (_player != null) {
                 _player.sendMessage(headerStr() + _message);
             } else {
@@ -436,13 +427,13 @@ public class Scavenger extends JavaPlugin {
     }
 
     public void debugMessage(String _message) {
-        if (getSConfig().debugEnabled()) {
+        if (config.debugEnabled()) {
             logDebug(_message);
         }
     }
 
     public void error(Player _player, String _message) {
-        if (_player != null && getSConfig().shouldNotify()) {
+        if (_player != null && config.shouldNotify()) {
             _player.sendMessage(headerStr() + ChatColor.RED + "Error: " + _message);
         } else {
             logError(_message);

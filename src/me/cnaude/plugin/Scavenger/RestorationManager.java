@@ -27,10 +27,16 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 
-public class RestorationManager implements Serializable {
+public final class RestorationManager implements Serializable {
 
+    Scavenger plugin;
     private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();
 
+    public RestorationManager(Scavenger plugin) {
+        this.plugin = plugin;
+        this.load();
+    }
+    
     public void save() {
         StreamSerializer serializer = new StreamSerializer();
         HashMap<String, RestorationS1> restorationsForDisk = new HashMap<String, RestorationS1>();
@@ -41,40 +47,40 @@ public class RestorationManager implements Serializable {
             for (ItemStack i : value.inventory) {
                 boolean error = false;
                 if (i instanceof ItemStack) {
-                    Scavenger.get().debugMessage("Serializing: " + i.toString());
+                    plugin.debugMessage("Serializing: " + i.toString());
                     try {
                         tmpRestoration.inventory.add(serializer.serializeItemStack(i));
                     } catch (IOException e) {
-                        Scavenger.get().logError(e.getMessage());
+                        plugin.logError(e.getMessage());
                         error = true;
                     } catch (Exception e) {
                         error = true;
-                        Scavenger.get().logError(e.getMessage());
+                        plugin.logError(e.getMessage());
                     }
                     if (error) {
-                        Scavenger.get().logError("Problem serializing item: " + i.toString());
+                        plugin.logError("Problem serializing item: " + i.toString());
                     }
-                    Scavenger.get().debugMessage("Done: " + i.toString());
+                    plugin.debugMessage("Done: " + i.toString());
                 }
             }
             for (ItemStack i : value.armour) {
                 if (i instanceof ItemStack) {
-                    Scavenger.get().debugMessage("Serializing: " + i.toString());
+                    plugin.debugMessage("Serializing: " + i.toString());
                     try {
                         tmpRestoration.armour.add(serializer.serializeItemStack(i));
                     } catch (IOException e) {
-                        Scavenger.get().logError(e.getMessage());
+                        plugin.logError(e.getMessage());
                     } catch (Exception e) {
-                        Scavenger.get().logError(e.getMessage());
+                        plugin.logError(e.getMessage());
                     }
-                    Scavenger.get().debugMessage("Done: " + i.toString());
+                    plugin.debugMessage("Done: " + i.toString());
                 }
             }
             tmpRestoration.enabled = value.enabled;
             tmpRestoration.level = value.level;
             tmpRestoration.exp = value.exp;
             restorationsForDisk.put(key, tmpRestoration);
-            Scavenger.get().logInfo("Saving " + key + "'s inventory to disk.");
+            plugin.logInfo("Saving " + key + "'s inventory to disk.");
         }
         try {
             File file = new File("plugins/Scavenger/inv1.ser");
@@ -83,7 +89,7 @@ public class RestorationManager implements Serializable {
             obj_out.writeObject(restorationsForDisk);
             obj_out.close();
         } catch (Exception e) {
-            Scavenger.get().logError(e.getMessage());
+            plugin.logError(e.getMessage());
         }
     }
 
@@ -92,7 +98,7 @@ public class RestorationManager implements Serializable {
         HashMap<String, RestorationS1> restorationsFromDisk;
         File file = new File("plugins/Scavenger/inv1.ser");
         if (!file.exists()) {
-            Scavenger.get().logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist.");
+            plugin.logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist.");
             return;
         }
         try {
@@ -101,7 +107,7 @@ public class RestorationManager implements Serializable {
             restorationsFromDisk = (HashMap<String, RestorationS1>) obj_in.readObject();
             obj_in.close();
         } catch (Exception e) {
-            Scavenger.get().logError(e.getMessage());
+            plugin.logError(e.getMessage());
             return;
         }
 
@@ -116,43 +122,43 @@ public class RestorationManager implements Serializable {
                 if (value.inventory.get(i) instanceof String) {
                     boolean error = false;
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    Scavenger.get().debugMessage("Deserializing: " + value.inventory.get(i).toString());
+                    plugin.debugMessage("Deserializing: " + value.inventory.get(i).toString());
                     try {
                         tmpStack = serializer.deserializeItemStack(value.inventory.get(i));
                     } catch (IOException e) {
-                        Scavenger.get().logError(e.getMessage());
+                        plugin.logError(e.getMessage());
                         error = true;
                     } catch (Exception e) {
-                        Scavenger.get().logError(e.getMessage());
+                        plugin.logError(e.getMessage());
                         error = true;
                     }
                     if (error) {
-                        Scavenger.get().logError("Problem deserializing item: " + value.inventory.get(i).toString());
+                        plugin.logError("Problem deserializing item: " + value.inventory.get(i).toString());
                     }
                     if (tmpStack == null) {
                         tmpRestoration.inventory[i] = new ItemStack(Material.AIR);
                     } else {
                         tmpRestoration.inventory[i] = tmpStack;
                     }
-                    Scavenger.get().debugMessage("Done: " + tmpRestoration.inventory[i].toString());
+                    plugin.debugMessage("Done: " + tmpRestoration.inventory[i].toString());
                 }
             }
 
             for (int i = 0; i < value.armour.size(); i++) {
                 if (value.armour.get(i) instanceof String) {
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    Scavenger.get().debugMessage("Deserializing: " + value.armour.get(i).toString());
+                    plugin.debugMessage("Deserializing: " + value.armour.get(i).toString());
                     try {
                         tmpStack = serializer.deserializeItemStack(value.armour.get(i));
                     } catch (IOException e) {
-                        Scavenger.get().logError(e.getMessage());
+                        plugin.logError(e.getMessage());
                     }
                     if (tmpStack == null) {
                         tmpRestoration.armour[i] = new ItemStack(Material.AIR);
                     } else {
                         tmpRestoration.armour[i] = tmpStack;
                     }
-                    Scavenger.get().debugMessage("Done: " + tmpRestoration.armour[i].toString());
+                    plugin.debugMessage("Done: " + tmpRestoration.armour[i].toString());
                 }
             }
 
@@ -161,200 +167,200 @@ public class RestorationManager implements Serializable {
             tmpRestoration.exp = value.exp;
 
             restorations.put(key, tmpRestoration);
-            Scavenger.get().logInfo("Loading " + key + "'s inventory from disk.");
+            plugin.logInfo("Loading " + key + "'s inventory from disk.");
         }
     }
 
-    public static boolean multipleInventories() {
-        if (Scavenger.get().getMultiverseInventories() != null
-                || Scavenger.get().getMultiInvAPI() != null
-                || Scavenger.get().getWorldInvAPI()) {
+    public boolean multipleInventories() {
+        if (plugin.getMultiverseInventories() != null
+                || plugin.getMultiInvAPI() != null
+                || plugin.getWorldInvAPI()) {
             return true;
         } else {
             return false;
         }
     }
 
-    public static boolean hasRestoration(Player p) {
+    public boolean hasRestoration(Player p) {
         if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
-                Scavenger.get().logDebug("Has: " + keyName);
+                plugin.logDebug("Has: " + keyName);
                 return true;
             }
         }
         return restorations.containsKey(p.getName());
     }
 
-    public static Restoration getRestoration(Player p) {
+    public Restoration getRestoration(Player p) {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
         if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
-                Scavenger.get().logDebug("Getting: " + keyName);
+                plugin.logDebug("Getting: " + keyName);
                 restoration = restorations.get(keyName);
             }
         }
         if (!restoration.enabled) {
             if (restorations.containsKey(p.getName())) {
-                Scavenger.get().logDebug("Getting: " + p.getName());
+                plugin.logDebug("Getting: " + p.getName());
                 restoration = restorations.get(p.getName());
             }
         }
         return restoration;
     }
 
-    public static void collect(Player p, List<ItemStack> itemDrops, EntityDeathEvent event) {
+    public void collect(Player p, List<ItemStack> itemDrops, EntityDeathEvent event) {
         if (itemDrops.isEmpty() && !levelAllow(p) && !expAllow(p)) {
             return;
         }
 
-        if (Scavenger.getSConfig().dropOnPVPDeath()) {
+        if (plugin.config.dropOnPVPDeath()) {
             if (p.getKiller() instanceof Player) {
-                Scavenger.get().message(p, Scavenger.getSConfig().msgPVPDeath());
+                plugin.message(p, plugin.config.msgPVPDeath());
                 return;
             }
         }
 
-        if (Scavenger.getSConfig().residence()) {
+        if (plugin.config.residence()) {
             ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());
             if (res != null) {
                 ResidencePermissions perms = res.getPermissions();
-                if (perms.playerHas(p.getName(), Scavenger.getSConfig().resFlag(), true)) {
-                    Scavenger.get().logDebug("Player '" + p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
-                    Scavenger.get().message(p, Scavenger.getSConfig().msgInsideRes());
+                if (perms.playerHas(p.getName(), plugin.config.resFlag(), true)) {
+                    plugin.logDebug("Player '" + p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
+                    plugin.message(p, plugin.config.msgInsideRes());
                     return;
                 } else {
-                    Scavenger.get().logDebug("Player '" + p.getName() + "' is allowed to use Scavenger in this residence.");
+                    plugin.logDebug("Player '" + p.getName() + "' is allowed to use Scavenger in this residence.");
 
                 }
             }
         }
 
-        if (Scavenger.getSConfig().factionEnemyDrops()) {
-            if (Scavenger.get().getFactions() != null) {
+        if (plugin.config.factionEnemyDrops()) {
+            if (plugin.getFactions() != null) {
                 try {
-                    Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
+                    plugin.logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
                     FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
-                    Scavenger.get().logDebug("Relation: " + fplayer.getRelationToLocation().name());
+                    plugin.logDebug("Relation: " + fplayer.getRelationToLocation().name());
                     if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
-                        Scavenger.get().logDebug("Player '" + p.getName() + "' is inside enemy territory!");
-                        Scavenger.get().message(p, Scavenger.getSConfig().msgInsideEnemyFaction());
+                        plugin.logDebug("Player '" + p.getName() + "' is inside enemy territory!");
+                        plugin.message(p, plugin.config.msgInsideEnemyFaction());
                         return;
                     }
                 } catch (NoSuchMethodError ex) {
-                    Scavenger.get().logDebug("ERROR: " + ex.getMessage());
+                    plugin.logDebug("ERROR: " + ex.getMessage());
                 }
             } else {
-                Scavenger.get().logDebug("No Factions detected");
+                plugin.logDebug("No Factions detected");
             }
         }
 
-        if (Scavenger.getSConfig().dungeonMazeDrops()) {
-            if (Scavenger.get().getDungeonMaze() != null) {
-                Scavenger.get().logDebug("Checking if '" + p.getName() + "' is in DungeonMaze.");
+        if (plugin.config.dungeonMazeDrops()) {
+            if (plugin.getDungeonMaze() != null) {
+                plugin.logDebug("Checking if '" + p.getName() + "' is in DungeonMaze.");
                 if (DungeonMazeAPI.isInDMWorld(p)) {
-                    Scavenger.get().logDebug("Player '" + p.getName() + "' is in DungeonMaze.");
-                    Scavenger.get().message(p, Scavenger.getSConfig().msgInsideDungeonMaze());
+                    plugin.logDebug("Player '" + p.getName() + "' is in DungeonMaze.");
+                    plugin.message(p, plugin.config.msgInsideDungeonMaze());
                     return;
                 }
             } else {
-                Scavenger.get().logDebug("No DungeonMaze plugin detected");
+                plugin.logDebug("No DungeonMaze plugin detected");
             }
         }
 
-        if (Scavenger.get().getWorldGuard() != null) {
-            Scavenger.get().logDebug("Checking region support for '" + p.getWorld().getName() + "'");
-            if (Scavenger.get().getWorldGuard().getRegionManager(p.getWorld()) != null) {
-                RegionManager regionManager = Scavenger.get().getWorldGuard().getRegionManager(p.getWorld());
+        if (plugin.getWorldGuard() != null) {
+            plugin.logDebug("Checking region support for '" + p.getWorld().getName() + "'");
+            if (plugin.getWorldGuard().getRegionManager(p.getWorld()) != null) {
+                RegionManager regionManager = plugin.getWorldGuard().getRegionManager(p.getWorld());
                 ApplicableRegionSet set = regionManager.getApplicableRegions(p.getLocation());
-                if (set.allows(DefaultFlag.PVP) && Scavenger.getSConfig().wgPVPIgnore()) {
-                    Scavenger.get().logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + Scavenger.getSConfig().wgPVPIgnore());
-                    if (!Scavenger.getSConfig().msgInsideWGPVP().isEmpty()) {
-                        Scavenger.get().message(p, Scavenger.getSConfig().msgInsideWGPVP());
+                if (set.allows(DefaultFlag.PVP) && plugin.config.wgPVPIgnore()) {
+                    plugin.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + plugin.config.wgPVPIgnore());
+                    if (!plugin.config.msgInsideWGPVP().isEmpty()) {
+                        plugin.message(p, plugin.config.msgInsideWGPVP());
                     }
                     return;
                 }
-                if (!set.allows(DefaultFlag.PVP) && Scavenger.getSConfig().wgGuardPVPOnly()) {
-                    Scavenger.get().logDebug("This is NOT a WorldGuard PVP zone and WorldGuardPVPOnly is " + Scavenger.getSConfig().wgGuardPVPOnly());
-                    if (!Scavenger.getSConfig().msgInsideWGPVP().isEmpty()) {
-                        Scavenger.get().message(p, Scavenger.getSConfig().msgInsideWGPVPOnly());
+                if (!set.allows(DefaultFlag.PVP) && plugin.config.wgGuardPVPOnly()) {
+                    plugin.logDebug("This is NOT a WorldGuard PVP zone and WorldGuardPVPOnly is " + plugin.config.wgGuardPVPOnly());
+                    if (!plugin.config.msgInsideWGPVP().isEmpty()) {
+                        plugin.message(p, plugin.config.msgInsideWGPVPOnly());
                     }
                     return;
                 }
             } else {
-                Scavenger.get().logDebug("Region support disabled for '" + p.getWorld().getName() + "'");
+                plugin.logDebug("Region support disabled for '" + p.getWorld().getName() + "'");
             }
         }
 
-        if (Scavenger.get().getUltimateArena() != null) {
-            Scavenger.get().getUltimateArena();
+        if (plugin.getUltimateArena() != null) {
+            plugin.getUltimateArena();
             if (UltimateArenaAPI.hookIntoUA().isPlayerInArenaLocation(p)) {
-                if (!Scavenger.getSConfig().msgInsideUA().isEmpty()) {
-                    Scavenger.get().message(p, Scavenger.getSConfig().msgInsideUA());
+                if (!plugin.config.msgInsideUA().isEmpty()) {
+                    plugin.message(p, plugin.config.msgInsideUA());
                 }
                 return;
             }
         }
 
-        if (Scavenger.maHandler != null && Scavenger.maHandler.isPlayerInArena(p)) {
-            if (!Scavenger.getSConfig().msgInsideMA().isEmpty()) {
-                Scavenger.get().message(p, Scavenger.getSConfig().msgInsideMA());
+        if (plugin.maHandler != null && plugin.maHandler.isPlayerInArena(p)) {
+            if (!plugin.config.msgInsideMA().isEmpty()) {
+                plugin.message(p, plugin.config.msgInsideMA());
             }
             return;
         }
 
-        if (Scavenger.pvpHandler != null && !net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(p).equals("")) {
-            String x = Scavenger.getSConfig().msgInsidePA();
+        if (plugin.pvpHandler != null && !net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(p).equals("")) {
+            String x = plugin.config.msgInsidePA();
             if (!x.isEmpty()) {
                 x = x.replaceAll("%ARENA%", net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(p));
-                Scavenger.get().message(p, x);
+                plugin.message(p, x);
             }
             return;
         }
 
-        if (Scavenger.battleArena) {
+        if (plugin.battleArena) {
             mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(p);
             if (ap != null) {
                 Match match = BattleArena.getBAController().getMatch(ap);
                 if (match != null && match.insideArena(ap)) {
-                    String x = Scavenger.getSConfig().msgInsideBA();
+                    String x = plugin.config.msgInsideBA();
                     if (!x.isEmpty()) {
-                        Scavenger.get().message(p, x);
+                        plugin.message(p, x);
                     }
                     return;
                 }
             }
         }
 
-        if (Scavenger.get().getMinigames() != null) {
-            if (Scavenger.get().getMinigames().getPlayerData().playerInMinigame(p)) {
-                Scavenger.get().logInfo("Player '" + p.getName() + "' is in a Minigame. Not recovering items.");
+        if (plugin.getMinigames() != null) {
+            if (plugin.getMinigames().getPlayerData().playerInMinigame(p)) {
+                plugin.logInfo("Player '" + p.getName() + "' is in a Minigame. Not recovering items.");
                 return;
             }
         }
 
         if (hasRestoration(p)) {
-            Scavenger.get().error(p, "Restoration already exists, ignoring.");
+            plugin.error(p, "Restoration already exists, ignoring.");
             return;
         }
 
-        if (Scavenger.get().getEconomy() != null
+        if (plugin.getEconomy() != null
                 && !(p.hasPermission("scavenger.free")
-                || (p.isOp() && Scavenger.getSConfig().opsAllPerms()))
-                && Scavenger.getSConfig().economyEnabled()) {
-            double restoreCost = Scavenger.getSConfig().restoreCost();
+                || (p.isOp() && plugin.config.opsAllPerms()))
+                && plugin.config.economyEnabled()) {
+            double restoreCost = plugin.config.restoreCost();
             double withdrawAmount;
-            double playeBalance = Scavenger.get().getEconomy().getBalance(p.getName());
-            double percentCost = Scavenger.getSConfig().percentCost();
-            double minCost = Scavenger.getSConfig().minCost();
-            double maxCost = Scavenger.getSConfig().maxCost();
+            double playeBalance = plugin.getEconomy().getBalance(p.getName());
+            double percentCost = plugin.config.percentCost();
+            double minCost = plugin.config.minCost();
+            double maxCost = plugin.config.maxCost();
             EconomyResponse er;
             String currency;
-            if (Scavenger.getSConfig().percent()) {
+            if (plugin.config.percent()) {
                 withdrawAmount = playeBalance * (percentCost / 100.0);
-                if (Scavenger.getSConfig().addMin()) {
+                if (plugin.config.addMin()) {
                     withdrawAmount = withdrawAmount + minCost;
                 } else if (withdrawAmount < minCost) {
                     withdrawAmount = minCost;
@@ -365,36 +371,36 @@ public class RestorationManager implements Serializable {
             } else {
                 withdrawAmount = restoreCost;
             }
-            er = Scavenger.get().getEconomy().withdrawPlayer(p.getName(), withdrawAmount);
+            er = plugin.getEconomy().withdrawPlayer(p.getName(), withdrawAmount);
             if (er.transactionSuccess()) {
                 if (withdrawAmount == 1) {
-                    currency = Scavenger.get().getEconomy().currencyNameSingular();
+                    currency = plugin.getEconomy().currencyNameSingular();
                 } else {
-                    currency = Scavenger.get().getEconomy().currencyNamePlural();
+                    currency = plugin.getEconomy().currencyNamePlural();
                 }
-                String x = Scavenger.getSConfig().msgSaveForFee();
+                String x = plugin.config.msgSaveForFee();
                 if (!x.isEmpty()) {
                     x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
-                    Scavenger.get().message(p, x);
+                    plugin.message(p, x);
                 }
             } else {
                 if (playeBalance == 1) {
-                    currency = Scavenger.get().getEconomy().currencyNameSingular();
+                    currency = plugin.getEconomy().currencyNameSingular();
                 } else {
-                    currency = Scavenger.get().getEconomy().currencyNamePlural();
+                    currency = plugin.getEconomy().currencyNamePlural();
                 }
-                String x = Scavenger.getSConfig().msgNotEnoughMoney();
+                String x = plugin.config.msgNotEnoughMoney();
                 if (!x.isEmpty()) {
                     x = x.replaceAll("%BALANCE%", String.format("%.2f", playeBalance));
                     x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
-                    Scavenger.get().message(p, x);
+                    plugin.message(p, x);
                 }
                 return;
             }
         } else {
-            Scavenger.get().message(p, Scavenger.getSConfig().msgSaving());
+            plugin.message(p, plugin.config.msgSaving());
         }
 
         Restoration restoration = new Restoration();
@@ -412,13 +418,13 @@ public class RestorationManager implements Serializable {
 
         itemDrops.clear();
 
-        if (Scavenger.getSConfig().singleItemDrops()) {
+        if (plugin.config.singleItemDrops()) {
             ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
             for (ItemStack[] a : invAndArmour) {
                 for (ItemStack i : a) {
                     boolean dropIt;
                     if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                        if (Scavenger.getSConfig().singleItemDropsOnly() == true) {
+                        if (plugin.config.singleItemDropsOnly() == true) {
                             if ((p.hasPermission("scavenger.drop." + i.getTypeId())) || (p.hasPermission("scavenger.drop.*"))) {
                                 dropIt = false;
                             } else {
@@ -432,39 +438,39 @@ public class RestorationManager implements Serializable {
                             }
                         }
                         if (dropIt) {
-                            Scavenger.get().debugMessage(p, "Dropping item " + i.getType());
+                            plugin.debugMessage(p, "Dropping item " + i.getType());
                             itemDrops.add(i.clone());
                             i.setAmount(0);
                         } else {
-                            Scavenger.get().debugMessage(p, "Keeping item " + i.getType());
+                            plugin.debugMessage(p, "Keeping item " + i.getType());
                         }
                     }
                 }
             }
         }
 
-        if (Scavenger.getSConfig().chanceToDrop() > 0
+        if (plugin.config.chanceToDrop() > 0
                 && !p.hasPermission("scavenger.nochance")) {
             ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
             for (ItemStack[] a : invAndArmour) {
                 for (ItemStack i : a) {
                     if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
                         Random randomGenerator = new Random();
-                        int randomInt = randomGenerator.nextInt(Scavenger.getSConfig().chanceToDrop()) + 1;
-                        Scavenger.get().debugMessage(p, "Random number is " + randomInt);
-                        if (randomInt == Scavenger.getSConfig().chanceToDrop()) {
-                            Scavenger.get().debugMessage(p, "Randomly dropping item " + i.getType());
+                        int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
+                        plugin.debugMessage(p, "Random number is " + randomInt);
+                        if (randomInt == plugin.config.chanceToDrop()) {
+                            plugin.debugMessage(p, "Randomly dropping item " + i.getType());
                             itemDrops.add(i.clone());
                             i.setAmount(0);
                         } else {
-                            Scavenger.get().debugMessage(p, "Randomly keeping item " + i.getType());
+                            plugin.debugMessage(p, "Randomly keeping item " + i.getType());
                         }
                     }
                 }
             }
         }
 
-        if (Scavenger.getSConfig().slotBasedRecovery()) {
+        if (plugin.config.slotBasedRecovery()) {
             checkSlots(p, "armour", restoration.armour, itemDrops);
             checkSlots(p, "inv", restoration.inventory, itemDrops);
         }
@@ -472,7 +478,7 @@ public class RestorationManager implements Serializable {
         addRestoration(p, restoration);
     }
 
-    private static void checkSlots(Player p, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
+    private void checkSlots(Player p, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         for (int i = 0; i < itemStackArray.length; i++) {
             String itemType;
             if (itemStackArray[i] != null) {
@@ -480,32 +486,32 @@ public class RestorationManager implements Serializable {
             } else {
                 itemType = "NULL";
             }
-            Scavenger.get().debugMessage("[type:" + type + "] [p:" + p.getName() + "] [slot:" + i + "] [item:"
+            plugin.debugMessage("[type:" + type + "] [p:" + p.getName() + "] [slot:" + i + "] [item:"
                     + itemType + "] [perm:" + p.hasPermission("scavenger." + type + "." + i) + "]");
             if (!p.hasPermission("scavenger." + type + "." + i) && !itemType.equals("NULL")) {
-                Scavenger.get().debugMessage(p, "Dropping: " + itemType);
+                plugin.debugMessage(p, "Dropping: " + itemType);
                 itemDrops.add(itemStackArray[i].clone());
                 itemStackArray[i].setAmount(0);
             } else {
-                Scavenger.get().debugMessage(p, "Keeping: " + itemType);
+                plugin.debugMessage(p, "Keeping: " + itemType);
             }
         }
     }
 
-    public static boolean levelAllow(Player p) {
+    public boolean levelAllow(Player p) {
         if ((p.hasPermission("scavenger.level")
-                || !Scavenger.getSConfig().permsEnabled()
-                || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) && p.getLevel() > 0) {
+                || !plugin.config.permsEnabled()
+                || (p.isOp() && plugin.config.opsAllPerms())) && p.getLevel() > 0) {
             return true;
         } else {
             return false;
         }
     }
 
-    public static boolean expAllow(Player p) {
+    public boolean expAllow(Player p) {
         if ((p.hasPermission("scavenger.exp")
-                || !Scavenger.getSConfig().permsEnabled()
-                || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) && p.getExhaustion() > 0) {
+                || !plugin.config.permsEnabled()
+                || (p.isOp() && plugin.config.opsAllPerms())) && p.getExhaustion() > 0) {
             return true;
         } else {
             return false;
@@ -513,41 +519,41 @@ public class RestorationManager implements Serializable {
     }
 
     public void printRestorations(Player p) {
-        Scavenger.get().message(p, "Restorations:");
+        plugin.message(p, "Restorations:");
         for (String key : restorations.keySet()) {
-            Scavenger.get().message(p, "  " + key);
+            plugin.message(p, "  " + key);
         }
     }
 
     public void printRestorations() {
-        Scavenger.get().logInfo("Restorations:");
+        plugin.logInfo("Restorations:");
         for (String key : restorations.keySet()) {
-            Scavenger.get().logInfo("  " + key);
+            plugin.logInfo("  " + key);
         }
     }
 
-    public static void addRestoration(Player p, Restoration r) {
+    public void addRestoration(Player p, Restoration r) {
         if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             restorations.put(keyName, r);
-            Scavenger.get().debugMessage("Adding: " + keyName);
+            plugin.debugMessage("Adding: " + keyName);
         } else {
             restorations.put(p.getName(), r);
-            Scavenger.get().debugMessage("Adding: " + p.getName());
+            plugin.debugMessage("Adding: " + p.getName());
         }
     }
 
-    public static void enable(Player p) {
+    public void enable(Player p) {
         if (hasRestoration(p)) {
             Restoration restoration = getRestoration(p);
             restoration.enabled = true;
-            Scavenger.get().debugMessage("Enabling: " + p.getName());
+            plugin.debugMessage("Enabling: " + p.getName());
         } else {
-            Scavenger.get().logDebug("Not enabling: " + p.getName());
+            plugin.logDebug("Not enabling: " + p.getName());
         }
     }
 
-    public static void restore(Player p) {
+    public void restore(Player p) {
         Restoration restoration = getRestoration(p);
 
         if (restoration.enabled) {
@@ -556,44 +562,44 @@ public class RestorationManager implements Serializable {
             p.getInventory().setContents(restoration.inventory);
             p.getInventory().setArmorContents(restoration.armour);
             if (p.hasPermission("scavenger.level")
-                    || !Scavenger.getSConfig().permsEnabled()
-                    || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+                    || !plugin.config.permsEnabled()
+                    || (p.isOp() && plugin.config.opsAllPerms())) {
                 p.setLevel(restoration.level);
             }
             if (p.hasPermission("scavenger.exp")
-                    || !Scavenger.getSConfig().permsEnabled()
-                    || (p.isOp() && Scavenger.getSConfig().opsAllPerms())) {
+                    || !plugin.config.permsEnabled()
+                    || (p.isOp() && plugin.config.opsAllPerms())) {
                 p.setExp(restoration.exp);
             }
-            if (Scavenger.getSConfig().shouldNotify()) {
-                Scavenger.get().message(p, Scavenger.getSConfig().msgRecovered());
+            if (plugin.config.shouldNotify()) {
+                plugin.message(p, plugin.config.msgRecovered());
             }
             removeRestoration(p);
             if (hasRestoration(p)) {
-                Scavenger.get().message(p, "Restore exists!!!");
+                plugin.message(p, "Restore exists!!!");
             }
         }
 
     }
 
-    public static void removeRestoration(Player p) {
+    public void removeRestoration(Player p) {
         if (multipleInventories()) {
             String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
             if (restorations.containsKey(keyName)) {
                 restorations.remove(keyName);
-                Scavenger.get().logDebug("Removing: " + keyName);
+                plugin.logDebug("Removing: " + keyName);
             }
         }
         if (restorations.containsKey(p.getName())) {
             restorations.remove(p.getName());
-            Scavenger.get().logDebug("Removing: " + p.getName());
+            plugin.logDebug("Removing: " + p.getName());
         }
     }
 
-    public static List<String> getWorldGroups(World world) {
+    public List<String> getWorldGroups(World world) {
         List<String> returnData = new ArrayList<String>();
-        if (Scavenger.get().getMultiverseInventories() != null) {
-            MultiverseInventories multiInv = Scavenger.get().getMultiverseInventories();
+        if (plugin.getMultiverseInventories() != null) {
+            MultiverseInventories multiInv = plugin.getMultiverseInventories();
             if (multiInv.getGroupManager() != null) {
                 GroupManager groupManager = multiInv.getGroupManager();
                 if (groupManager.getGroupsForWorld(world.getName()) != null) {
@@ -607,16 +613,16 @@ public class RestorationManager implements Serializable {
 
             }
         }
-        if (Scavenger.get().getMultiInvAPI() != null) {
+        if (plugin.getMultiInvAPI() != null) {
             String worldname = world.getName();
-            MultiInvAPI multiInvAPI = Scavenger.get().getMultiInvAPI();
+            MultiInvAPI multiInvAPI = plugin.getMultiInvAPI();
             if (multiInvAPI.getGroups() != null) {
                 if (multiInvAPI.getGroups().containsKey(worldname)) {
                     returnData.add(multiInvAPI.getGroups().get(worldname));
                 }
             }
         }
-        if (Scavenger.get().getWorldInvAPI()) {
+        if (plugin.getWorldInvAPI()) {
             String worldname = world.getName();
             try {
                 returnData.add(WorldInventoriesAPI.findGroup(worldname).getName());
