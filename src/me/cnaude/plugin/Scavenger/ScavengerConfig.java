@@ -44,6 +44,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_LANGUAGE = "Global.LanguageFile";
     private static final String BLACKLISTED_WORLDS = "BlacklistedWorlds";
     private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
+    private static final String GLOBAL_RESTOREDELAY = "Global.RestoreDelayTicks";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED = "MsgRecovered";
     private static final String MSG_SAVING = "MsgSaving";
@@ -117,6 +118,7 @@ public final class ScavengerConfig {
     private String languageFileName;
     private List<String> blacklistedworlds = new ArrayList<String>();
     private boolean slotBasedRecovery;
+    private int restoreDelayTicks;
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();
@@ -155,6 +157,7 @@ public final class ScavengerConfig {
         for (String s : config.getStringList(BLACKLISTED_WORLDS)) {            
             blacklistedworlds.add(s.toLowerCase());                            
         }
+        restoreDelayTicks = config.getInt(GLOBAL_RESTOREDELAY, 10);
     
         initLangFiles(plug);
         loadLanguage(plug);
@@ -471,5 +474,9 @@ public final class ScavengerConfig {
     
     public boolean slotBasedRecovery() {
         return slotBasedRecovery;
+    }
+    
+    public int restoreDelayTicks() {
+        return restoreDelayTicks;
     }
 }

@@ -39,7 +39,7 @@ public class ScavengerEventListenerOffline implements Listener {
                 public void run() {
                     rm.restore(player);
                 }
-            }, 20);
+            }, plugin.config.restoreDelayTicks());
         }
     }
 

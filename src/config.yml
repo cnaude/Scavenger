@@ -33,6 +33,8 @@ Global:
   DropOnPVPDeath: false
   # Enabled slot based recovery. Players must have scavenger.armour.X, or scavenger.inv.X, where X is the slot number to recover.
   SlotBasedRecovery: false
+  # Restore delay in ticks. 
+  RestoreDelayTicks: 10
 Messages:
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.
