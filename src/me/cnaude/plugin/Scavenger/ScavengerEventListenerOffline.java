@@ -7,8 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ScavengerEventListenerOffline implements Listener {
 
@@ -60,6 +60,13 @@ public class ScavengerEventListenerOffline implements Listener {
         }
 
     }*/
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {        
+        if (rm.hasRestoration(event.getPlayer())) {
+            rm.restore(event.getPlayer());
+        }
+    }
 
     private boolean isScavengeAllowed(Player player) {
         String dcString = "NULL";

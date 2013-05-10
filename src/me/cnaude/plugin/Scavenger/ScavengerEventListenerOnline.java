@@ -7,12 +7,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ScavengerEventListenerOnline implements Listener {
-    
+
     Scavenger plugin;
     RestorationManager rm;
-    
+
     public ScavengerEventListenerOnline(Scavenger plugin, RestorationManager restorationManager) {
         this.plugin = plugin;
         this.rm = restorationManager;
@@ -60,6 +61,13 @@ public class ScavengerEventListenerOnline implements Listener {
      }
      }
      }*/
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerTeleport(PlayerTeleportEvent event) {        
+        if (rm.hasRestoration(event.getPlayer())) {
+            rm.restore(event.getPlayer());
+        }
+    }
+
     private boolean isScavengeAllowed(Player player) {
         String dcString = "NULL";
         if (player.getLastDamageCause() != null) {
