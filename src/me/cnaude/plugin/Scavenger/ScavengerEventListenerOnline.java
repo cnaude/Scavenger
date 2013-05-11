@@ -19,6 +19,18 @@ public class ScavengerEventListenerOnline implements Listener {
         this.rm = restorationManager;
     }
 
+    public void delayedRestore(final Player player) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (rm.hasRestoration(player)) {
+                    rm.enable(player);
+                    rm.restore(player);
+                }
+            }
+        }, plugin.config.restoreDelayTicks());
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
@@ -30,26 +42,12 @@ public class ScavengerEventListenerOnline implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        final Player player = event.getPlayer();
-        if (rm.hasRestoration(event.getPlayer())) {
-            rm.enable(event.getPlayer());
-            plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    rm.restore(player);
-                }
-            }, plugin.config.restoreDelayTicks());
-        }
+        delayedRestore(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        if ((event.getPlayer() instanceof Player)) {
-            if (rm.hasRestoration(event.getPlayer())) {
-                rm.enable(event.getPlayer());
-                rm.restore(event.getPlayer());
-            }
-        }
+        delayedRestore(event.getPlayer());
     }
 
     /*
@@ -62,10 +60,8 @@ public class ScavengerEventListenerOnline implements Listener {
      }
      }*/
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {        
-        if (rm.hasRestoration(event.getPlayer())) {
-            rm.restore(event.getPlayer());
-        }
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        delayedRestore(event.getPlayer());
     }
 
     private boolean isScavengeAllowed(Player player) {
