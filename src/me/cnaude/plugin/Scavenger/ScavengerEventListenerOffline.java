@@ -25,7 +25,7 @@ public class ScavengerEventListenerOffline implements Listener {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
-                    rm.enable(player);
+                    //rm.enable(player);
                     rm.restore(player);
                 }
             }
