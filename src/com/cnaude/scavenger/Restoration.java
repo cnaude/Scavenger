@@ -1,4 +1,4 @@
-package me.cnaude.plugin.Scavenger;
+package com.cnaude.scavenger;
 
 import org.bukkit.inventory.ItemStack;
 

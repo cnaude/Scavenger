@@ -1,4 +1,4 @@
-package me.cnaude.plugin.Scavenger;
+package com.cnaude.scavenger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -184,7 +184,7 @@ public final class ScavengerConfig {
             File file = new File(langDir + "/" + fName);
             if (!file.exists()) {
                 try {
-                    InputStream in = Scavenger.class.getResourceAsStream("/me/cnaude/plugin/Scavenger/Languages/" + fName);
+                    InputStream in = Scavenger.class.getResourceAsStream("/" + fName);
                     byte[] buf = new byte[1024];
                     int len;
                     OutputStream out = new FileOutputStream(file);

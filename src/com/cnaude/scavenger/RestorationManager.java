@@ -1,4 +1,4 @@
-package me.cnaude.plugin.Scavenger;
+package com.cnaude.scavenger;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;

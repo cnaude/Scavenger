@@ -1,20 +1,22 @@
-package me.cnaude.plugin.Scavenger;
+package com.cnaude.scavenger;
 
+import fr.areku.Authenticator.Authenticator;
+import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-public class ScavengerEventListenerOnline implements Listener {
+public class ScavengerEventListenerOffline implements Listener {
 
     Scavenger plugin;
     RestorationManager rm;
 
-    public ScavengerEventListenerOnline(Scavenger plugin, RestorationManager restorationManager) {
+    public ScavengerEventListenerOffline(Scavenger plugin, RestorationManager restorationManager) {
         this.plugin = plugin;
         this.rm = restorationManager;
     }
@@ -24,14 +26,16 @@ public class ScavengerEventListenerOnline implements Listener {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
-                    rm.enable(player);
-                    rm.restore(player);
+                    //rm.enable(player);
+                    if (isScavengeAllowed(player)) {
+                        rm.restore(player);
+                    }
                 }
             }
         }, plugin.config.restoreDelayTicks());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
@@ -45,20 +49,24 @@ public class ScavengerEventListenerOnline implements Listener {
         delayedRestore(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        delayedRestore(event.getPlayer());
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerOfflineModeLogin(PlayerOfflineModeLogin event) {
+        if ((event.getPlayer() instanceof Player)) {
+            if (isScavengeAllowed(event.getPlayer())) {
+                rm.enable(event.getPlayer());
+            }
+        }
     }
 
-    /*
-     @EventHandler(priority = EventPriority.NORMAL)
-     public void onPlayerMove(PlayerMoveEvent event) {
-     if (event.getFrom().distance(event.getTo()) >= 0.5f) {
-     if (restorationManager.hasRestoration(event.getPlayer())) {
-     restorationManager.restore(event.getPlayer());
-     }
-     }
-     }*/
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (rm.hasRestoration(event.getPlayer())) {
+            if (isScavengeAllowed(event.getPlayer())) {
+                rm.restore(event.getPlayer());
+            }
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         delayedRestore(event.getPlayer());
@@ -73,6 +81,9 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         plugin.logDebug("Player: " + player + "World: "
                 + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
+        if (!Authenticator.isPlayerLoggedIn(player)) {
+            return false;
+        }
         if (plugin.config.blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
         }

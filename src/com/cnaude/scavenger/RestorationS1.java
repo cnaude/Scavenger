@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.cnaude.plugin.Scavenger;
+package com.cnaude.scavenger;
 
 import java.io.Serializable;
 import java.util.ArrayList;

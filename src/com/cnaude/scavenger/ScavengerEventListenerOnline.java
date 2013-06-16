@@ -1,38 +1,37 @@
-package me.cnaude.plugin.Scavenger;
+package com.cnaude.scavenger;
 
-import fr.areku.Authenticator.Authenticator;
-import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-public class ScavengerEventListenerOffline implements Listener {
+public class ScavengerEventListenerOnline implements Listener {
 
     Scavenger plugin;
     RestorationManager rm;
-    
-    public ScavengerEventListenerOffline(Scavenger plugin, RestorationManager restorationManager) {
+
+    public ScavengerEventListenerOnline(Scavenger plugin, RestorationManager restorationManager) {
         this.plugin = plugin;
         this.rm = restorationManager;
     }
-    
+
     public void delayedRestore(final Player player) {
         plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
-                    //rm.enable(player);
+                    rm.enable(player);
                     rm.restore(player);
                 }
             }
         }, plugin.config.restoreDelayTicks());
     }
-    
-    @EventHandler(priority = EventPriority.HIGH)
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
@@ -40,32 +39,28 @@ public class ScavengerEventListenerOffline implements Listener {
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        delayedRestore(event.getPlayer());        
+        delayedRestore(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerOfflineModeLogin(PlayerOfflineModeLogin event) {
-        if ((event.getPlayer() instanceof Player)) {
-            if (isScavengeAllowed(event.getPlayer())) {
-                rm.enable(event.getPlayer());
-            }
-        }
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoinEvent(PlayerJoinEvent event) {
+        delayedRestore(event.getPlayer());
     }
 
     /*
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (isScavengeAllowed(event.getPlayer())) {
-            rm.restore(event.getPlayer());
-        }
-
-    }*/
-    
+     @EventHandler(priority = EventPriority.NORMAL)
+     public void onPlayerMove(PlayerMoveEvent event) {
+     if (event.getFrom().distance(event.getTo()) >= 0.5f) {
+     if (restorationManager.hasRestoration(event.getPlayer())) {
+     restorationManager.restore(event.getPlayer());
+     }
+     }
+     }*/
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {          
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
         delayedRestore(event.getPlayer());
     }
 
@@ -76,11 +71,8 @@ public class ScavengerEventListenerOffline implements Listener {
                 dcString = player.getLastDamageCause().getCause().toString();
             }
         }
-        plugin.logDebug("Player: " + player + "World: " 
-                + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);        
-        if (!Authenticator.isPlayerLoggedIn(player)) {
-            return false;
-        }
+        plugin.logDebug("Player: " + player + "World: "
+                + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
         if (plugin.config.blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
         }
