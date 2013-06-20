@@ -26,9 +26,12 @@ public class ScavengerEventListenerOffline implements Listener {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
+                    if (Authenticator.isPlayerLoggedIn(player)) {
                     //rm.enable(player);
                     if (isScavengeAllowed(player)) {
+                        rm.enable(player);
                         rm.restore(player);
+                    }
                     }
                 }
             }
@@ -61,8 +64,11 @@ public class ScavengerEventListenerOffline implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (rm.hasRestoration(event.getPlayer())) {
-            if (isScavengeAllowed(event.getPlayer())) {
+            if (Authenticator.isPlayerLoggedIn(event.getPlayer())) {
+                //if (isScavengeAllowed(event.getPlayer())) {
+                rm.enable(event.getPlayer());
                 rm.restore(event.getPlayer());
+                //}
             }
         }
     }
