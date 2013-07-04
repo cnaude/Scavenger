@@ -193,7 +193,7 @@ public class Scavenger extends JavaPlugin {
         }
         return mg;
     }
-
+    
     public P getFactions() {
         Plugin plugin = getServer().getPluginManager().getPlugin("Factions");
 
@@ -202,6 +202,16 @@ public class Scavenger extends JavaPlugin {
         }
         return (P) plugin;
     }
+
+    /*
+    public Factions getFactions() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("Factions");
+
+        if (plugin == null || !(plugin instanceof Factions)) {
+            return null;
+        }
+        return (Factions) plugin;
+    }*/
 
     public DungeonMaze getDungeonMaze() {
         Plugin plugin = getServer().getPluginManager().getPlugin("DungeonMaze");
