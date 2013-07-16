@@ -1,6 +1,5 @@
 package com.cnaude.scavenger;
 
-import me.cnaude.plugin.Scavenger.RestorationS1;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
@@ -19,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
+import me.cnaude.plugin.Scavenger.RestorationS1;
 import me.drayshak.WorldInventories.api.WorldInventoriesAPI;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
@@ -37,7 +37,7 @@ public final class RestorationManager implements Serializable {
         this.plugin = plugin;
         this.load();
     }
-    
+
     public void save() {
         StreamSerializer serializer = new StreamSerializer();
         HashMap<String, RestorationS1> restorationsForDisk = new HashMap<String, RestorationS1>();
@@ -238,7 +238,7 @@ public final class RestorationManager implements Serializable {
                 }
             }
         }
-        
+
         if (plugin.config.factionEnemyDrops()) {
             if (plugin.getFactions() != null) {
                 try {
@@ -259,24 +259,24 @@ public final class RestorationManager implements Serializable {
         }
 
         /*
-        if (plugin.config.factionEnemyDrops()) {
-            if (plugin.getFactions() != null) {
-                try {
-                    plugin.logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
-                    FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
-                    plugin.logDebug("Relation: " + fplayer.getRelationToLocation().name());
-                    if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
-                        plugin.logDebug("Player '" + p.getName() + "' is inside enemy territory!");
-                        plugin.message(p, plugin.config.msgInsideEnemyFaction());
-                        return;
-                    }
-                } catch (NoSuchMethodError ex) {
-                    plugin.logDebug("ERROR: " + ex.getMessage());
-                }
-            } else {
-                plugin.logDebug("No Factions detected");
-            }
-        } */
+         if (plugin.config.factionEnemyDrops()) {
+         if (plugin.getFactions() != null) {
+         try {
+         plugin.logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
+         FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
+         plugin.logDebug("Relation: " + fplayer.getRelationToLocation().name());
+         if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
+         plugin.logDebug("Player '" + p.getName() + "' is inside enemy territory!");
+         plugin.message(p, plugin.config.msgInsideEnemyFaction());
+         return;
+         }
+         } catch (NoSuchMethodError ex) {
+         plugin.logDebug("ERROR: " + ex.getMessage());
+         }
+         } else {
+         plugin.logDebug("No Factions detected");
+         }
+         } */
 
         if (plugin.config.dungeonMazeDrops()) {
             if (plugin.getDungeonMaze() != null) {

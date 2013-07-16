@@ -7,5 +7,5 @@ public class Restoration {
     public ItemStack[] inventory;
     public ItemStack[] armour;
     public int level;
-    public float exp;   
+    public float exp;
 }

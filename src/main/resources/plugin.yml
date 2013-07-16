@@ -1,9 +1,10 @@
-name: Scavenger
-main: com.cnaude.scavenger.Scavenger
-version: 1.25a
+name: ${project.name}
+version: ${project.version}
+description: ${project.description}
 author: cnaude, modwizcode, SirHedgehog, Xephi
-description: Item recovery on death. Based on SirHedgehog's code.
-website: http://dev.bukkit.org/server-mods/scavenger/
+description: ${project.description}
+website: ${project.url}
+main: com.cnaude.scavenger.Scavenger
 loadbefore:
   - ProtocolLib
 softdepend:

@@ -1,0 +1,13 @@
+MsgRecovered: Tu inventario fue restaurado.
+MsgSaving: Guardando tu inventario.
+MsgSaveForFee: Tu invetario fue guadado por una pequeña cuota %COST% %CURRENCY%.
+MsgNotEnoughMoney: El coste de recuperar tu items es %COST% pero tu solo tienes esto %BALANCE% %CURRENCY%.
+MsgInsidePA: Tu estabas el la Arena PVP %ARENA%. Scavenger No ha guardado tu inventario.
+MsgInsideMA: Tu estabas en el Mob Arena. Tu inventario no fue guadado, no te preocupes solo el que llevas ahora, el real no se a perdido :).
+MsgInsideWGPVP: Tu estabas en una region PVP de worldGuard. Scavenger no guardo tu inevtario.
+MsgInsideWGPVPOnly: Tu no estabas en una region PVP de worldGuard. Scavenger no guardo tu invrntario.
+MsgInsideEnemyFaction: Has muerto en territorio enemigo. Bay items!
+MsgInsideDungeonMaze: tu estas dentro de una DungeonMaze. Tus items han sido dropeados!
+MsgHeader: Scavenger
+MsgInsideRes: Esta residencia esta no tiene habilitado el savado de items! dropeando items!
+MsgPVPDeath: Asesinado por otro jugador! Dropeando items.
