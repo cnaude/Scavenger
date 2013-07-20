@@ -72,3 +72,7 @@ Economy:
 BlacklistedWorlds:
 - put_here_worlds
 - that_you_want_blacklisted
+# Drop items in these WorldGuard regions
+BlacklistedWGRegions:
+- put_here_regions
+- that_you_want_blacklisted

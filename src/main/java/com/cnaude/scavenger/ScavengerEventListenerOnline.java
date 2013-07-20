@@ -8,6 +8,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import com.sk89q.worldguard.bukkit.WGBukkit;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 public class ScavengerEventListenerOnline implements Listener {
 
@@ -73,8 +78,21 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         plugin.logDebug("Player: " + player + "World: "
                 + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
+        
+        World world = player.getWorld();
+        Location location = player.getLocation();
         if (plugin.config.blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
+        }
+        if (plugin.getWorldGuard() != null) {            
+            ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
+            for (ProtectedRegion region : set) {
+                plugin.logDebug("Region ID: " + region.getId());
+                if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
+                    plugin.logDebug("Region ID " + region.getId() + " is blacklisted. Dropping items.");
+                    return false;
+                }
+            }
         }
         if (ScavengerIgnoreList.isIgnored(player.getName())) {
             return false;

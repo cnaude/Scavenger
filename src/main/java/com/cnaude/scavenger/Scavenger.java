@@ -3,7 +3,7 @@ package com.cnaude.scavenger;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
-import com.massivecraft.factions.P;
+import com.massivecraft.factions.Factions;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.orange451.UltimateArena.*;
 import com.pauldavdesign.mineauz.minigames.Minigames;
@@ -121,7 +121,7 @@ public class Scavenger extends JavaPlugin {
     }
 
     private void checkForFactions() {
-        if (getFactions() != null && config.factionEnemyDrops()) {
+        if (isFactionsLoaded()) {
             logInfo("Factions detected. Players will drop items in enemy teritory!");
         }
     }
@@ -194,24 +194,9 @@ public class Scavenger extends JavaPlugin {
         return mg;
     }
     
-    public P getFactions() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("Factions");
-
-        if (plugin == null || !(plugin instanceof P)) {
-            return null;
-        }
-        return (P) plugin;
+    public boolean isFactionsLoaded() {
+        return (getServer().getPluginManager().getPlugin("Factions") != null);
     }
-
-    /*
-    public Factions getFactions() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("Factions");
-
-        if (plugin == null || !(plugin instanceof Factions)) {
-            return null;
-        }
-        return (Factions) plugin;
-    }*/
 
     public DungeonMaze getDungeonMaze() {
         Plugin plugin = getServer().getPluginManager().getPlugin("DungeonMaze");

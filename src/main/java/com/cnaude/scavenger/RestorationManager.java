@@ -4,7 +4,11 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.comphenix.protocol.utility.StreamSerializer;
-import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.Rel;
+import com.massivecraft.factions.entity.BoardColls;
+import com.massivecraft.factions.entity.Faction;
+import com.massivecraft.factions.entity.UPlayer;
+import com.massivecraft.mcore.ps.PS;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -212,42 +216,47 @@ public final class RestorationManager implements Serializable {
         return restoration;
     }
 
-    public void collect(Player p, List<ItemStack> itemDrops, EntityDeathEvent event) {
-        if (itemDrops.isEmpty() && !levelAllow(p) && !expAllow(p)) {
+    public void collect(Player player, List<ItemStack> itemDrops, EntityDeathEvent event) {
+        if (itemDrops.isEmpty() && !levelAllow(player) && !expAllow(player)) {
             return;
         }
 
         if (plugin.config.dropOnPVPDeath()) {
-            if (p.getKiller() instanceof Player) {
-                plugin.message(p, plugin.config.msgPVPDeath());
+            if (player.getKiller() instanceof Player) {
+                plugin.message(player, plugin.config.msgPVPDeath());
                 return;
             }
         }
 
         if (plugin.config.residence()) {
-            ClaimedResidence res = Residence.getResidenceManager().getByLoc(p.getLocation());
+            ClaimedResidence res = Residence.getResidenceManager().getByLoc(player.getLocation());
             if (res != null) {
                 ResidencePermissions perms = res.getPermissions();
-                if (perms.playerHas(p.getName(), plugin.config.resFlag(), true)) {
-                    plugin.logDebug("Player '" + p.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
-                    plugin.message(p, plugin.config.msgInsideRes());
+                if (perms.playerHas(player.getName(), plugin.config.resFlag(), true)) {
+                    plugin.logDebug("Player '" + player.getName() + "' is not allowed to use Scavenger in this residence. Items will be dropped.");
+                    plugin.message(player, plugin.config.msgInsideRes());
                     return;
                 } else {
-                    plugin.logDebug("Player '" + p.getName() + "' is allowed to use Scavenger in this residence.");
+                    plugin.logDebug("Player '" + player.getName() + "' is allowed to use Scavenger in this residence.");
 
                 }
             }
         }
 
         if (plugin.config.factionEnemyDrops()) {
-            if (plugin.getFactions() != null) {
+            if (plugin.isFactionsLoaded()) {
                 try {
-                    plugin.logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
-                    FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
-                    plugin.logDebug("Relation: " + fplayer.getRelationToLocation().name());
-                    if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
-                        plugin.logDebug("Player '" + p.getName() + "' is inside enemy territory!");
-                        plugin.message(p, plugin.config.msgInsideEnemyFaction());
+                    UPlayer uplayer = UPlayer.get(player);                                                            
+                    Faction faction = BoardColls.get().getFactionAt(PS.valueOf(player.getLocation()));
+                    
+                    Rel rel = faction.getRelationTo(uplayer);
+                    
+                    plugin.logDebug("Checking if '" + player.getName() + "' is in enemy territory.");
+                    
+                    plugin.logDebug("Relation: " + rel.name());
+                    if (rel.equals(Rel.ENEMY)) {
+                        plugin.logDebug("Player '" + player.getName() + "' is inside enemy territory!");
+                        plugin.message(player, plugin.config.msgInsideEnemyFaction());
                         return;
                     }
                 } catch (NoSuchMethodError ex) {
@@ -258,32 +267,12 @@ public final class RestorationManager implements Serializable {
             }
         }
 
-        /*
-         if (plugin.config.factionEnemyDrops()) {
-         if (plugin.getFactions() != null) {
-         try {
-         plugin.logDebug("Checking if '" + p.getName() + "' is in enemy territory.");
-         FPlayer fplayer = com.massivecraft.factions.FPlayers.i.get(p);
-         plugin.logDebug("Relation: " + fplayer.getRelationToLocation().name());
-         if (fplayer.getRelationToLocation().name().equals("ENEMY")) {
-         plugin.logDebug("Player '" + p.getName() + "' is inside enemy territory!");
-         plugin.message(p, plugin.config.msgInsideEnemyFaction());
-         return;
-         }
-         } catch (NoSuchMethodError ex) {
-         plugin.logDebug("ERROR: " + ex.getMessage());
-         }
-         } else {
-         plugin.logDebug("No Factions detected");
-         }
-         } */
-
         if (plugin.config.dungeonMazeDrops()) {
             if (plugin.getDungeonMaze() != null) {
-                plugin.logDebug("Checking if '" + p.getName() + "' is in DungeonMaze.");
-                if (DungeonMazeAPI.isInDMWorld(p)) {
-                    plugin.logDebug("Player '" + p.getName() + "' is in DungeonMaze.");
-                    plugin.message(p, plugin.config.msgInsideDungeonMaze());
+                plugin.logDebug("Checking if '" + player.getName() + "' is in DungeonMaze.");
+                if (DungeonMazeAPI.isInDMWorld(player)) {
+                    plugin.logDebug("Player '" + player.getName() + "' is in DungeonMaze.");
+                    plugin.message(player, plugin.config.msgInsideDungeonMaze());
                     return;
                 }
             } else {
@@ -292,63 +281,63 @@ public final class RestorationManager implements Serializable {
         }
 
         if (plugin.getWorldGuard() != null) {
-            plugin.logDebug("Checking region support for '" + p.getWorld().getName() + "'");
-            if (plugin.getWorldGuard().getRegionManager(p.getWorld()) != null) {
-                RegionManager regionManager = plugin.getWorldGuard().getRegionManager(p.getWorld());
-                ApplicableRegionSet set = regionManager.getApplicableRegions(p.getLocation());
+            plugin.logDebug("Checking region support for '" + player.getWorld().getName() + "'");
+            if (plugin.getWorldGuard().getRegionManager(player.getWorld()) != null) {
+                RegionManager regionManager = plugin.getWorldGuard().getRegionManager(player.getWorld());
+                ApplicableRegionSet set = regionManager.getApplicableRegions(player.getLocation());
                 if (set.allows(DefaultFlag.PVP) && plugin.config.wgPVPIgnore()) {
                     plugin.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + plugin.config.wgPVPIgnore());
                     if (!plugin.config.msgInsideWGPVP().isEmpty()) {
-                        plugin.message(p, plugin.config.msgInsideWGPVP());
+                        plugin.message(player, plugin.config.msgInsideWGPVP());
                     }
                     return;
                 }
                 if (!set.allows(DefaultFlag.PVP) && plugin.config.wgGuardPVPOnly()) {
                     plugin.logDebug("This is NOT a WorldGuard PVP zone and WorldGuardPVPOnly is " + plugin.config.wgGuardPVPOnly());
                     if (!plugin.config.msgInsideWGPVP().isEmpty()) {
-                        plugin.message(p, plugin.config.msgInsideWGPVPOnly());
+                        plugin.message(player, plugin.config.msgInsideWGPVPOnly());
                     }
                     return;
                 }
             } else {
-                plugin.logDebug("Region support disabled for '" + p.getWorld().getName() + "'");
+                plugin.logDebug("Region support disabled for '" + player.getWorld().getName() + "'");
             }
         }
 
         if (plugin.getUltimateArena() != null) {
             plugin.getUltimateArena();
-            if (UltimateArenaAPI.hookIntoUA().isPlayerInArenaLocation(p)) {
+            if (UltimateArenaAPI.hookIntoUA().isPlayerInArenaLocation(player)) {
                 if (!plugin.config.msgInsideUA().isEmpty()) {
-                    plugin.message(p, plugin.config.msgInsideUA());
+                    plugin.message(player, plugin.config.msgInsideUA());
                 }
                 return;
             }
         }
 
-        if (plugin.maHandler != null && plugin.maHandler.isPlayerInArena(p)) {
+        if (plugin.maHandler != null && plugin.maHandler.isPlayerInArena(player)) {
             if (!plugin.config.msgInsideMA().isEmpty()) {
-                plugin.message(p, plugin.config.msgInsideMA());
+                plugin.message(player, plugin.config.msgInsideMA());
             }
             return;
         }
 
-        if (plugin.pvpHandler != null && !net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(p).equals("")) {
+        if (plugin.pvpHandler != null && !net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(player).equals("")) {
             String x = plugin.config.msgInsidePA();
             if (!x.isEmpty()) {
-                x = x.replaceAll("%ARENA%", net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(p));
-                plugin.message(p, x);
+                x = x.replaceAll("%ARENA%", net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(player));
+                plugin.message(player, x);
             }
             return;
         }
 
         if (plugin.battleArena) {
-            mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(p);
+            mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(player);
             if (ap != null) {
                 Match match = BattleArena.getBAController().getMatch(ap);
                 if (match != null && match.insideArena(ap)) {
                     String x = plugin.config.msgInsideBA();
                     if (!x.isEmpty()) {
-                        plugin.message(p, x);
+                        plugin.message(player, x);
                     }
                     return;
                 }
@@ -356,24 +345,24 @@ public final class RestorationManager implements Serializable {
         }
 
         if (plugin.getMinigames() != null) {
-            if (plugin.getMinigames().getPlayerData().playerInMinigame(p)) {
-                plugin.logInfo("Player '" + p.getName() + "' is in a Minigame. Not recovering items.");
+            if (plugin.getMinigames().getPlayerData().playerInMinigame(player)) {
+                plugin.logInfo("Player '" + player.getName() + "' is in a Minigame. Not recovering items.");
                 return;
             }
         }
 
-        if (hasRestoration(p)) {
-            plugin.error(p, "Restoration already exists, ignoring.");
+        if (hasRestoration(player)) {
+            plugin.error(player, "Restoration already exists, ignoring.");
             return;
         }
 
         if (plugin.getEconomy() != null
-                && !(p.hasPermission("scavenger.free")
-                || (p.isOp() && plugin.config.opsAllPerms()))
+                && !(player.hasPermission("scavenger.free")
+                || (player.isOp() && plugin.config.opsAllPerms()))
                 && plugin.config.economyEnabled()) {
             double restoreCost = plugin.config.restoreCost();
             double withdrawAmount;
-            double playeBalance = plugin.getEconomy().getBalance(p.getName());
+            double playeBalance = plugin.getEconomy().getBalance(player.getName());
             double percentCost = plugin.config.percentCost();
             double minCost = plugin.config.minCost();
             double maxCost = plugin.config.maxCost();
@@ -392,7 +381,7 @@ public final class RestorationManager implements Serializable {
             } else {
                 withdrawAmount = restoreCost;
             }
-            er = plugin.getEconomy().withdrawPlayer(p.getName(), withdrawAmount);
+            er = plugin.getEconomy().withdrawPlayer(player.getName(), withdrawAmount);
             if (er.transactionSuccess()) {
                 if (withdrawAmount == 1) {
                     currency = plugin.getEconomy().currencyNameSingular();
@@ -403,7 +392,7 @@ public final class RestorationManager implements Serializable {
                 if (!x.isEmpty()) {
                     x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
-                    plugin.message(p, x);
+                    plugin.message(player, x);
                 }
             } else {
                 if (playeBalance == 1) {
@@ -416,24 +405,24 @@ public final class RestorationManager implements Serializable {
                     x = x.replaceAll("%BALANCE%", String.format("%.2f", playeBalance));
                     x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
-                    plugin.message(p, x);
+                    plugin.message(player, x);
                 }
                 return;
             }
         } else {
-            plugin.message(p, plugin.config.msgSaving());
+            plugin.message(player, plugin.config.msgSaving());
         }
 
         Restoration restoration = new Restoration();
         restoration.enabled = false;
-        restoration.inventory = p.getInventory().getContents();
-        restoration.armour = p.getInventory().getArmorContents();
+        restoration.inventory = player.getInventory().getContents();
+        restoration.armour = player.getInventory().getArmorContents();
 
-        if (levelAllow(p)) {
-            restoration.level = p.getLevel();
+        if (levelAllow(player)) {
+            restoration.level = player.getLevel();
         }
-        if (expAllow(p)) {
-            restoration.exp = p.getExp();
+        if (expAllow(player)) {
+            restoration.exp = player.getExp();
             event.setDroppedExp(0);
         }
 
@@ -446,24 +435,24 @@ public final class RestorationManager implements Serializable {
                     boolean dropIt;
                     if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
                         if (plugin.config.singleItemDropsOnly() == true) {
-                            if ((p.hasPermission("scavenger.drop." + i.getTypeId())) || (p.hasPermission("scavenger.drop.*"))) {
+                            if ((player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
                                 dropIt = false;
                             } else {
                                 dropIt = true;
                             }
                         } else {
-                            if (!(p.hasPermission("scavenger.drop." + i.getTypeId())) || (p.hasPermission("scavenger.drop.*"))) {
+                            if (!(player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
                                 dropIt = false;
                             } else {
                                 dropIt = true;
                             }
                         }
                         if (dropIt) {
-                            plugin.debugMessage(p, "Dropping item " + i.getType());
+                            plugin.debugMessage(player, "Dropping item " + i.getType());
                             itemDrops.add(i.clone());
                             i.setAmount(0);
                         } else {
-                            plugin.debugMessage(p, "Keeping item " + i.getType());
+                            plugin.debugMessage(player, "Keeping item " + i.getType());
                         }
                     }
                 }
@@ -471,20 +460,20 @@ public final class RestorationManager implements Serializable {
         }
 
         if (plugin.config.chanceToDrop() > 0
-                && !p.hasPermission("scavenger.nochance")) {
+                && !player.hasPermission("scavenger.nochance")) {
             ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
             for (ItemStack[] a : invAndArmour) {
                 for (ItemStack i : a) {
                     if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
                         Random randomGenerator = new Random();
                         int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
-                        plugin.debugMessage(p, "Random number is " + randomInt);
+                        plugin.debugMessage(player, "Random number is " + randomInt);
                         if (randomInt == plugin.config.chanceToDrop()) {
-                            plugin.debugMessage(p, "Randomly dropping item " + i.getType());
+                            plugin.debugMessage(player, "Randomly dropping item " + i.getType());
                             itemDrops.add(i.clone());
                             i.setAmount(0);
                         } else {
-                            plugin.debugMessage(p, "Randomly keeping item " + i.getType());
+                            plugin.debugMessage(player, "Randomly keeping item " + i.getType());
                         }
                     }
                 }
@@ -492,11 +481,11 @@ public final class RestorationManager implements Serializable {
         }
 
         if (plugin.config.slotBasedRecovery()) {
-            checkSlots(p, "armour", restoration.armour, itemDrops);
-            checkSlots(p, "inv", restoration.inventory, itemDrops);
+            checkSlots(player, "armour", restoration.armour, itemDrops);
+            checkSlots(player, "inv", restoration.inventory, itemDrops);
         }
 
-        addRestoration(p, restoration);
+        addRestoration(player, restoration);
     }
 
     private void checkSlots(Player p, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
