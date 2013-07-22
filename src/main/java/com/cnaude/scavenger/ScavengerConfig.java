@@ -180,9 +180,10 @@ public final class ScavengerConfig {
         langFiles.add("french.yml");
         langFiles.add("german.yml");
         langFiles.add("italian.yml");
-        langFiles.add("korean.yml");
-        langFiles.add("russian.yml");
+        langFiles.add("korean.yml");        
         langFiles.add("portugues.yml");
+        langFiles.add("russian.yml");
+        langFiles.add("spanish.yml");
         
 
         for (String fName : langFiles) {

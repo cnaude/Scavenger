@@ -4,15 +4,9 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.comphenix.protocol.utility.StreamSerializer;
-import com.massivecraft.factions.Rel;
-import com.massivecraft.factions.entity.BoardColls;
-import com.massivecraft.factions.entity.Faction;
-import com.massivecraft.factions.entity.UPlayer;
-import com.massivecraft.mcore.ps.PS;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.orange451.UltimateArena.UltimateArenaAPI;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -24,6 +18,7 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
 import me.cnaude.plugin.Scavenger.RestorationS1;
 import me.drayshak.WorldInventories.api.WorldInventoriesAPI;
+import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -243,27 +238,9 @@ public final class RestorationManager implements Serializable {
             }
         }
 
-        if (plugin.config.factionEnemyDrops()) {
-            if (plugin.isFactionsLoaded()) {
-                try {
-                    UPlayer uplayer = UPlayer.get(player);                                                            
-                    Faction faction = BoardColls.get().getFactionAt(PS.valueOf(player.getLocation()));
-                    
-                    Rel rel = faction.getRelationTo(uplayer);
-                    
-                    plugin.logDebug("Checking if '" + player.getName() + "' is in enemy territory.");
-                    
-                    plugin.logDebug("Relation: " + rel.name());
-                    if (rel.equals(Rel.ENEMY)) {
-                        plugin.logDebug("Player '" + player.getName() + "' is inside enemy territory!");
-                        plugin.message(player, plugin.config.msgInsideEnemyFaction());
-                        return;
-                    }
-                } catch (NoSuchMethodError ex) {
-                    plugin.logDebug("ERROR: " + ex.getMessage());
-                }
-            } else {
-                plugin.logDebug("No Factions detected");
+        if (plugin.config.factionEnemyDrops() && plugin.factionHook != null) {
+            if (plugin.factionHook.isPlayerInEnemyFaction(player)) {
+                return;
             }
         }
 

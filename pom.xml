@@ -5,7 +5,7 @@
 
     <groupId>com.cnaude</groupId>
     <artifactId>Scavenger</artifactId>
-    <version>1.3b</version>
+    <version>1.3d</version>
     <name>Scavenger</name>
     <description>Item recovery on death. Based on SirHedgehog's code.</description>
     <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
@@ -104,9 +104,9 @@
             <version>2.6.6.5</version>
         </dependency>
         <dependency>
-            <groupId>com.orange451</groupId>
+            <groupId>net.dmulloy2.ultimatearena</groupId>
             <artifactId>UltimateArena</artifactId>
-            <version>1.0</version>
+            <version>2.4.3</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
@@ -203,55 +203,10 @@
                 <version>2.3.2</version>
                 <configuration>
                     <!-- Minimum Minecraft requirement -->
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <minimizeJar>true</minimizeJar>
-                            <artifactSet>
-                                <includes>
-                                    <include>com.esotericsoftware.kryo</include>
-                                    <include>org.objenesis.instantiator</include>
-                                    <include>com.esotericsoftware.reflectasm</include>
-                                    <include>org.objectweb.asm</include>
-                                </includes>
-                            </artifactSet>
-                            <filters>
-                            </filters>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.esotericsoftware.kryo</pattern>
-                                    <shadedPattern>com.esotericsoftware.kryo</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.objenesis.instantiator</pattern>
-                                    <shadedPattern>org.objenesis.instantiator</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.esotericsoftware.reflectasm</pattern>
-                                    <shadedPattern>com.esotericsoftware.reflectasm</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.objectweb.asm</pattern>
-                                    <shadedPattern>org.objectweb.asm</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>   
+            </plugin>       
             
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>

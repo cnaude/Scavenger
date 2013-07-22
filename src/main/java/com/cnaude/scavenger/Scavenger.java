@@ -1,11 +1,10 @@
 package com.cnaude.scavenger;
 
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.cnaude.scavenger.Hooks.ScavengerFactions;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
-import com.massivecraft.factions.Factions;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.orange451.UltimateArena.*;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.timvisee.DungeonMaze.DungeonMaze;
@@ -13,6 +12,7 @@ import com.timvisee.DungeonMaze.API.DungeonMazeAPI;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
@@ -48,6 +48,7 @@ public class Scavenger extends JavaPlugin {
     public ScavengerConfig config;    
     private ScavengerEventListenerOffline eventListener;
     private ScavengerEventListenerOnline eventListenerOnline;
+    public ScavengerFactions factionHook = null;
 
     @Override
     public void onEnable() {
@@ -121,7 +122,8 @@ public class Scavenger extends JavaPlugin {
     }
 
     private void checkForFactions() {
-        if (isFactionsLoaded()) {
+        if (isFactionsLoaded() && config.factionEnemyDrops()) {
+            factionHook = new ScavengerFactions(this);
             logInfo("Factions detected. Players will drop items in enemy teritory!");
         }
     }
@@ -310,7 +312,7 @@ public class Scavenger extends JavaPlugin {
             return null;
         }
 
-        return com.orange451.UltimateArena.UltimateArenaAPI.hookIntoUA();
+        return UltimateArenaAPI.hookIntoUA();
     }
 
     public void setupMobArenaHandler() {
