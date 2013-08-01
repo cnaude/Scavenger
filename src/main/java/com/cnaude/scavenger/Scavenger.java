@@ -1,14 +1,13 @@
 package com.cnaude.scavenger;
 
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.cnaude.scavenger.Hooks.ScavengerDungeonMaze;
 import com.cnaude.scavenger.Hooks.ScavengerFactions;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.timvisee.DungeonMaze.DungeonMaze;
-import com.timvisee.DungeonMaze.API.DungeonMazeAPI;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,8 +36,7 @@ public class Scavenger extends JavaPlugin {
     public MobArenaHandler maHandler;
     public PVPArena pvpHandler;
     public MultiverseInventories multiverseHandler;
-    public MultiInv multiinvHandler;
-    public DungeonMazeAPI dmHandler;
+    public MultiInv multiinvHandler;    
     public RestorationManager rm;
     public boolean battleArena = false;
     public boolean minigames = false;
@@ -49,6 +47,7 @@ public class Scavenger extends JavaPlugin {
     private ScavengerEventListenerOffline eventListener;
     private ScavengerEventListenerOnline eventListenerOnline;
     public ScavengerFactions factionHook = null;
+    public ScavengerDungeonMaze dmHook = null;
 
     @Override
     public void onEnable() {
@@ -129,7 +128,8 @@ public class Scavenger extends JavaPlugin {
     }
 
     private void checkForDungeonMaze() {
-        if (getDungeonMaze() != null) {
+        if (isDungeonMazeLoaded() && config.dungeonMazeDrops()) {
+            dmHook = new ScavengerDungeonMaze();
             logInfo("DungeonMaze detected, drop item in the dungeon maze worlds configs.");
         }
     }
@@ -199,13 +199,9 @@ public class Scavenger extends JavaPlugin {
     public boolean isFactionsLoaded() {
         return (getServer().getPluginManager().getPlugin("Factions") != null);
     }
-
-    public DungeonMaze getDungeonMaze() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("DungeonMaze");
-        if (plugin == null && !(plugin instanceof DungeonMaze)) {
-            return null;
-        }
-        return (DungeonMaze) plugin;
+    
+    public boolean isDungeonMazeLoaded() {
+        return (getServer().getPluginManager().getPlugin("DungeonMaze") != null);
     }
 
     public boolean checkForProtocolLib() {

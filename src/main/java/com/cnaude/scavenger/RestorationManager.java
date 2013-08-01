@@ -10,7 +10,6 @@ import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.timvisee.DungeonMaze.API.DungeonMazeAPI;
 
 import java.io.*;
 import java.util.*;
@@ -244,16 +243,12 @@ public final class RestorationManager implements Serializable {
             }
         }
 
-        if (plugin.config.dungeonMazeDrops()) {
-            if (plugin.getDungeonMaze() != null) {
-                plugin.logDebug("Checking if '" + player.getName() + "' is in DungeonMaze.");
-                if (DungeonMazeAPI.isInDMWorld(player)) {
-                    plugin.logDebug("Player '" + player.getName() + "' is in DungeonMaze.");
-                    plugin.message(player, plugin.config.msgInsideDungeonMaze());
-                    return;
-                }
-            } else {
-                plugin.logDebug("No DungeonMaze plugin detected");
+        if (plugin.config.dungeonMazeDrops() && plugin.dmHook != null) {
+            plugin.logDebug("Checking if '" + player.getName() + "' is in DungeonMaze.");
+            if (plugin.dmHook.isPlayerInDungeon(player)) {
+                plugin.logDebug("Player '" + player.getName() + "' is in DungeonMaze.");
+                plugin.message(player, plugin.config.msgInsideDungeonMaze());
+                return;
             }
         }
 
@@ -392,8 +387,11 @@ public final class RestorationManager implements Serializable {
 
         Restoration restoration = new Restoration();
         restoration.enabled = false;
-        restoration.inventory = player.getInventory().getContents();
-        restoration.armour = player.getInventory().getArmorContents();
+        if (player.hasPermission("scavenger.scavenge")) {
+            restoration.inventory = player.getInventory().getContents();
+            restoration.armour = player.getInventory().getArmorContents();
+            itemDrops.clear();
+        }
 
         if (levelAllow(player)) {
             restoration.level = player.getLevel();
@@ -402,8 +400,6 @@ public final class RestorationManager implements Serializable {
             restoration.exp = player.getExp();
             event.setDroppedExp(0);
         }
-
-        itemDrops.clear();
 
         if (plugin.config.singleItemDrops()) {
             ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};

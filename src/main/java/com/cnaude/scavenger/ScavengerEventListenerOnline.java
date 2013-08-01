@@ -103,6 +103,12 @@ public class ScavengerEventListenerOnline implements Listener {
         if (player.hasPermission("scavenger.scavenge")) {
             return true;
         }
+        if (player.hasPermission("scavenger.exp")) {
+            return true;
+        }
+        if (player.hasPermission("scavenger.level")) {
+            return true;
+        }
         if (player.hasPermission("scavenger.scavenge." + dcString)) {
             return true;
         }

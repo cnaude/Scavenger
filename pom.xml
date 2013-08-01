@@ -5,7 +5,7 @@
 
     <groupId>com.cnaude</groupId>
     <artifactId>Scavenger</artifactId>
-    <version>1.3d</version>
+    <version>1.3f</version>
     <name>Scavenger</name>
     <description>Item recovery on death. Based on SirHedgehog's code.</description>
     <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
@@ -13,15 +13,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.6.1-R0.1</bukkit.version>
+        <bukkit.version>1.6.2-R0.1-SNAPSHOT</bukkit.version>
     </properties>
 
     <repositories>
-        <!-- Bukkit
+        <!-- Bukkit -->
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>-->
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     
         <!-- For JUnitBenchmarks -->
         <repository>
@@ -116,7 +119,7 @@
         <dependency>
             <groupId>com.timvisee</groupId>
             <artifactId>DungeonMaze</artifactId>
-            <version>1.0</version>
+            <version>0.1.6</version>
         </dependency>
         <dependency>
             <groupId>mc.alk</groupId>
