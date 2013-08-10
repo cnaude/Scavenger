@@ -387,77 +387,91 @@ public final class RestorationManager implements Serializable {
 
         Restoration restoration = new Restoration();
         restoration.enabled = false;
-        if (player.hasPermission("scavenger.scavenge")) {
-            restoration.inventory = player.getInventory().getContents();
-            restoration.armour = player.getInventory().getArmorContents();
-            itemDrops.clear();
-        }
+
+        restoration.inventory = player.getInventory().getContents();
+        restoration.armour = player.getInventory().getArmorContents();
+        itemDrops.clear();
+
 
         if (levelAllow(player)) {
+            plugin.logDebug("Collecting level " + player.getLevel() + " for " + player.getName());
             restoration.level = player.getLevel();
         }
         if (expAllow(player)) {
+            plugin.logDebug("Collecting exp " + player.getExp() + " for " + player.getName());
             restoration.exp = player.getExp();
             event.setDroppedExp(0);
         }
 
-        if (plugin.config.singleItemDrops()) {
-            ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-            for (ItemStack[] a : invAndArmour) {
-                for (ItemStack i : a) {
-                    boolean dropIt;
-                    if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                        if (plugin.config.singleItemDropsOnly() == true) {
-                            if ((player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
-                                dropIt = false;
+        if (player.hasPermission("scavenger.scavenge")) {
+            if (plugin.config.singleItemDrops()) {
+                ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+                for (ItemStack[] a : invAndArmour) {
+                    for (ItemStack i : a) {
+                        boolean dropIt;
+                        if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
+                            if (plugin.config.singleItemDropsOnly() == true) {
+                                if ((player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
+                                    dropIt = false;
+                                } else {
+                                    dropIt = true;
+                                }
                             } else {
-                                dropIt = true;
+                                if (!(player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
+                                    dropIt = false;
+                                } else {
+                                    dropIt = true;
+                                }
                             }
-                        } else {
-                            if (!(player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
-                                dropIt = false;
+                            if (dropIt) {
+                                plugin.debugMessage(player, "Dropping item " + i.getType());
+                                itemDrops.add(i.clone());
+                                i.setAmount(0);
                             } else {
-                                dropIt = true;
+                                plugin.debugMessage(player, "Keeping item " + i.getType());
                             }
-                        }
-                        if (dropIt) {
-                            plugin.debugMessage(player, "Dropping item " + i.getType());
-                            itemDrops.add(i.clone());
-                            i.setAmount(0);
-                        } else {
-                            plugin.debugMessage(player, "Keeping item " + i.getType());
                         }
                     }
                 }
             }
-        }
 
-        if (plugin.config.chanceToDrop() > 0
-                && !player.hasPermission("scavenger.nochance")) {
-            ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-            for (ItemStack[] a : invAndArmour) {
-                for (ItemStack i : a) {
-                    if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                        Random randomGenerator = new Random();
-                        int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
-                        plugin.debugMessage(player, "Random number is " + randomInt);
-                        if (randomInt == plugin.config.chanceToDrop()) {
-                            plugin.debugMessage(player, "Randomly dropping item " + i.getType());
-                            itemDrops.add(i.clone());
-                            i.setAmount(0);
-                        } else {
-                            plugin.debugMessage(player, "Randomly keeping item " + i.getType());
+            if (plugin.config.chanceToDrop() > 0
+                    && !player.hasPermission("scavenger.nochance")) {
+                ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+                for (ItemStack[] a : invAndArmour) {
+                    for (ItemStack i : a) {
+                        if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
+                            Random randomGenerator = new Random();
+                            int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
+                            plugin.debugMessage(player, "Random number is " + randomInt);
+                            if (randomInt == plugin.config.chanceToDrop()) {
+                                plugin.debugMessage(player, "Randomly dropping item " + i.getType());
+                                itemDrops.add(i.clone());
+                                i.setAmount(0);
+                            } else {
+                                plugin.debugMessage(player, "Randomly keeping item " + i.getType());
+                            }
                         }
                     }
                 }
             }
-        }
 
-        if (plugin.config.slotBasedRecovery()) {
-            checkSlots(player, "armour", restoration.armour, itemDrops);
-            checkSlots(player, "inv", restoration.inventory, itemDrops);
+            if (plugin.config.slotBasedRecovery()) {
+                checkSlots(player, "armour", restoration.armour, itemDrops);
+                checkSlots(player, "inv", restoration.inventory, itemDrops);
+            }
+        } else {
+            ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+            for (ItemStack[] a : invAndArmour) {
+                for (ItemStack i : a) {
+                    if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
+                        plugin.debugMessage(player, "Dropping item " + i.getType());
+                        itemDrops.add(i.clone());
+                        i.setAmount(0);
+                    }
+                }
+            }
         }
-
         addRestoration(player, restoration);
     }
 
