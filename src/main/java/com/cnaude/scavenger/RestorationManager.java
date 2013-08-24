@@ -255,9 +255,9 @@ public final class RestorationManager implements Serializable {
         if (plugin.getWorldGuard() != null) {
             plugin.logDebug("Checking region support for '" + player.getWorld().getName() + "'");
             if (plugin.getWorldGuard().getRegionManager(player.getWorld()) != null) {
-                RegionManager regionManager = plugin.getWorldGuard().getRegionManager(player.getWorld());
-                ApplicableRegionSet set = regionManager.getApplicableRegions(player.getLocation());
-                if (set != null) {
+                try {
+                    RegionManager regionManager = plugin.getWorldGuard().getRegionManager(player.getWorld());
+                    ApplicableRegionSet set = regionManager.getApplicableRegions(player.getLocation());
                     if (set.allows(DefaultFlag.PVP) && plugin.config.wgPVPIgnore()) {
                         plugin.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + plugin.config.wgPVPIgnore());
                         if (!plugin.config.msgInsideWGPVP().isEmpty()) {
@@ -272,8 +272,8 @@ public final class RestorationManager implements Serializable {
                         }
                         return;
                     }
-                } else {
-                    plugin.logDebug("[RM] Null set from getApplicableRegions");
+                } catch (NullPointerException ex) {
+                    plugin.logDebug(ex.getMessage());
                 }
             } else {
                 plugin.logDebug("Region support disabled for '" + player.getWorld().getName() + "'");

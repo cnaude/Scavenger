@@ -79,8 +79,8 @@ public class ScavengerEventListenerOnline implements Listener {
             return false;
         }
         if (plugin.getWorldGuard() != null) {
-            ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
-            if (set != null) {
+            try {
+                ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
                 for (ProtectedRegion region : set) {
                     plugin.logDebug("Region ID: " + region.getId());
                     if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
@@ -88,8 +88,8 @@ public class ScavengerEventListenerOnline implements Listener {
                         return false;
                     }
                 }
-            } else {
-                plugin.logDebug("[EventListener] Null set from getApplicableRegions");
+            } catch (NullPointerException ex) {
+                plugin.logDebug(ex.getMessage());
             }
         }
         if (ScavengerIgnoreList.isIgnored(player.getName())) {
