@@ -5,7 +5,7 @@
 
     <groupId>com.cnaude</groupId>
     <artifactId>Scavenger</artifactId>
-    <version>1.3g</version>
+    <version>1.3j</version>
     <name>Scavenger</name>
     <description>Item recovery on death. Based on SirHedgehog's code.</description>
     <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
@@ -220,7 +220,7 @@
                             <tasks>                                                                
                                 <copy file="../Scavenger/target/Scavenger-${project.version}.jar" tofile="../Scavenger/target/Scavenger.jar"/>
                                 <exec dir="../Scavenger/target" executable="scp">
-                                    <arg line="Scavenger.jar cnaude@cnaude.mdns.org:minetest/plugins/"/>
+                                    <arg line="Scavenger.jar cnaude@giraffe.lan:minetest/plugins/"/>
                                 </exec>
                                 <copy file="../Scavenger/target/Scavenger.jar" tofile="../../../../Dropbox/Public/dist/Scavenger.jar"/>
                             </tasks>

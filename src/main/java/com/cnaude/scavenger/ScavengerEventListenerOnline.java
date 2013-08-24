@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import com.sk89q.worldguard.bukkit.WGBukkit;
@@ -25,6 +24,7 @@ public class ScavengerEventListenerOnline implements Listener {
     }
 
     public void delayedRestore(final Player player) {
+        plugin.debugMessage("Delayed restore for " + player.getName());
         plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
@@ -47,25 +47,19 @@ public class ScavengerEventListenerOnline implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        delayedRestore(event.getPlayer());
+        Player player = event.getPlayer();
+        plugin.logInfo("Player respawn " + player.getName());
+        delayedRestore(player);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        delayedRestore(event.getPlayer());
-    }
-
-    /*
-     @EventHandler(priority = EventPriority.NORMAL)
-     public void onPlayerMove(PlayerMoveEvent event) {
-     if (event.getFrom().distance(event.getTo()) >= 0.5f) {
-     if (restorationManager.hasRestoration(event.getPlayer())) {
-     restorationManager.restore(event.getPlayer());
-     }
-     }
-     }*/
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        plugin.logDebug("Player teleport " + player.getName());
+        if (player.isDead()) {
+            plugin.logDebug("Dead teleport! " + player.getName());
+            return;
+        }
         delayedRestore(event.getPlayer());
     }
 
@@ -78,20 +72,24 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         plugin.logDebug("Player: " + player + "World: "
                 + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
-        
+
         World world = player.getWorld();
         Location location = player.getLocation();
         if (plugin.config.blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
             return false;
         }
-        if (plugin.getWorldGuard() != null) {            
+        if (plugin.getWorldGuard() != null) {
             ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
-            for (ProtectedRegion region : set) {
-                plugin.logDebug("Region ID: " + region.getId());
-                if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
-                    plugin.logDebug("Region ID " + region.getId() + " is blacklisted. Dropping items.");
-                    return false;
+            if (set != null) {
+                for (ProtectedRegion region : set) {
+                    plugin.logDebug("Region ID: " + region.getId());
+                    if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
+                        plugin.logDebug("Region ID " + region.getId() + " is blacklisted. Dropping items.");
+                        return false;
+                    }
                 }
+            } else {
+                plugin.logDebug("[EventListener] Null set from getApplicableRegions");
             }
         }
         if (ScavengerIgnoreList.isIgnored(player.getName())) {

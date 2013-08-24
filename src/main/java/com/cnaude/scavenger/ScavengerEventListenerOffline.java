@@ -49,12 +49,14 @@ public class ScavengerEventListenerOffline implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
+        plugin.logDebug("Offline respawn " + event.getPlayer().getName());
         delayedRestore(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerOfflineModeLogin(PlayerOfflineModeLogin event) {
         if ((event.getPlayer() instanceof Player)) {
+            plugin.logDebug("Offline login " + event.getPlayer().getName());
             if (isScavengeAllowed(event.getPlayer())) {
                 rm.enable(event.getPlayer());
             }
@@ -100,6 +102,12 @@ public class ScavengerEventListenerOffline implements Listener {
             return true;
         }
         if (player.hasPermission("scavenger.scavenge")) {
+            return true;
+        }
+        if (player.hasPermission("scavenger.exp")) {
+            return true;
+        }
+        if (player.hasPermission("scavenger.level")) {
             return true;
         }
         if (player.hasPermission("scavenger.scavenge." + dcString)) {

@@ -257,19 +257,23 @@ public final class RestorationManager implements Serializable {
             if (plugin.getWorldGuard().getRegionManager(player.getWorld()) != null) {
                 RegionManager regionManager = plugin.getWorldGuard().getRegionManager(player.getWorld());
                 ApplicableRegionSet set = regionManager.getApplicableRegions(player.getLocation());
-                if (set.allows(DefaultFlag.PVP) && plugin.config.wgPVPIgnore()) {
-                    plugin.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + plugin.config.wgPVPIgnore());
-                    if (!plugin.config.msgInsideWGPVP().isEmpty()) {
-                        plugin.message(player, plugin.config.msgInsideWGPVP());
+                if (set != null) {
+                    if (set.allows(DefaultFlag.PVP) && plugin.config.wgPVPIgnore()) {
+                        plugin.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + plugin.config.wgPVPIgnore());
+                        if (!plugin.config.msgInsideWGPVP().isEmpty()) {
+                            plugin.message(player, plugin.config.msgInsideWGPVP());
+                        }
+                        return;
                     }
-                    return;
-                }
-                if (!set.allows(DefaultFlag.PVP) && plugin.config.wgGuardPVPOnly()) {
-                    plugin.logDebug("This is NOT a WorldGuard PVP zone and WorldGuardPVPOnly is " + plugin.config.wgGuardPVPOnly());
-                    if (!plugin.config.msgInsideWGPVP().isEmpty()) {
-                        plugin.message(player, plugin.config.msgInsideWGPVPOnly());
+                    if (!set.allows(DefaultFlag.PVP) && plugin.config.wgGuardPVPOnly()) {
+                        plugin.logDebug("This is NOT a WorldGuard PVP zone and WorldGuardPVPOnly is " + plugin.config.wgGuardPVPOnly());
+                        if (!plugin.config.msgInsideWGPVP().isEmpty()) {
+                            plugin.message(player, plugin.config.msgInsideWGPVPOnly());
+                        }
+                        return;
                     }
-                    return;
+                } else {
+                    plugin.logDebug("[RM] Null set from getApplicableRegions");
                 }
             } else {
                 plugin.logDebug("Region support disabled for '" + player.getWorld().getName() + "'");
@@ -551,6 +555,8 @@ public final class RestorationManager implements Serializable {
     }
 
     public void restore(Player p) {
+        String permLevel = "scavenger.level";
+        String permExp = "scavenger.exp";
         Restoration restoration = getRestoration(p);
 
         if (restoration.enabled) {
@@ -558,15 +564,23 @@ public final class RestorationManager implements Serializable {
 
             p.getInventory().setContents(restoration.inventory);
             p.getInventory().setArmorContents(restoration.armour);
-            if (p.hasPermission("scavenger.level")
+            if (p.hasPermission(permLevel)
                     || !plugin.config.permsEnabled()
                     || (p.isOp() && plugin.config.opsAllPerms())) {
+                plugin.logDebug("Player " + p.getName() + " does have " + permLevel + " permission.");
                 p.setLevel(restoration.level);
+                plugin.logDebug("Player " + p.getName() + " gets " + restoration.level + " level.");
+            } else {
+                plugin.logDebug("Player " + p.getName() + " does NOT have " + permLevel + " permission.");
             }
-            if (p.hasPermission("scavenger.exp")
+            if (p.hasPermission(permExp)
                     || !plugin.config.permsEnabled()
                     || (p.isOp() && plugin.config.opsAllPerms())) {
+                plugin.logDebug("Player " + p.getName() + " does have " + permExp + " permission.");
                 p.setExp(restoration.exp);
+                plugin.logDebug("Player " + p.getName() + " gets " + restoration.exp + " XP.");
+            } else {
+                plugin.logDebug("Player " + p.getName() + " does NOT have " + permExp + " permission.");
             }
             if (plugin.config.shouldNotify()) {
                 plugin.message(p, plugin.config.msgRecovered());
