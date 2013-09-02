@@ -308,7 +308,7 @@ public class Scavenger extends JavaPlugin {
             return null;
         }
 
-        return UltimateArenaAPI.hookIntoUA();
+        return UltimateArenaAPI.hookIntoUA(this);
     }
 
     public void setupMobArenaHandler() {

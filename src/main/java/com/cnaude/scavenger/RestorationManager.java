@@ -282,7 +282,7 @@ public final class RestorationManager implements Serializable {
 
         if (plugin.getUltimateArena() != null) {
             plugin.getUltimateArena();
-            if (UltimateArenaAPI.hookIntoUA().isPlayerInArenaLocation(player)) {
+            if (UltimateArenaAPI.hookIntoUA(plugin).isPlayerInArenaLocation(player)) {
                 if (!plugin.config.msgInsideUA().isEmpty()) {
                     plugin.message(player, plugin.config.msgInsideUA());
                 }

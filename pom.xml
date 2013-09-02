@@ -5,7 +5,7 @@
 
     <groupId>com.cnaude</groupId>
     <artifactId>Scavenger</artifactId>
-    <version>1.3k</version>
+    <version>1.3m</version>
     <name>Scavenger</name>
     <description>Item recovery on death. Based on SirHedgehog's code.</description>
     <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.6.2-R0.1-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.6.2-R0.1</bukkit.version>
     </properties>
 
     <repositories>
@@ -109,7 +109,7 @@
         <dependency>
             <groupId>net.dmulloy2.ultimatearena</groupId>
             <artifactId>UltimateArena</artifactId>
-            <version>2.4.3</version>
+            <version>2.5.2</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
