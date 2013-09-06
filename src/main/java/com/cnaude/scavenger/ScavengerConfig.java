@@ -176,6 +176,7 @@ public final class ScavengerConfig {
         }
         @SuppressWarnings({"rawtypes", "unchecked"})
         ArrayList<String> langFiles = new ArrayList();
+        langFiles.add("chinese.yml");
         langFiles.add("dutch.yml");
         langFiles.add("french.yml");
         langFiles.add("german.yml");

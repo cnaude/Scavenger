@@ -1,0 +1,12 @@
+MsgRecovered: 物品已恢復.
+MsgSaving: 物品已保存.
+MsgSaveForFee: '物品保存需要一筆費用: %COST% %CURRENCY%.'
+MsgNotEnoughMoney: '物品恢復需要一筆費用: %COST% %CURRENCY%,但你只有 %BALANCE% %CURRENCY%.'
+MsgInsidePA: 你處於 %ARENA% 競技場,無法幫你保存物品.
+MsgInsideMA: 你處於 怪物 競技場,無法幫你保存物品.
+MsgInsideWGPVP: 你處於 PVP 區域,無法幫你保存物品.
+MsgInsideWGPVPOnly: 你不在 PVP 區域,無法幫你保存物品.
+MsgInsideEnemyFaction: 你死在敵人的領土,物品消失!
+MsgHeader: 物品恢復
+MsgInsideRes: 這個住宅區不允許恢復物品,物品消失!
+MsgPVPDeath: 被玩家殺死,物品消失!
