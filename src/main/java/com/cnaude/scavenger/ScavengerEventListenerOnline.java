@@ -41,9 +41,9 @@ public class ScavengerEventListenerOnline implements Listener {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
                 rm.collect(event.getEntity(), event.getDrops(), event);
+                }
             }
-        }
-    }
+            }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -107,8 +107,12 @@ public class ScavengerEventListenerOnline implements Listener {
         if (player.hasPermission("scavenger.level")) {
             return true;
         }
-        if (player.hasPermission("scavenger.scavenge." + dcString)) {
+        String dcPerm = "scavenger.scavenge." + dcString;
+        if (player.hasPermission(dcPerm)) {
+            plugin.logDebug("Player " + player.getName() + " has " + dcPerm);
             return true;
+        } else {
+            plugin.logDebug("Player " + player.getName() + " does NOT have " + dcPerm);
         }
         if (player.hasPermission("scavenger.inv")) {
             return true;
@@ -116,9 +120,6 @@ public class ScavengerEventListenerOnline implements Listener {
         if (player.hasPermission("scavenger.armour")) {
             return true;
         }
-        if ((player.isOp() && plugin.config.opsAllPerms())) {
-            return true;
-        }
-        return false;
+        return (player.isOp() && plugin.config.opsAllPerms());
     }
 }

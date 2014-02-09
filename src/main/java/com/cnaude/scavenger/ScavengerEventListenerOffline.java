@@ -27,11 +27,11 @@ public class ScavengerEventListenerOffline implements Listener {
             public void run() {
                 if (rm.hasRestoration(player)) {
                     if (Authenticator.isPlayerLoggedIn(player)) {
-                    //rm.enable(player);
-                    if (isScavengeAllowed(player)) {
-                        rm.enable(player);
-                        rm.restore(player);
-                    }
+                        //rm.enable(player);
+                        if (isScavengeAllowed(player)) {
+                            rm.enable(player);
+                            rm.restore(player);
+                        }
                     }
                 }
             }
@@ -43,9 +43,9 @@ public class ScavengerEventListenerOffline implements Listener {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
                 rm.collect(event.getEntity(), event.getDrops(), event);
+                }
             }
-        }
-    }
+            }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -119,9 +119,6 @@ public class ScavengerEventListenerOffline implements Listener {
         if (player.hasPermission("scavenger.armour")) {
             return true;
         }
-        if ((player.isOp() && plugin.config.opsAllPerms())) {
-            return true;
-        }
-        return false;
+        return (player.isOp() && plugin.config.opsAllPerms());
     }
 }

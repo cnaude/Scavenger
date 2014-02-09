@@ -8,4 +8,5 @@ public class Restoration {
     public ItemStack[] armour;
     public int level;
     public float exp;
+    public String deathCause;
 }

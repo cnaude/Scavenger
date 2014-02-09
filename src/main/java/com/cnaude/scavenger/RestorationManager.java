@@ -407,7 +407,17 @@ public final class RestorationManager implements Serializable {
             event.setDroppedExp(0);
         }
 
-        if (player.hasPermission("scavenger.scavenge")) {
+        String dcString = "NULL";
+        if (player.getLastDamageCause() != null) {
+            if (player.getLastDamageCause().getCause() != null) {
+                dcString = player.getLastDamageCause().getCause().toString();
+            }
+        }
+        String dcPerm = "scavenger.scavenge." + dcString;
+        plugin.logDebug("["+player.getName()+"] scavenger.scavenge = " + player.hasPermission("scavenger.scavenge"));
+        plugin.logDebug("["+player.getName()+"] " + dcPerm + " = " + player.hasPermission(dcPerm));
+        if (player.hasPermission("scavenger.scavenge") || player.hasPermission(dcPerm)) {
+            plugin.logDebug("Permission okay...");
             if (plugin.config.singleItemDrops()) {
                 ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
                 for (ItemStack[] a : invAndArmour) {
