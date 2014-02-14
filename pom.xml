@@ -21,9 +21,10 @@
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+        </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
         </repository>
     
         <!-- For JUnitBenchmarks -->
@@ -80,7 +81,7 @@
             <version>2.0.3</version>
         </dependency>
         
-         <dependency>
+        <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>mcore</artifactId>
             <version>6.5.0</version>
@@ -181,8 +182,8 @@
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
-            <artifactId>WorldEdit</artifactId>
-            <version>5.5.2</version>
+            <artifactId>worldedit</artifactId>
+            <version>5.</version>
         </dependency>
     </dependencies>
 
