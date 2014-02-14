@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.6.2-R0.1</bukkit.version>
+        <bukkit.version>1.7.2-R0.3</bukkit.version>
     </properties>
 
     <repositories>
@@ -220,7 +220,7 @@
                             <tasks>                                                                              
                                 <copy file="../${project.name}/target/${project.name}-${project.version}.jar" tofile="../${project.name}/target/${project.name}.jar"/>
                                 <exec dir="../${project.name}/target" executable="scp">
-                                    <arg line="-o 'StrictHostKeyChecking no' ${project.name}.jar cnaude@cn.revisited.us:minetest/plugins/"/>
+                                    <arg line="${project.name}.jar cnaude@cn.revisited.us:minetest/plugins/"/>
                                 </exec>
                             </tasks>
                         </configuration>
