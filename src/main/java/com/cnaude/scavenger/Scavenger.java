@@ -3,6 +3,7 @@ package com.cnaude.scavenger;
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
 import com.cnaude.scavenger.Hooks.ScavengerDungeonMaze;
 import com.cnaude.scavenger.Hooks.ScavengerFactions;
+import com.cnaude.scavenger.Hooks.ScavengerMyWorlds;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -35,7 +36,7 @@ public class Scavenger extends JavaPlugin {
     private Economy economy = null;
     public MobArenaHandler maHandler;
     public PVPArena pvpHandler;
-    public MultiverseInventories multiverseHandler;
+    public MultiverseInventories multiverseHandler;    
     public MultiInv multiinvHandler;    
     public RestorationManager rm;
     public boolean battleArena = false;
@@ -48,6 +49,7 @@ public class Scavenger extends JavaPlugin {
     private ScavengerEventListenerOnline eventListenerOnline;
     public ScavengerFactions factionHook = null;
     public ScavengerDungeonMaze dmHook = null;
+    public ScavengerMyWorlds myWorldsHook = null;
 
     @Override
     public void onEnable() {
@@ -69,6 +71,7 @@ public class Scavenger extends JavaPlugin {
             checkForWorldGuard();
             checkForFactions();
             checkForDungeonMaze();
+            checkForMyWorlds();
             setupResidence();
 
             rm = new RestorationManager(this);
@@ -210,6 +213,14 @@ public class Scavenger extends JavaPlugin {
             return false;
         } else {
             return true;
+        }
+    }
+    
+    public void checkForMyWorlds() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("MyWorlds");
+        if (plugin != null) {
+            myWorldsHook = new ScavengerMyWorlds();
+            logInfo("MyWorlds detected.");
         }
     }
 

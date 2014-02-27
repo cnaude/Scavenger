@@ -5,7 +5,7 @@
 
     <groupId>com.cnaude</groupId>
     <artifactId>Scavenger</artifactId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
     <name>Scavenger</name>
     <description>Item recovery on death. Based on SirHedgehog's code.</description>
     <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
@@ -184,6 +184,12 @@
             <groupId>com.sk89q</groupId>
             <artifactId>worldedit</artifactId>
             <version>5.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bergerkiller.bukkit</groupId>
+            <artifactId>MyWorlds</artifactId>
+            <version>1.67</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

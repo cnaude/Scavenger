@@ -23,6 +23,7 @@ softdepend:
   - Residence
   - WorldInventories
   - Minigames
+  - MyWorlds
 commands:
   scavengerreload:
     description: Reload config

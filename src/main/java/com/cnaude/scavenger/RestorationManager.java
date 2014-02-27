@@ -29,7 +29,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 public final class RestorationManager implements Serializable {
 
     Scavenger plugin;
-    private static HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();
+    private static final HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();
 
     public RestorationManager(Scavenger plugin) {
         this.plugin = plugin;
@@ -52,9 +52,6 @@ public final class RestorationManager implements Serializable {
                     } catch (IOException e) {
                         plugin.logError(e.getMessage());
                         error = true;
-                    } catch (Exception e) {
-                        error = true;
-                        plugin.logError(e.getMessage());
                     }
                     if (error) {
                         plugin.logError("Problem serializing item: " + i.toString());
@@ -68,8 +65,6 @@ public final class RestorationManager implements Serializable {
                     try {
                         tmpRestoration.armour.add(serializer.serializeItemStack(i));
                     } catch (IOException e) {
-                        plugin.logError(e.getMessage());
-                    } catch (Exception e) {
                         plugin.logError(e.getMessage());
                     }
                     plugin.debugMessage("Done: " + i.toString());
@@ -87,7 +82,7 @@ public final class RestorationManager implements Serializable {
             ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
             obj_out.writeObject(restorationsForDisk);
             obj_out.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             plugin.logError(e.getMessage());
         }
     }
@@ -105,7 +100,10 @@ public final class RestorationManager implements Serializable {
             ObjectInputStream obj_in = new ObjectInputStream(f_in);
             restorationsFromDisk = (HashMap<String, RestorationS1>) obj_in.readObject();
             obj_in.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
+            plugin.logError(e.getMessage());
+            return;
+        } catch (ClassNotFoundException e) {
             plugin.logError(e.getMessage());
             return;
         }
@@ -171,18 +169,15 @@ public final class RestorationManager implements Serializable {
     }
 
     public boolean multipleInventories() {
-        if (plugin.getMultiverseInventories() != null
+        return plugin.getMultiverseInventories() != null
                 || plugin.getMultiInvAPI() != null
-                || plugin.getWorldInvAPI()) {
-            return true;
-        } else {
-            return false;
-        }
+                || plugin.myWorldsHook != null
+                || plugin.getWorldInvAPI();
     }
 
     public boolean hasRestoration(Player p) {
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
             if (restorations.containsKey(keyName)) {
                 plugin.logDebug("Has: " + keyName);
                 return true;
@@ -195,7 +190,7 @@ public final class RestorationManager implements Serializable {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
             if (restorations.containsKey(keyName)) {
                 plugin.logDebug("Getting: " + keyName);
                 restoration = restorations.get(keyName);
@@ -396,7 +391,6 @@ public final class RestorationManager implements Serializable {
         restoration.armour = player.getInventory().getArmorContents();
         itemDrops.clear();
 
-
         if (levelAllow(player)) {
             plugin.logDebug("Collecting level " + player.getLevel() + " for " + player.getName());
             restoration.level = player.getLevel();
@@ -414,8 +408,8 @@ public final class RestorationManager implements Serializable {
             }
         }
         String dcPerm = "scavenger.scavenge." + dcString;
-        plugin.logDebug("["+player.getName()+"] scavenger.scavenge = " + player.hasPermission("scavenger.scavenge"));
-        plugin.logDebug("["+player.getName()+"] " + dcPerm + " = " + player.hasPermission(dcPerm));
+        plugin.logDebug("[" + player.getName() + "] scavenger.scavenge = " + player.hasPermission("scavenger.scavenge"));
+        plugin.logDebug("[" + player.getName() + "] " + dcPerm + " = " + player.hasPermission(dcPerm));
         if (player.hasPermission("scavenger.scavenge") || player.hasPermission(dcPerm)) {
             plugin.logDebug("Permission okay...");
             if (plugin.config.singleItemDrops()) {
@@ -545,7 +539,7 @@ public final class RestorationManager implements Serializable {
 
     public void addRestoration(Player p, Restoration r) {
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
             restorations.put(keyName, r);
             plugin.debugMessage("Adding: " + keyName);
         } else {
@@ -605,7 +599,7 @@ public final class RestorationManager implements Serializable {
 
     public void removeRestoration(Player p) {
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p.getWorld()).get(0);
+            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
             if (restorations.containsKey(keyName)) {
                 restorations.remove(keyName);
                 plugin.logDebug("Removing: " + keyName);
@@ -617,7 +611,8 @@ public final class RestorationManager implements Serializable {
         }
     }
 
-    public List<String> getWorldGroups(World world) {
+    public List<String> getWorldGroups(Player player) {
+        World world = player.getWorld();
         List<String> returnData = new ArrayList<String>();
         if (plugin.getMultiverseInventories() != null) {
             MultiverseInventories multiInv = plugin.getMultiverseInventories();
@@ -648,6 +643,11 @@ public final class RestorationManager implements Serializable {
             try {
                 returnData.add(WorldInventoriesAPI.findGroup(worldname).getName());
             } catch (Exception ex) {
+            }
+        }
+        if (plugin.myWorldsHook != null) {
+            if (plugin.myWorldsHook.isEnabled()) {
+                returnData.add(plugin.myWorldsHook.getLocationName(player.getLocation()));
             }
         }
         if (returnData.isEmpty()) {
