@@ -126,6 +126,11 @@ public class ScavengerEventListenerOnline implements Listener {
             plugin.logDebug("Player " + player.getName() + " has " + "scavenger.armour");
             return true;
         }
-        return (player.isOp() && plugin.config.opsAllPerms());
+        if (player.isOp() && plugin.config.opsAllPerms()) {
+            plugin.logDebug("Player " + player.getName() + " is op and ops have all permissions.");
+            return true;
+        } 
+        plugin.logDebug("Returning false.");
+        return false;
     }
 }
