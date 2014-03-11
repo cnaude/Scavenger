@@ -29,8 +29,11 @@ public class ScavengerEventListenerOnline implements Listener {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
+                    plugin.debugMessage("Player " + player.getName() + " has a restore. Initiating restore.");
                     rm.enable(player);
                     rm.restore(player);
+                } else {
+                    plugin.debugMessage("Player " + player.getName() + " has NO restore. Nothing to restore.");
                 }
             }
         }, plugin.config.restoreDelayTicks());
@@ -41,9 +44,9 @@ public class ScavengerEventListenerOnline implements Listener {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
                 rm.collect(event.getEntity(), event.getDrops(), event);
-                }
             }
-            }
+        }
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -129,7 +132,7 @@ public class ScavengerEventListenerOnline implements Listener {
         if (player.isOp() && plugin.config.opsAllPerms()) {
             plugin.logDebug("Player " + player.getName() + " is op and ops have all permissions.");
             return true;
-        } 
+        }
         plugin.logDebug("Returning false.");
         return false;
     }
