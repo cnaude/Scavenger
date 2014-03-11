@@ -17,17 +17,6 @@
     </properties>
 
     <repositories>
-        <!-- Bukkit -->
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>sk89q-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
-        </repository>
-    
-        <!-- For JUnitBenchmarks -->
         <repository>
             <id>sonatype-nexus-public</id>
             <name>SonaType public snapshots and releases repository</name>
@@ -37,10 +26,23 @@
                 <enabled>false</enabled>
             </releases> 
             <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>        
+
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
+            <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
+        </repository>        
+    
         <!-- For anything else without its own repo -->
         <repository>
             <id>cnaude-repo</id>

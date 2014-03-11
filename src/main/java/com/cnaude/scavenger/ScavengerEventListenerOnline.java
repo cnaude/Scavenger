@@ -96,15 +96,19 @@ public class ScavengerEventListenerOnline implements Listener {
             return false;
         }
         if (!plugin.config.permsEnabled()) {
+            plugin.logDebug("Permissions are disabled. Enabling restore for " + player.getName());
             return true;
         }
         if (player.hasPermission("scavenger.scavenge")) {
+            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.scavenge");
             return true;
         }
         if (player.hasPermission("scavenger.exp")) {
+            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.exp");
             return true;
         }
         if (player.hasPermission("scavenger.level")) {
+            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.level");
             return true;
         }
         String dcPerm = "scavenger.scavenge." + dcString;
@@ -115,9 +119,11 @@ public class ScavengerEventListenerOnline implements Listener {
             plugin.logDebug("Player " + player.getName() + " does NOT have " + dcPerm);
         }
         if (player.hasPermission("scavenger.inv")) {
+            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.inv");
             return true;
         }
         if (player.hasPermission("scavenger.armour")) {
+            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.armour");
             return true;
         }
         return (player.isOp() && plugin.config.opsAllPerms());
