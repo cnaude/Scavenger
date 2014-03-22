@@ -49,7 +49,7 @@ public class Scavenger extends JavaPlugin {
     private ScavengerEventListenerOnline eventListenerOnline;
     public ScavengerFactions factionHook = null;
     public ScavengerDungeonMaze dmHook = null;
-    public ScavengerMyWorlds myWorldsHook = null;
+    public ScavengerMyWorlds myWorldsHook = null;   
 
     @Override
     public void onEnable() {

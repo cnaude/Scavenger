@@ -67,6 +67,11 @@ Economy:
     AddMin: false
     # Chance to drop item. Leave 0 for no chance. This is an integer value. If you enter 5 then the chance to drop is 1 out of 5.
     ChanceToDrop: 0
+    # Deposit type: player, bank, none
+    DepositType: none
+    # Name of bank or player to deposit money taken from player
+    DepositDestination: ''
+    
 
 # Drop item in these worlds
 BlacklistedWorlds:

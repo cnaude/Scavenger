@@ -365,6 +365,17 @@ public final class RestorationManager implements Serializable {
                     x = x.replaceAll("%CURRENCY%", currency);
                     plugin.message(player, x);
                 }
+                if (!plugin.config.depositDestination().isEmpty()) {
+                    if (plugin.config.depositType().equalsIgnoreCase("bank")) {
+                        if (plugin.getEconomy().hasBankSupport()) {
+                            plugin.getEconomy().bankDeposit(plugin.config.depositDestination(), withdrawAmount);
+                        }
+                    } else if (plugin.config.depositType().equalsIgnoreCase("player")) {
+                        if (plugin.getEconomy().hasAccount(plugin.config.depositDestination())) {
+                            plugin.getEconomy().depositPlayer(plugin.config.depositDestination(), withdrawAmount);
+                        }
+                    }
+                }
             } else {
                 if (playeBalance == 1) {
                     currency = plugin.getEconomy().currencyNameSingular();

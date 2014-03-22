@@ -26,6 +26,8 @@ public final class ScavengerConfig {
     private static final String ECONOMY_PERCENTCOST = "Economy.PercentCost";
     private static final String ECONOMY_ADDMIN = "Economy.AddMin";
     private static final String ECONOMY_DROP_CHANCE = "Economy.ChanceToDrop";
+    private static final String ECONOMY_DEPOSIT_TYPE = "DepositType";
+    private static final String ECONOMY_DEPOSIT_DESTINATION = "DepositDestination";
     private static final String GLOBAL_COLOR = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR = "Global.TextColor";
     private static final String DEBUG_ENABLED = "Global.Debug";
@@ -45,7 +47,7 @@ public final class ScavengerConfig {
     private static final String BLACKLISTED_WORLDS = "BlacklistedWorlds";
     private static final String BLACKLISTED_WGREGIONS = "BlacklistedWGRegions";
     private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
-    private static final String GLOBAL_RESTOREDELAY = "Global.RestoreDelayTicks";
+    private static final String GLOBAL_RESTOREDELAY = "Global.RestoreDelayTicks";    
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED = "MsgRecovered";
     private static final String MSG_SAVING = "MsgSaving";
@@ -117,10 +119,12 @@ public final class ScavengerConfig {
     private boolean dropOnPVPDeath;
     private String msgPVPDeath;
     private String languageFileName;
-    private List<String> blacklistedworlds = new ArrayList<String>();
-    private List<String> blacklistedWGRegions = new ArrayList<String>();
+    private final List<String> blacklistedworlds = new ArrayList<String>();
+    private final List<String> blacklistedWGRegions = new ArrayList<String>();
     private boolean slotBasedRecovery;
     private int restoreDelayTicks;
+    private String depositType;
+    private String depositDestination;
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();
@@ -139,6 +143,8 @@ public final class ScavengerConfig {
         addMin = config.getBoolean(ECONOMY_ADDMIN, false);
         chanceToDrop = config.getInt(ECONOMY_DROP_CHANCE, 0);
         slotBasedRecovery = config.getBoolean(GLOBAL_SLOT_RECOVERY,false);
+        depositType = config.getString(ECONOMY_DEPOSIT_TYPE,"none");
+        depositDestination = config.getString(ECONOMY_DEPOSIT_DESTINATION,"");
 
         shouldNotify = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops = config.getBoolean(GLOBAL_SIDROPS, false);
@@ -489,5 +495,13 @@ public final class ScavengerConfig {
     
     public int restoreDelayTicks() {
         return restoreDelayTicks;
+    }
+    
+    public String depositType() {
+        return depositType;
+    }
+    
+    public String depositDestination() {
+        return depositDestination;
     }
 }
