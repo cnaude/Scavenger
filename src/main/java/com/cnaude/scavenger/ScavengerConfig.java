@@ -26,8 +26,8 @@ public final class ScavengerConfig {
     private static final String ECONOMY_PERCENTCOST = "Economy.PercentCost";
     private static final String ECONOMY_ADDMIN = "Economy.AddMin";
     private static final String ECONOMY_DROP_CHANCE = "Economy.ChanceToDrop";
-    private static final String ECONOMY_DEPOSIT_TYPE = "DepositType";
-    private static final String ECONOMY_DEPOSIT_DESTINATION = "DepositDestination";
+    private static final String ECONOMY_DEPOSIT_TYPE = "Economy.DepositType";
+    private static final String ECONOMY_DEPOSIT_DESTINATION = "Economy.DepositDestination";
     private static final String GLOBAL_COLOR = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR = "Global.TextColor";
     private static final String DEBUG_ENABLED = "Global.Debug";
