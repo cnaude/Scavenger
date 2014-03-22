@@ -366,15 +366,29 @@ public final class RestorationManager implements Serializable {
                     plugin.message(player, x);
                 }
                 if (!plugin.config.depositDestination().isEmpty()) {
+                    plugin.logDebug("DepositDesination: " + plugin.config.depositDestination());
                     if (plugin.config.depositType().equalsIgnoreCase("bank")) {
+                        plugin.logDebug("DepositType: BANK");
                         if (plugin.getEconomy().hasBankSupport()) {
+                            plugin.logDebug("Bank support is enabled");
                             plugin.getEconomy().bankDeposit(plugin.config.depositDestination(), withdrawAmount);
-                        }
+                        } else {
+                            plugin.logDebug("Bank support is NOT enabled");
+                        }                                                      
                     } else if (plugin.config.depositType().equalsIgnoreCase("player")) {
+                        plugin.logDebug("DepositType: PLAYER");
+                        plugin.logDebug("DepositDestination: " + plugin.config.depositDestination());
                         if (plugin.getEconomy().hasAccount(plugin.config.depositDestination())) {
-                            plugin.getEconomy().depositPlayer(plugin.config.depositDestination(), withdrawAmount);
+                            plugin.logDebug("DepositDestination: VALID");
+                            plugin.getEconomy().depositPlayer(plugin.config.depositDestination(), withdrawAmount);                            
+                        } else {
+                            plugin.logDebug("DepositDestination: INVALID");
                         }
+                    } else {
+                        plugin.logDebug("DepositType: INVALID");
                     }
+                } else {
+                    plugin.logDebug("No deposit destination!");
                 }
             } else {
                 if (playeBalance == 1) {

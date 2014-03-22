@@ -70,9 +70,7 @@ Economy:
     # Deposit type: player, bank, none
     DepositType: none
     # Name of bank or player to deposit money taken from player
-    DepositDestination: ''
-    
-
+    DepositDestination: '' 
 # Drop item in these worlds
 BlacklistedWorlds:
 - put_here_worlds
