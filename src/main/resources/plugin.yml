@@ -2,7 +2,6 @@ name: ${project.name}
 version: ${project.version}
 description: ${project.description}
 author: cnaude, modwizcode, SirHedgehog, Xephi
-description: ${project.description}
 website: ${project.url}
 main: com.cnaude.scavenger.Scavenger
 loadbefore:

@@ -3,6 +3,7 @@ package com.cnaude.scavenger;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -48,6 +49,7 @@ public final class ScavengerConfig {
     private static final String BLACKLISTED_WGREGIONS = "BlacklistedWGRegions";
     private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
     private static final String GLOBAL_RESTOREDELAY = "Global.RestoreDelayTicks";    
+    private static final String GLOBAL_BLACKLISTWARN = "Global.BlackListWarn";   
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED = "MsgRecovered";
     private static final String MSG_SAVING = "MsgSaving";
@@ -65,6 +67,7 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDERES = "MsgInsideRes";
     private static final String MSG_PVPDEATH = "PVPDeath";
     private static final String MSG_HEADER_DEF = "Scavenger";
+    private static final String MSG_BLACKLISTEDWORLD = "MsgBlacklistedWorld";
     private static final String MSG_RECOVERED_DEF = "Your inventory has been restored.";
     private static final String MSG_SAVING_DEF = "Saving your inventory.";
     private static final String MSG_SAVEFORFEE_DEF = "Saving your inventory for a small fee of %COST% %CURRENCY%.";
@@ -79,6 +82,7 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDEDUNGEONMAZE_DEF = "You died in a DungeonMaze. Your items will be dropped!";
     private static final String MSG_INSIDERES_DEF = "This residence does not allow item recovery! Dropping items!";
     private static final String MSG_PVPDEATH_DEF = "Killed by another player! Dropping items.";
+    private static final String MSG_BLACKLISTEDWORLD_DEF = "Scavenger is disabled in this world. Be careful.";
     private boolean shouldNotify;
     private double restoreCost;
     private boolean economyEnabled;
@@ -105,6 +109,7 @@ public final class ScavengerConfig {
     private boolean wgGuardPVPOnly;
     private String msgInsideWGPVP;
     private String msgInsideWGPVPOnly;
+    private String MsgBlacklistedWorld;
     private boolean opsAllPerms;
     private String msgHeader;
     private int chanceToDrop;
@@ -125,6 +130,7 @@ public final class ScavengerConfig {
     private int restoreDelayTicks;
     private String depositType;
     private String depositDestination;
+    private boolean blackListWarn;
 
     public ScavengerConfig(Scavenger plug) {
         config = plug.getConfig();
@@ -156,6 +162,7 @@ public final class ScavengerConfig {
         factionEnemyDrops = config.getBoolean(GLOBAL_FACTIONENEMYDROPS, false);
         offlineMode = config.getBoolean(GLOBAL_OFFLINEMODE, false);
         dungeonMaze = config.getBoolean(GLOBAL_DUNGEONMAZE, false);
+        blackListWarn = config.getBoolean(GLOBAL_BLACKLISTWARN, false);
         residence = config.getBoolean(GLOBAL_RESIDENCE, false);
         resFlag = config.getString(GLOBAL_RESFLAG, "noscv");
         dropOnPVPDeath = config.getBoolean(GLOBAL_DROPONPVPDEATH, false);
@@ -205,7 +212,7 @@ public final class ScavengerConfig {
                         out.write(buf, 0, len);
                     }
                     out.close();
-                } catch (Exception ex) {
+                } catch (IOException ex) {
                     plug.logError(ex.getMessage());
                 }
             }
@@ -298,9 +305,14 @@ public final class ScavengerConfig {
                 } else {
                     msgInsideWGPVPOnly = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);
                 }
+                if (map.containsKey(MSG_BLACKLISTEDWORLD)) {
+                    MsgBlacklistedWorld = map.get(MSG_BLACKLISTEDWORLD);
+                } else {
+                    MsgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
+                }                
                 reader.close();
                 success = true;
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 plug.logError("Error reading file: " + ex.getMessage());
                 success = false;
             }
@@ -322,6 +334,7 @@ public final class ScavengerConfig {
             msgInsideUA = config.getString("Messages." + MSG_INSIDEUA, MSG_INSIDEUA_DEF);
             msgInsideWGPVP = config.getString("Messages." + MSG_INSIDEWGPVP, MSG_INSIDEWGPVP_DEF);
             msgInsideWGPVPOnly = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);
+            MsgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
         }
     }
 
@@ -504,4 +517,13 @@ public final class ScavengerConfig {
     public String depositDestination() {
         return depositDestination;
     }
+    
+    public String MsgBlacklistedWorld() {
+        return MsgBlacklistedWorld;
+    }
+    
+    public boolean blackListWarn() {
+        return blackListWarn;
+    }
+            
 }

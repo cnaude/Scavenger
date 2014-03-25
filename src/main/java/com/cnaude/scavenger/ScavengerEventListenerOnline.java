@@ -12,6 +12,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 public class ScavengerEventListenerOnline implements Listener {
 
@@ -136,4 +137,14 @@ public class ScavengerEventListenerOnline implements Listener {
         plugin.logDebug("Returning false.");
         return false;
     }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        Player player = event.getPlayer();
+        plugin.logInfo("Player change world " + player.getName());
+        if (plugin.config.blackListWarn()) {
+            player.sendMessage(plugin.config.MsgBlacklistedWorld());
+        }
+    }
+    
 }
