@@ -33,7 +33,7 @@ public class ScavengerEvents implements Listener {
         World world = player.getWorld();
         plugin.logInfo("Player change world " + player.getName());
         if (plugin.config.blackListWarn()) {
-            if (plugin.config.blacklistedWorlds().contains(world.getName())) {
+            if (plugin.config.blacklistedWorlds().contains(world.getName().toLowerCase())) {
                 player.sendMessage(plugin.config.MsgBlacklistedWorld());
             }
         }
