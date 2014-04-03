@@ -31,10 +31,14 @@ public class ScavengerEvents implements Listener {
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         World world = player.getWorld();
-        plugin.logInfo("Player change world " + player.getName());
+        World fromWorld = event.getFrom();
+        plugin.logInfo("Player " + player.getName() + "change world from " + fromWorld.getName() + " to " + world.getName());
         if (plugin.config.blackListWarn()) {
             if (plugin.config.blacklistedWorlds().contains(world.getName().toLowerCase())) {
+                plugin.logInfo("B1");
                 player.sendMessage(plugin.config.MsgBlacklistedWorld());
+            } else {
+                plugin.logInfo("B2");
             }
         }
     }
