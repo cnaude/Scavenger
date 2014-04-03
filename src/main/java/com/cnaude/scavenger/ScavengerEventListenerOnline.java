@@ -137,14 +137,7 @@ public class ScavengerEventListenerOnline implements Listener {
         plugin.logDebug("Returning false.");
         return false;
     }
+
     
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        Player player = event.getPlayer();
-        plugin.logInfo("Player change world " + player.getName());
-        if (plugin.config.blackListWarn()) {
-            player.sendMessage(plugin.config.MsgBlacklistedWorld());
-        }
-    }
-    
+
 }

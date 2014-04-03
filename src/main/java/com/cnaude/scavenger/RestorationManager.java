@@ -119,18 +119,15 @@ public final class RestorationManager implements Serializable {
                 if (value.inventory.get(i) instanceof String) {
                     boolean error = false;
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.debugMessage("Deserializing: " + value.inventory.get(i).toString());
+                    plugin.debugMessage("Deserializing: " + value.inventory.get(i));
                     try {
                         tmpStack = serializer.deserializeItemStack(value.inventory.get(i));
                     } catch (IOException e) {
                         plugin.logError(e.getMessage());
                         error = true;
-                    } catch (Exception e) {
-                        plugin.logError(e.getMessage());
-                        error = true;
                     }
                     if (error) {
-                        plugin.logError("Problem deserializing item: " + value.inventory.get(i).toString());
+                        plugin.logError("Problem deserializing item: " + value.inventory.get(i));
                     }
                     if (tmpStack == null) {
                         tmpRestoration.inventory[i] = new ItemStack(Material.AIR);
@@ -144,7 +141,7 @@ public final class RestorationManager implements Serializable {
             for (int i = 0; i < value.armour.size(); i++) {
                 if (value.armour.get(i) instanceof String) {
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.debugMessage("Deserializing: " + value.armour.get(i).toString());
+                    plugin.debugMessage("Deserializing: " + value.armour.get(i));
                     try {
                         tmpStack = serializer.deserializeItemStack(value.armour.get(i));
                     } catch (IOException e) {
@@ -176,30 +173,29 @@ public final class RestorationManager implements Serializable {
     }
 
     public boolean hasRestoration(Player p) {
+        UUID uuid = p.getUniqueId();
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
-            if (restorations.containsKey(keyName)) {
-                plugin.logDebug("Has: " + keyName);
-                return true;
-            }
+            return restorations.containsKey(uuid + "." + getWorldGroups(p));
         }
-        return restorations.containsKey(p.getName());
+        return restorations.containsKey(uuid.toString());
     }
 
     public Restoration getRestoration(Player p) {
+        UUID uuid = p.getUniqueId();
         Restoration restoration = new Restoration();
         restoration.enabled = false;
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
+            String keyName = uuid + "." + getWorldGroups(p);
             if (restorations.containsKey(keyName)) {
                 plugin.logDebug("Getting: " + keyName);
                 restoration = restorations.get(keyName);
             }
         }
         if (!restoration.enabled) {
-            if (restorations.containsKey(p.getName())) {
-                plugin.logDebug("Getting: " + p.getName());
-                restoration = restorations.get(p.getName());
+            String keyName = p.getUniqueId().toString();
+            if (restorations.containsKey(keyName)) {
+                plugin.logDebug("Getting: " + keyName + ":" + p.getName());
+                restoration = restorations.get(keyName);
             }
         }
         return restoration;
@@ -374,13 +370,13 @@ public final class RestorationManager implements Serializable {
                             plugin.getEconomy().bankDeposit(plugin.config.depositDestination(), withdrawAmount);
                         } else {
                             plugin.logDebug("Bank support is NOT enabled");
-                        }                                                      
+                        }
                     } else if (plugin.config.depositType().equalsIgnoreCase("player")) {
                         plugin.logDebug("DepositType: PLAYER");
                         plugin.logDebug("DepositDestination: " + plugin.config.depositDestination());
                         if (plugin.getEconomy().hasAccount(plugin.config.depositDestination())) {
                             plugin.logDebug("DepositDestination: VALID");
-                            plugin.getEconomy().depositPlayer(plugin.config.depositDestination(), withdrawAmount);                            
+                            plugin.getEconomy().depositPlayer(plugin.config.depositDestination(), withdrawAmount);
                         } else {
                             plugin.logDebug("DepositDestination: INVALID");
                         }
@@ -444,17 +440,9 @@ public final class RestorationManager implements Serializable {
                         boolean dropIt;
                         if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
                             if (plugin.config.singleItemDropsOnly() == true) {
-                                if ((player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
-                                    dropIt = false;
-                                } else {
-                                    dropIt = true;
-                                }
+                                dropIt = (player.hasPermission("scavenger.drop." + i.getTypeId())) && (player.hasPermission("scavenger.drop.*"));
                             } else {
-                                if (!(player.hasPermission("scavenger.drop." + i.getTypeId())) || (player.hasPermission("scavenger.drop.*"))) {
-                                    dropIt = false;
-                                } else {
-                                    dropIt = true;
-                                }
+                                dropIt = player.hasPermission("scavenger.drop." + i.getTypeId()) && (player.hasPermission("scavenger.drop.*"));
                             }
                             if (dropIt) {
                                 plugin.debugMessage(player, "Dropping item " + i.getType());
@@ -529,23 +517,15 @@ public final class RestorationManager implements Serializable {
     }
 
     public boolean levelAllow(Player p) {
-        if ((p.hasPermission("scavenger.level")
+        return (p.hasPermission("scavenger.level")
                 || !plugin.config.permsEnabled()
-                || (p.isOp() && plugin.config.opsAllPerms())) && p.getLevel() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+                || (p.isOp() && plugin.config.opsAllPerms())) && p.getLevel() > 0;
     }
 
     public boolean expAllow(Player p) {
-        if ((p.hasPermission("scavenger.exp")
+        return (p.hasPermission("scavenger.exp")
                 || !plugin.config.permsEnabled()
-                || (p.isOp() && plugin.config.opsAllPerms())) && p.getExhaustion() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+                || (p.isOp() && plugin.config.opsAllPerms())) && p.getExhaustion() > 0;
     }
 
     public void printRestorations(Player p) {
@@ -563,13 +543,14 @@ public final class RestorationManager implements Serializable {
     }
 
     public void addRestoration(Player p, Restoration r) {
+        UUID uuid = p.getUniqueId();
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
+            String keyName = uuid + "." + getWorldGroups(p);
             restorations.put(keyName, r);
-            plugin.debugMessage("Adding: " + keyName);
+            plugin.debugMessage("Adding: " + p.getDisplayName() + ":" + keyName);
         } else {
-            restorations.put(p.getName(), r);
-            plugin.debugMessage("Adding: " + p.getName());
+            restorations.put(uuid.toString(), r);
+            plugin.debugMessage("Adding: " + p.getDisplayName() + ":" + uuid);
         }
     }
 
@@ -622,21 +603,30 @@ public final class RestorationManager implements Serializable {
 
     }
 
+    public boolean hasRestoration(UUID uuid) {
+        return restorations.containsKey(uuid.toString());
+    }
+
+    public void removeRestoration(UUID uuid) {
+        if (hasRestoration(uuid)) {
+            restorations.remove(uuid.toString());
+            plugin.logDebug("Removing: " + uuid);
+        }
+    }
+
     public void removeRestoration(Player p) {
+        UUID uuid = p.getUniqueId();
         if (multipleInventories()) {
-            String keyName = p.getName() + "." + getWorldGroups(p).get(0);
+            String keyName = uuid + "." + getWorldGroups(p);
             if (restorations.containsKey(keyName)) {
                 restorations.remove(keyName);
                 plugin.logDebug("Removing: " + keyName);
             }
         }
-        if (restorations.containsKey(p.getName())) {
-            restorations.remove(p.getName());
-            plugin.logDebug("Removing: " + p.getName());
-        }
+        removeRestoration(uuid);
     }
 
-    public List<String> getWorldGroups(Player player) {
+    public String getWorldGroups(Player player) {
         World world = player.getWorld();
         List<String> returnData = new ArrayList<String>();
         if (plugin.getMultiverseInventories() != null) {
@@ -678,6 +668,6 @@ public final class RestorationManager implements Serializable {
         if (returnData.isEmpty()) {
             returnData.add("");
         }
-        return returnData;
+        return returnData.get(0);
     }
 }

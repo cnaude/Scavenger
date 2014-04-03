@@ -2,6 +2,7 @@ package com.cnaude.scavenger;
 
 import fr.areku.Authenticator.Authenticator;
 import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -121,15 +122,6 @@ public class ScavengerEventListenerOffline implements Listener {
             return true;
         }
         return (player.isOp() && plugin.config.opsAllPerms());
-    }
-    
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        Player player = event.getPlayer();
-        plugin.logInfo("Player change world " + player.getName());
-        if (plugin.config.blackListWarn()) {
-            player.sendMessage(plugin.config.MsgBlacklistedWorld());
-        }
     }
     
 }

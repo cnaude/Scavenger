@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.7.2-R0.3</bukkit.version>
+        <bukkit.version>1.7.5-R0.1</bukkit.version>
     </properties>
 
     <repositories>
@@ -36,6 +36,10 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+            <releases> 
+                <!-- set to true if you wish to fetch releases from this repo too. -->
+                <enabled>false</enabled>
+            </releases> 
         </repository>
         
         <repository>

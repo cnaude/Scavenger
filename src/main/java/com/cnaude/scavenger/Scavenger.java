@@ -99,6 +99,7 @@ public class Scavenger extends JavaPlugin {
                 getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                 logInfo("Offline-mode is set to false, no Authenticator Hook");
             }
+            getServer().getPluginManager().registerEvents(new ScavengerEvents(this,rm), this);
         }
     }
 
