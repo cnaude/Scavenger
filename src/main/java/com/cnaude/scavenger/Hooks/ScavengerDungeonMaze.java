@@ -4,7 +4,7 @@
  */
 package com.cnaude.scavenger.Hooks;
 
-import com.timvisee.dungeonmaze.api.DungeonMazeAPI;
+import com.timvisee.dungeonmaze.api.DungeonMazeApiOld;
 import org.bukkit.entity.Player;
 
 /**
@@ -13,6 +13,6 @@ import org.bukkit.entity.Player;
  */
 public class ScavengerDungeonMaze {           
     public boolean isPlayerInDungeon(Player player) {
-        return (DungeonMazeAPI.isInDMWorld(player));
+        return (DungeonMazeApiOld.isInDMWorld(player));
     }
 }
