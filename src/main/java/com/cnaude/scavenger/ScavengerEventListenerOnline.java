@@ -12,7 +12,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 public class ScavengerEventListenerOnline implements Listener {
 

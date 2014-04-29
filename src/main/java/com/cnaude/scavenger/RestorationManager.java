@@ -301,12 +301,14 @@ public final class RestorationManager implements Serializable {
             mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(player);
             if (ap != null) {
                 Match match = BattleArena.getBAController().getMatch(ap);
-                if (match != null && match.insideArena(ap)) {
-                    String x = plugin.config.msgInsideBA();
-                    if (!x.isEmpty()) {
-                        plugin.message(player, x);
+                if (match != null) {
+                    if (match.isInMatch(ap)) {
+                        String x = plugin.config.msgInsideBA();
+                        if (!x.isEmpty()) {
+                            plugin.message(player, x);
+                        }
+                        return;
                     }
-                    return;
                 }
             }
         }

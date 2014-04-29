@@ -124,8 +124,8 @@ public final class ScavengerConfig {
     private boolean dropOnPVPDeath;
     private String msgPVPDeath;
     private String languageFileName;
-    private final List<String> blacklistedworlds = new ArrayList<String>();
-    private final List<String> blacklistedWGRegions = new ArrayList<String>();
+    private final List<String> blacklistedworlds = new ArrayList<>();
+    private final List<String> blacklistedWGRegions = new ArrayList<>();
     private boolean slotBasedRecovery;
     private int restoreDelayTicks;
     private String depositType;
@@ -207,11 +207,11 @@ public final class ScavengerConfig {
                     InputStream in = Scavenger.class.getResourceAsStream("/" + fName);
                     byte[] buf = new byte[1024];
                     int len;
-                    OutputStream out = new FileOutputStream(file);
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
+                    try (OutputStream out = new FileOutputStream(file)) {
+                        while ((len = in.read(buf)) > 0) {
+                            out.write(buf, 0, len);
+                        }
                     }
-                    out.close();
                 } catch (IOException ex) {
                     plug.logError(ex.getMessage());
                 }
@@ -227,90 +227,90 @@ public final class ScavengerConfig {
             Yaml yaml = new Yaml();
             try {
                 plug.logInfo("Loading language file: " + file.getAbsolutePath());
-                Reader reader = new FileReader(file);
-                @SuppressWarnings("unchecked")
-                Map<String, String> map = (Map<String, String>) yaml.load(reader);
-                if (map.containsKey(MSG_HEADER)) {
-                    msgHeader = map.get(MSG_HEADER);
-                } else {
-                    msgHeader = config.getString("Messages." + MSG_HEADER, MSG_HEADER_DEF);
+                try (Reader reader = new FileReader(file)) {
+                    @SuppressWarnings("unchecked")
+                            Map<String, String> map = (Map<String, String>) yaml.load(reader);
+                    if (map.containsKey(MSG_HEADER)) {
+                        msgHeader = map.get(MSG_HEADER);
+                    } else {
+                        msgHeader = config.getString("Messages." + MSG_HEADER, MSG_HEADER_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEENEMYFACTION)) {
+                        msgInsideEnemyFaction = map.get(MSG_INSIDEENEMYFACTION);
+                    } else {
+                        msgInsideEnemyFaction = config.getString("Messages." + MSG_INSIDEENEMYFACTION, MSG_INSIDEENEMYFACTION_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEDUNGEONMAZE)) {
+                        msgInsideDungeonMaze = map.get(MSG_INSIDEDUNGEONMAZE);
+                    } else {
+                        msgInsideDungeonMaze = config.getString("Messages." + MSG_INSIDEDUNGEONMAZE, MSG_INSIDEDUNGEONMAZE_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDERES)) {
+                        msgInsideRes = map.get(MSG_INSIDERES);
+                    } else {
+                        msgInsideRes = config.getString("Messages." + MSG_INSIDERES, MSG_INSIDERES_DEF);
+                    }
+                    if (map.containsKey(MSG_PVPDEATH)) {
+                        msgPVPDeath = map.get(MSG_PVPDEATH);
+                    } else {
+                        msgPVPDeath = config.getString("Messages." + MSG_PVPDEATH, MSG_PVPDEATH_DEF);
+                    }
+                    if (map.containsKey(MSG_RECOVERED)) {
+                        msgRecovered = map.get(MSG_RECOVERED);
+                    } else {
+                        msgRecovered = config.getString("Messages." + MSG_RECOVERED, MSG_RECOVERED_DEF);
+                    }
+                    if (map.containsKey(MSG_SAVING)) {
+                        msgSaving = map.get(MSG_SAVING);
+                    } else {
+                        msgSaving = config.getString("Messages." + MSG_SAVING, MSG_SAVING_DEF);
+                    }
+                    if (map.containsKey(MSG_SAVEFORFEE)) {
+                        msgSaveForFee = map.get(MSG_SAVEFORFEE);
+                    } else {
+                        msgSaveForFee = config.getString("Messages." + MSG_SAVEFORFEE, MSG_SAVEFORFEE_DEF);
+                    }
+                    if (map.containsKey(MSG_NOTENOUGHMONEY)) {
+                        msgNotEnoughMoney = map.get(MSG_NOTENOUGHMONEY);
+                    } else {
+                        msgNotEnoughMoney = config.getString("Messages." + MSG_NOTENOUGHMONEY, MSG_NOTENOUGHMONEY_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEPA)) {
+                        msgInsidePA = map.get(MSG_INSIDEPA);
+                    } else {
+                        msgInsidePA = config.getString("Messages." + MSG_INSIDEPA, MSG_INSIDEPA_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEBA)) {
+                        msgInsideBA = map.get(MSG_INSIDEBA);
+                    } else {
+                        msgInsideBA = config.getString("Messages." + MSG_INSIDEBA, MSG_INSIDEBA_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEMA)) {
+                        msgInsideMA = map.get(MSG_INSIDEMA);
+                    } else {
+                        msgInsideMA = config.getString("Messages." + MSG_INSIDEMA, MSG_INSIDEMA_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEUA)) {
+                        msgInsideUA = map.get(MSG_INSIDEUA);
+                    } else {
+                        msgInsideUA = config.getString("Messages." + MSG_INSIDEUA, MSG_INSIDEUA_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEWGPVP)) {
+                        msgInsideWGPVP = map.get(MSG_INSIDEWGPVP);
+                    } else {
+                        msgInsideWGPVP = config.getString("Messages." + MSG_INSIDEWGPVP, MSG_INSIDEWGPVP_DEF);
+                    }
+                    if (map.containsKey(MSG_INSIDEWGPVPONLY)) {
+                        msgInsideWGPVPOnly = map.get(MSG_INSIDEWGPVPONLY);
+                    } else {
+                        msgInsideWGPVPOnly = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);
+                    }
+                    if (map.containsKey(MSG_BLACKLISTEDWORLD)) {
+                        MsgBlacklistedWorld = map.get(MSG_BLACKLISTEDWORLD);
+                    } else {
+                        MsgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
+                    }
                 }
-                if (map.containsKey(MSG_INSIDEENEMYFACTION)) {
-                    msgInsideEnemyFaction = map.get(MSG_INSIDEENEMYFACTION);
-                } else {
-                    msgInsideEnemyFaction = config.getString("Messages." + MSG_INSIDEENEMYFACTION, MSG_INSIDEENEMYFACTION_DEF);
-                }
-                if (map.containsKey(MSG_INSIDEDUNGEONMAZE)) {
-                	msgInsideDungeonMaze = map.get(MSG_INSIDEDUNGEONMAZE);
-                } else {
-                	msgInsideDungeonMaze = config.getString("Messages." + MSG_INSIDEDUNGEONMAZE, MSG_INSIDEDUNGEONMAZE_DEF);
-                }
-                if (map.containsKey(MSG_INSIDERES)) {
-                    msgInsideRes = map.get(MSG_INSIDERES);
-                } else {
-                    msgInsideRes = config.getString("Messages." + MSG_INSIDERES, MSG_INSIDERES_DEF);
-                }
-                if (map.containsKey(MSG_PVPDEATH)) {
-                    msgPVPDeath = map.get(MSG_PVPDEATH);
-                } else {
-                    msgPVPDeath = config.getString("Messages." + MSG_PVPDEATH, MSG_PVPDEATH_DEF);
-                }
-                if (map.containsKey(MSG_RECOVERED)) {
-                    msgRecovered = map.get(MSG_RECOVERED);
-                } else {
-                    msgRecovered = config.getString("Messages." + MSG_RECOVERED, MSG_RECOVERED_DEF);
-                }
-                if (map.containsKey(MSG_SAVING)) {
-                    msgSaving = map.get(MSG_SAVING);
-                } else {
-                    msgSaving = config.getString("Messages." + MSG_SAVING, MSG_SAVING_DEF);
-                }
-                if (map.containsKey(MSG_SAVEFORFEE)) {
-                    msgSaveForFee = map.get(MSG_SAVEFORFEE);
-                } else {
-                    msgSaveForFee = config.getString("Messages." + MSG_SAVEFORFEE, MSG_SAVEFORFEE_DEF);
-                }
-                if (map.containsKey(MSG_NOTENOUGHMONEY)) {
-                    msgNotEnoughMoney = map.get(MSG_NOTENOUGHMONEY);
-                } else {
-                    msgNotEnoughMoney = config.getString("Messages." + MSG_NOTENOUGHMONEY, MSG_NOTENOUGHMONEY_DEF);
-                }
-                if (map.containsKey(MSG_INSIDEPA)) {
-                    msgInsidePA = map.get(MSG_INSIDEPA);
-                } else {
-                    msgInsidePA = config.getString("Messages." + MSG_INSIDEPA, MSG_INSIDEPA_DEF);
-                }
-                if (map.containsKey(MSG_INSIDEBA)) {
-                    msgInsideBA = map.get(MSG_INSIDEBA);
-                } else {
-                    msgInsideBA = config.getString("Messages." + MSG_INSIDEBA, MSG_INSIDEBA_DEF);
-                }
-                if (map.containsKey(MSG_INSIDEMA)) {
-                    msgInsideMA = map.get(MSG_INSIDEMA);
-                } else {
-                    msgInsideMA = config.getString("Messages." + MSG_INSIDEMA, MSG_INSIDEMA_DEF);
-                }
-                if (map.containsKey(MSG_INSIDEUA)) {
-                    msgInsideUA = map.get(MSG_INSIDEUA);
-                } else {
-                    msgInsideUA = config.getString("Messages." + MSG_INSIDEUA, MSG_INSIDEUA_DEF);
-                }
-                if (map.containsKey(MSG_INSIDEWGPVP)) {
-                    msgInsideWGPVP = map.get(MSG_INSIDEWGPVP);
-                } else {
-                    msgInsideWGPVP = config.getString("Messages." + MSG_INSIDEWGPVP, MSG_INSIDEWGPVP_DEF);
-                }
-                if (map.containsKey(MSG_INSIDEWGPVPONLY)) {
-                    msgInsideWGPVPOnly = map.get(MSG_INSIDEWGPVPONLY);
-                } else {
-                    msgInsideWGPVPOnly = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);
-                }
-                if (map.containsKey(MSG_BLACKLISTEDWORLD)) {
-                    MsgBlacklistedWorld = map.get(MSG_BLACKLISTEDWORLD);
-                } else {
-                    MsgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
-                }                
-                reader.close();
                 success = true;
             } catch (IOException ex) {
                 plug.logError("Error reading file: " + ex.getMessage());

@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class RestorationS1 implements Serializable {
     public boolean enabled;
-    public List<String> inventory = new ArrayList<String>();
-    public List<String> armour = new ArrayList<String>();
+    public List<String> inventory = new ArrayList<>();
+    public List<String> armour = new ArrayList<>();
     public int level;
     public float exp;
 }

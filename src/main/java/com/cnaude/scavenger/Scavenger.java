@@ -210,11 +210,7 @@ public class Scavenger extends JavaPlugin {
 
     public boolean checkForProtocolLib() {
         Plugin plugin = getServer().getPluginManager().getPlugin("ProtocolLib");
-        if (plugin == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return plugin != null;
     }
     
     public void checkForMyWorlds() {
