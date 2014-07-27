@@ -29,7 +29,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 public final class RestorationManager implements Serializable {
 
     Scavenger plugin;
-    private static final HashMap<String, Restoration> restorations = new HashMap<String, Restoration>();
+    private static final HashMap<String, Restoration> restorations = new HashMap<>();
 
     public RestorationManager(Scavenger plugin) {
         this.plugin = plugin;
@@ -38,7 +38,7 @@ public final class RestorationManager implements Serializable {
 
     public void save() {
         StreamSerializer serializer = new StreamSerializer();
-        HashMap<String, RestorationS1> restorationsForDisk = new HashMap<String, RestorationS1>();
+        HashMap<String, RestorationS1> restorationsForDisk = new HashMap<>();
         for (Map.Entry<String, Restoration> entry : restorations.entrySet()) {
             String key = entry.getKey();
             Restoration value = entry.getValue();
@@ -79,9 +79,9 @@ public final class RestorationManager implements Serializable {
         try {
             File file = new File("plugins/Scavenger/inv1.ser");
             FileOutputStream f_out = new FileOutputStream(file);
-            ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
-            obj_out.writeObject(restorationsForDisk);
-            obj_out.close();
+            try (ObjectOutputStream obj_out = new ObjectOutputStream(f_out)) {
+                obj_out.writeObject(restorationsForDisk);
+            }
         } catch (IOException e) {
             plugin.logError(e.getMessage());
         }
@@ -97,13 +97,10 @@ public final class RestorationManager implements Serializable {
         }
         try {
             FileInputStream f_in = new FileInputStream(file);
-            ObjectInputStream obj_in = new ObjectInputStream(f_in);
-            restorationsFromDisk = (HashMap<String, RestorationS1>) obj_in.readObject();
-            obj_in.close();
-        } catch (IOException e) {
-            plugin.logError(e.getMessage());
-            return;
-        } catch (ClassNotFoundException e) {
+            try (ObjectInputStream obj_in = new ObjectInputStream(f_in)) {
+                restorationsFromDisk = (HashMap<String, RestorationS1>) obj_in.readObject();
+            }
+        } catch (IOException | ClassNotFoundException e) {
             plugin.logError(e.getMessage());
             return;
         }
@@ -567,6 +564,10 @@ public final class RestorationManager implements Serializable {
     }
 
     public void restore(Player p) {
+        if (!p.isOnline()) {
+            plugin.debugMessage("Player " + p.getName() + " is offline. Skipping restore...");
+            return;
+        }
         String permLevel = "scavenger.level";
         String permExp = "scavenger.exp";
         Restoration restoration = getRestoration(p);
