@@ -82,7 +82,7 @@ public class ScavengerEventListenerOnline implements Listener {
             return false;
         }
         if (plugin.getWorldGuard() != null) {
-            try {
+            try {                
                 ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
                 for (ProtectedRegion region : set) {
                     plugin.logDebug("Region ID: " + region.getId());
