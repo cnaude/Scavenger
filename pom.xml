@@ -17,8 +17,6 @@
     <description>Item recovery on death. Based on SirHedgehog's code.</description>
     <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
 
-
-
     <repositories>
         <!-- Cnaude's Repo -->
         <repository>
