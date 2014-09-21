@@ -6,7 +6,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.7.10-R0.1</bukkit.version>
+        <bukkit.version>1.7.9-R0.1</bukkit.version>
         <build.number>SNAPSHOT</build.number>
     </properties>
 
@@ -46,24 +46,19 @@
             </snapshots>
         </repository>
         
-        <!-- Bukkit
+        <!-- bukkit -->
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
         </repository>
-        -->
         
     </repositories>
     
     <dependencies>
         <dependency>
-            <groupId>com.cnaude.bukkit</groupId>
+            <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>${bukkit.version}</version>
-            <type>jar</type>
             <scope>provided</scope>
         </dependency>
 
