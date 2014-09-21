@@ -20,18 +20,34 @@
 
 
     <repositories>
+        <!-- Cnaude's Repo -->
+        <repository>
+            <id>cnaude-repo</id>
+            <url>http://cnaude.org/repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        
+        <!-- Vault -->
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+        </repository>
+        
         <repository>
             <id>sonatype-nexus-public</id>
             <name>SonaType public snapshots and releases repository</name>
             <url>https://oss.sonatype.org/content/groups/public</url>
             <releases> 
                 <!-- set to true if you wish to fetch releases from this repo too. -->
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases> 
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
+        
         <!-- Bukkit 
         <repository>
             <id>bukkit-repo</id>
@@ -42,14 +58,7 @@
         </repository>
         -->
    
-        <!-- For anything else without its own repo -->
-        <repository>
-            <id>cnaude-repo</id>
-            <url>http://cnaude.org/repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
+        
     </repositories>
     
     <dependencies>
@@ -74,28 +83,29 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
-            <version>1.2.25</version>
+            <version>1.4.1</version>
             <scope>provided</scope>
         </dependency>
                
         <!-- Factions -->
         <dependency>
-            <groupId>com.massivecraft</groupId>
+            <groupId>com.cnaude.factions</groupId>
             <artifactId>Factions</artifactId>
-            <version>2.3.1</version>
+            <version>2.6.0</version>
         </dependency>
         
+        <!-- MassiveCore -->
         <dependency>
-            <groupId>com.massivecraft</groupId>
-            <artifactId>mcore</artifactId>
-            <version>6.5.0</version>
+            <groupId>com.cnaude.mcore</groupId>
+            <artifactId>MassiveCore</artifactId>
+            <version>7.4.0</version>
         </dependency>
 
-        <!-- Herochat -->
+        <!-- mcMMO -->
         <dependency>
-            <groupId>com.gmail.nossr50</groupId>
+            <groupId>com.cnaude.mcmmo</groupId>
             <artifactId>mcMMO</artifactId>
-            <version>1.4.06-beta2</version>
+            <version>1.5.01-SNAPSHOT-b3682</version>
         </dependency>          
            
         <!-- Testing only -->
@@ -112,53 +122,73 @@
             <version>0.4.0</version>
             <scope>test</scope>
         </dependency>
+        
+        <!-- Residence -->
         <dependency>
-            <groupId>com.bekvon</groupId>
+            <groupId>com.cnaude.residence</groupId>
             <artifactId>Residence</artifactId>
-            <version>2.6.6.5</version>
+            <version>2.6.4</version>
         </dependency>
+        
+        <!-- Ultimate Arena -->
         <dependency>
-            <groupId>net.dmulloy2.ultimatearena</groupId>
+            <groupId>com.cnaude.ultimatearena</groupId>
             <artifactId>UltimateArena</artifactId>
             <version>2.5.2</version>
         </dependency>
+        
+        <!-- WorldGuard -->
         <dependency>
-            <groupId>com.sk89q.worldguard</groupId>
+            <groupId>com.cnaude.worldguard</groupId>
             <artifactId>WorldGuard</artifactId>
             <version>6.0.0-SNAPSHOT</version>
         </dependency>
+        
+        <!-- DungeonMaze -->
         <dependency>
-            <groupId>com.timvisee</groupId>
+            <groupId>com.cnaude.dungeonmaze</groupId>
             <artifactId>DungeonMaze</artifactId>
             <version>0.1.10</version>
         </dependency>
+        
+        <!-- BattleArena -->
         <dependency>
-            <groupId>mc.alk</groupId>
+            <groupId>com.cnaude.battlearena</groupId>
             <artifactId>BattleArena</artifactId>
             <version>3.9.7.8</version>
         </dependency>
+        
+        <!-- PVPArena -->
         <dependency>
-            <groupId>net.slipcor</groupId>
+            <groupId>com.cnaude.pvparena</groupId>
             <artifactId>pvparena</artifactId>
-            <version>1.0</version>
+            <version>0.10.3.274</version>
         </dependency>
+        
+        <!-- MobArena -->
         <dependency>
-            <groupId>com.garbagemule</groupId>
+            <groupId>com.cnaude.mobarena</groupId>
             <artifactId>MobArena</artifactId>
-            <version>1.0</version>
+            <version>0.94.4.81</version>
         </dependency>
+        
+        <!-- MiniGames -->
         <dependency>
-            <groupId>com.pauldavdesign</groupId>
+            <groupId>com.cnaude.minigames</groupId>
             <artifactId>MiniGames</artifactId>
             <version>1.6.3</version>
         </dependency>
+        
+        <!-- Authenticator -->
         <dependency>
-            <groupId>fr.areku</groupId>
+            <groupId>com.cnaude.authenticator</groupId>
             <artifactId>Authenticator</artifactId>
-            <version>1.0</version>
+            <version>1.5</version>
         </dependency>
+        
+        <!-- Multiverse-Inventories -->
         <dependency>
-            <groupId>com.onarandombox.multiverseinventories</groupId>
+            <groupId>com.cnaude.multiverseinventories</groupId>
             <artifactId>Multiverse-Inventories</artifactId>
             <version>2.5</version>
             <exclusions>
@@ -168,30 +198,38 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        
+        <!-- ProtocolLib -->
         <dependency>
-            <groupId>com.comphenix.protocol</groupId>
+            <groupId>com.cnaude.protocollib</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>2.4.5</version>
+            <version>3.0.1</version>
         </dependency>
+        
+        <!-- MultiInv -->
         <dependency>
             <artifactId>MultiInv</artifactId>
-            <groupId>uk.co</groupId>
-            <type>jar</type>
+            <groupId>com.cnaude.multiinv</groupId>
             <version>3.2.7</version>
         </dependency>
+        
+        <!-- WorldInventories -->
         <dependency>
             <artifactId>WorldInventories</artifactId>
-            <groupId>me.drayshak</groupId>
-            <type>jar</type>
-            <version>1.0.2</version>
+            <groupId>com.cnaude.worldinventories</groupId>
+            <version>1.7.0-dev4</version>
         </dependency>
+        
+        <!-- WorldEdit -->
         <dependency>
-            <groupId>com.sk89q</groupId>
+            <groupId>com.cnaude.worldedit</groupId>
             <artifactId>worldedit</artifactId>
             <version>6.0.0-SNAPSHOT</version>
         </dependency>
+        
+        <!-- MyWorlds -->
         <dependency>
-            <groupId>com.bergerkiller.bukkit</groupId>
+            <groupId>com.cnaude.myworlds</groupId>
             <artifactId>MyWorlds</artifactId>
             <version>1.67</version>
             <scope>provided</scope>
