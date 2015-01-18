@@ -4,9 +4,6 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.comphenix.protocol.utility.StreamSerializer;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.api.GroupManager;
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -163,8 +160,7 @@ public final class RestorationManager implements Serializable {
     }
 
     public boolean multipleInventories() {
-        return plugin.getMultiverseInventories() != null
-                || plugin.getMultiInvAPI() != null
+        return plugin.getMultiInvAPI() != null
                 || plugin.myWorldsHook != null
                 || plugin.getWorldInvAPI();
     }
@@ -631,22 +627,7 @@ public final class RestorationManager implements Serializable {
 
     public String getWorldGroups(Player player) {
         World world = player.getWorld();
-        List<String> returnData = new ArrayList<String>();
-        if (plugin.getMultiverseInventories() != null) {
-            MultiverseInventories multiInv = plugin.getMultiverseInventories();
-            if (multiInv.getGroupManager() != null) {
-                GroupManager groupManager = multiInv.getGroupManager();
-                if (groupManager.getGroupsForWorld(world.getName()) != null) {
-                    List<WorldGroupProfile> worldGroupProfiles = groupManager.getGroupsForWorld(world.getName());
-                    if (worldGroupProfiles != null) {
-                        for (WorldGroupProfile i : worldGroupProfiles) {
-                            returnData.add(i.getName());
-                        }
-                    }
-                }
-
-            }
-        }
+        List<String> returnData = new ArrayList<>();        
         if (plugin.getMultiInvAPI() != null) {
             String worldname = world.getName();
             MultiInvAPI multiInvAPI = plugin.getMultiInvAPI();

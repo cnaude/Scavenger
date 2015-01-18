@@ -6,7 +6,6 @@ import com.cnaude.scavenger.Hooks.ScavengerFactions;
 import com.cnaude.scavenger.Hooks.ScavengerMyWorlds;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -36,7 +35,6 @@ public class Scavenger extends JavaPlugin {
     private Economy economy = null;
     public MobArenaHandler maHandler;
     public PVPArena pvpHandler;
-    public MultiverseInventories multiverseHandler;    
     public MultiInv multiinvHandler;    
     public RestorationManager rm;
     public boolean battleArena = false;
@@ -155,17 +153,7 @@ public class Scavenger extends JavaPlugin {
         if (economyProvider != null) {
             economy = economyProvider.getProvider();
         }
-
         return (economy != null);
-    }
-
-    public MultiverseInventories getMultiverseInventories() {
-        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
-
-        if (plugin == null || !(plugin instanceof MultiverseInventories)) {
-            return null;
-        }
-        return (MultiverseInventories) plugin;
     }
 
     public MultiInvAPI getMultiInvAPI() {
