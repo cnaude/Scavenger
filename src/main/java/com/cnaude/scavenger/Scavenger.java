@@ -232,7 +232,7 @@ public class Scavenger extends JavaPlugin {
     public WorldGuardPlugin getWorldGuard() {
         Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
         if (plugin != null)  {
-            if (!plugin.getDescription().getVersion().startsWith("6.0")) {
+            if (!plugin.getDescription().getVersion().startsWith("6.")) {
                 logInfo("Invalid version of WorldGuard detected. Please use 6.0.0 or newer.");
                 plugin = null;
             }
