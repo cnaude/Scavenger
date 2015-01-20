@@ -31,23 +31,23 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 public class Scavenger extends JavaPlugin {
 
     public static final String PLUGIN_NAME = "Scavenger";
-    public static final String LOG_HEADER = "[" + PLUGIN_NAME + "]";    
+    public static final String LOG_HEADER = "[" + PLUGIN_NAME + "]";
     private Economy economy = null;
     public MobArenaHandler maHandler;
     public PVPArena pvpHandler;
-    public MultiInv multiinvHandler;    
+    public MultiInv multiinvHandler;
     public RestorationManager rm;
     public boolean battleArena = false;
     public boolean minigames = false;
     public ScavengerIgnoreList ignoreList;
     public boolean configLoaded = false;
     static final Logger log = Logger.getLogger("Minecraft");
-    public ScavengerConfig config;    
+    public ScavengerConfig config;
     private ScavengerEventListenerOffline eventListener;
     private ScavengerEventListenerOnline eventListenerOnline;
     public ScavengerFactions factionHook = null;
     public ScavengerDungeonMaze dmHook = null;
-    public ScavengerMyWorlds myWorldsHook = null;   
+    public ScavengerMyWorlds myWorldsHook = null;
 
     @Override
     public void onEnable() {
@@ -57,7 +57,7 @@ public class Scavenger extends JavaPlugin {
         } else {
 
             loadConfig();
-            
+
             for (String s : config.blacklistedWorlds()) {
                 logDebug("BlackListedWorld: " + s);
             }
@@ -73,8 +73,8 @@ public class Scavenger extends JavaPlugin {
             setupResidence();
 
             rm = new RestorationManager(this);
-            eventListener = new ScavengerEventListenerOffline(this,rm);
-            eventListenerOnline = new ScavengerEventListenerOnline(this,rm);
+            eventListener = new ScavengerEventListenerOffline(this, rm);
+            eventListenerOnline = new ScavengerEventListenerOnline(this, rm);
             ignoreList = new ScavengerIgnoreList(this);
 
             if (config.offlineMode()) {
@@ -97,7 +97,7 @@ public class Scavenger extends JavaPlugin {
                 getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                 logInfo("Offline-mode is set to false, no Authenticator Hook");
             }
-            getServer().getPluginManager().registerEvents(new ScavengerEvents(this,rm), this);
+            getServer().getPluginManager().registerEvents(new ScavengerEvents(this, rm), this);
         }
     }
 
@@ -168,18 +168,18 @@ public class Scavenger extends JavaPlugin {
         }
         return multiInvAPI;
     }
-    
+
     public boolean getWorldInvAPI() {
         //Plugin plugin = getServer().getPluginManager().getPlugin("WorldInventories");
         try {
-            Class.forName( "me.drayshak.WorldInventories.api.WorldInventoriesAPI" );
-        } catch( ClassNotFoundException e ) {
+            Class.forName("me.drayshak.WorldInventories.api.WorldInventoriesAPI");
+        } catch (ClassNotFoundException e) {
             return false;
-        }        
-        return true;        
+        }
+        return true;
     }
-    
-    public Minigames getMinigames(){
+
+    public Minigames getMinigames() {
         Plugin plugin = getServer().getPluginManager().getPlugin("Minigames");
         Minigames mg = null;
         if (plugin != null) {
@@ -187,11 +187,11 @@ public class Scavenger extends JavaPlugin {
         }
         return mg;
     }
-    
+
     public boolean isFactionsLoaded() {
         return (getServer().getPluginManager().getPlugin("Factions") != null);
     }
-    
+
     public boolean isDungeonMazeLoaded() {
         return (getServer().getPluginManager().getPlugin("DungeonMaze") != null);
     }
@@ -200,7 +200,7 @@ public class Scavenger extends JavaPlugin {
         Plugin plugin = getServer().getPluginManager().getPlugin("ProtocolLib");
         return plugin != null;
     }
-    
+
     public void checkForMyWorlds() {
         Plugin plugin = getServer().getPluginManager().getPlugin("MyWorlds");
         if (plugin != null) {
@@ -231,6 +231,12 @@ public class Scavenger extends JavaPlugin {
 
     public WorldGuardPlugin getWorldGuard() {
         Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+        if (plugin != null)  {
+            if (!plugin.getDescription().getVersion().startsWith("6.0")) {
+                logInfo("Invalid version of WorldGuard detected. Please use 6.0.0 or newer.");
+                plugin = null;
+            }
+        }
 
         // WorldGuard may not be loaded
         if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
@@ -293,7 +299,7 @@ public class Scavenger extends JavaPlugin {
             }
         } else {
             logInfo("Economy disabled. Item recovery will be free.");
-        }        
+        }
         configLoaded = true;
     }
 
@@ -323,10 +329,10 @@ public class Scavenger extends JavaPlugin {
 
         if (pvpPlugin == null) {
             return;
-        }                
-        
+        }
+
         pvpHandler = net.slipcor.pvparena.PVPArena.instance;
-        
+
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
 

@@ -6,7 +6,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.7.9-R0.1</bukkit.version>
+        <bukkit.version>1.8</bukkit.version>
         <build.number>SNAPSHOT</build.number>
     </properties>
 
@@ -57,8 +57,9 @@
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>${bukkit.version}</version>
+            <type>jar</type>
             <scope>provided</scope>
         </dependency>
 
@@ -133,8 +134,8 @@
         <dependency>
             <groupId>com.cnaude.worldguard</groupId>
             <artifactId>WorldGuard</artifactId>
-            <!--<version>6.0.0-SNAPSHOT</version>-->
-            <version>5.9</version>
+            <version>6.0.0-SNAPSHOT</version>
+            <!--<version>5.9</version>-->
         </dependency>
         
         <!-- DungeonMaze -->
