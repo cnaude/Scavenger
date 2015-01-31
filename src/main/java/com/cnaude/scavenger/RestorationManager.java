@@ -97,7 +97,7 @@ public final class RestorationManager implements Serializable {
             try (ObjectInputStream obj_in = new ObjectInputStream(f_in)) {
                 restorationsFromDisk = (HashMap<String, RestorationS1>) obj_in.readObject();
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
             plugin.logError(e.getMessage());
             return;
         }
