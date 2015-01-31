@@ -120,9 +120,6 @@ public final class RestorationManager implements Serializable {
                         plugin.logError(e.getMessage() + " => " + value.inventory.get(i));
                         error = true;
                     }
-                    if (error) {
-                        plugin.logError("Problem deserializing item: " + value.inventory.get(i));
-                    }
                     if (tmpStack == null || error) {
                         tmpRestoration.inventory[i] = new ItemStack(Material.AIR);
                     } else {
