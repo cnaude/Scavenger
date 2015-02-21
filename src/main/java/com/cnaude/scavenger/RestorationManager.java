@@ -116,7 +116,10 @@ public final class RestorationManager implements Serializable {
                     plugin.debugMessage("Deserializing: " + value.inventory.get(i));
                     try {
                         tmpStack = serializer.deserializeItemStack(value.inventory.get(i));
-                    } catch (IOException e) {
+                    } catch (Exception e) {
+                        plugin.logError(e.getMessage() + " => " + value.inventory.get(i));
+                        error = true;
+                    } catch (Throwable e) {
                         plugin.logError(e.getMessage() + " => " + value.inventory.get(i));
                         error = true;
                     }

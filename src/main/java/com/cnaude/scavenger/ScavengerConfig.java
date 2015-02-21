@@ -17,6 +17,7 @@ import org.yaml.snakeyaml.Yaml;
 public final class ScavengerConfig {
 
     private final Configuration config;
+    private final Scavenger plugin;
     private static final String langDir = "plugins/Scavenger/Languages";
     private static final String SHOULD_NOTIFY = "Global.Notify";
     private static final String ECONOMY_ENABLED = "Economy.Enabled";
@@ -45,6 +46,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_RESFLAG = "Global.ResidenceFlag";
     private static final String GLOBAL_DROPONPVPDEATH = "Global.DropOnPVPDeath";
     private static final String GLOBAL_LANGUAGE = "Global.LanguageFile";
+    private static final String GLOBAL_ENABLED = "Global.Enabled";
     private static final String BLACKLISTED_WORLDS = "BlacklistedWorlds";
     private static final String BLACKLISTED_WGREGIONS = "BlacklistedWGRegions";
     private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
@@ -83,6 +85,8 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDERES_DEF = "This residence does not allow item recovery! Dropping items!";
     private static final String MSG_PVPDEATH_DEF = "Killed by another player! Dropping items.";
     private static final String MSG_BLACKLISTEDWORLD_DEF = "Scavenger is disabled in this world. Be careful.";
+    private static final String MSG_NOPERM = "MsgNoPerm";
+    private static final String MSG_NOPERM_DEF = "You do not have permissions to do this!";
     private boolean shouldNotify;
     private double restoreCost;
     private boolean economyEnabled;
@@ -109,7 +113,8 @@ public final class ScavengerConfig {
     private boolean wgGuardPVPOnly;
     private String msgInsideWGPVP;
     private String msgInsideWGPVPOnly;
-    private String MsgBlacklistedWorld;
+    private String msgBlacklistedWorld;
+    private String msgNoPerm;
     private boolean opsAllPerms;
     private String msgHeader;
     private int chanceToDrop;
@@ -131,14 +136,17 @@ public final class ScavengerConfig {
     private String depositType;
     private String depositDestination;
     private boolean blackListWarn;
+    private boolean scvrEnabled;
 
-    public ScavengerConfig(Scavenger plug) {
-        config = plug.getConfig();
-        loadValues(plug);
+    public ScavengerConfig(Scavenger plugin, Configuration config) {
+        this.config = config;
+        this.plugin = plugin;
+        loadValues();
     }
 
-    public void loadValues(Scavenger plug) {
+    public void loadValues() {
         debugEnabled = config.getBoolean(DEBUG_ENABLED, false);
+        scvrEnabled = config.getBoolean(GLOBAL_ENABLED, true);
 
         economyEnabled = config.getBoolean(ECONOMY_ENABLED, false);
         restoreCost = config.getDouble(ECONOMY_RESTORECOST, 10.0);
@@ -177,8 +185,8 @@ public final class ScavengerConfig {
         }        
         restoreDelayTicks = config.getInt(GLOBAL_RESTOREDELAY, 10);
     
-        initLangFiles(plug);
-        loadLanguage(plug);
+        initLangFiles(plugin);
+        loadLanguage(plugin);
 
     }
 
@@ -306,9 +314,14 @@ public final class ScavengerConfig {
                         msgInsideWGPVPOnly = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);
                     }
                     if (map.containsKey(MSG_BLACKLISTEDWORLD)) {
-                        MsgBlacklistedWorld = map.get(MSG_BLACKLISTEDWORLD);
+                        msgBlacklistedWorld = map.get(MSG_BLACKLISTEDWORLD);
                     } else {
-                        MsgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
+                        msgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
+                    }
+                    if (map.containsKey(MSG_NOPERM)) {
+                        msgNoPerm = map.get(MSG_NOPERM);
+                    } else {
+                        msgBlacklistedWorld = config.getString("Messages." + MSG_NOPERM, MSG_NOPERM_DEF);
                     }
                 }
                 success = true;
@@ -334,7 +347,8 @@ public final class ScavengerConfig {
             msgInsideUA = config.getString("Messages." + MSG_INSIDEUA, MSG_INSIDEUA_DEF);
             msgInsideWGPVP = config.getString("Messages." + MSG_INSIDEWGPVP, MSG_INSIDEWGPVP_DEF);
             msgInsideWGPVPOnly = config.getString("Messages." + MSG_INSIDEWGPVPONLY, MSG_INSIDEWGPVPONLY_DEF);
-            MsgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
+            msgBlacklistedWorld = config.getString("Messages." + MSG_BLACKLISTEDWORLD, MSG_BLACKLISTEDWORLD_DEF);
+            msgNoPerm = config.getString("Messages." + MSG_NOPERM, MSG_NOPERM_DEF);
         }
     }
 
@@ -433,6 +447,10 @@ public final class ScavengerConfig {
     public String msgInsideWGPVPOnly() {
         return msgInsideWGPVPOnly;
     }
+    
+    public String msgNoPerm() {
+        return msgNoPerm;
+    }
 
     public String msgHeader() {
         return msgHeader;
@@ -519,11 +537,21 @@ public final class ScavengerConfig {
     }
     
     public String MsgBlacklistedWorld() {
-        return MsgBlacklistedWorld;
+        return msgBlacklistedWorld;
     }
     
     public boolean blackListWarn() {
         return blackListWarn;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        scvrEnabled = enabled;
+        config.set(GLOBAL_ENABLED, enabled);
+        plugin.saveConfig();
+    }
+
+    public boolean isScavengerEnabled() {
+        return scvrEnabled;
     }
             
 }

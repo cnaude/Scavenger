@@ -1,6 +1,12 @@
 package com.cnaude.scavenger;
 
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import com.cnaude.scavenger.Commands.ScavengerDisable;
+import com.cnaude.scavenger.Commands.ScavengerEnable;
+import com.cnaude.scavenger.Commands.ScavengerList;
+import com.cnaude.scavenger.Commands.ScavengerOff;
+import com.cnaude.scavenger.Commands.ScavengerOn;
+import com.cnaude.scavenger.Commands.ScavengerReload;
 import com.cnaude.scavenger.Hooks.ScavengerDungeonMaze;
 import com.cnaude.scavenger.Hooks.ScavengerFactions;
 import com.cnaude.scavenger.Hooks.ScavengerMyWorlds;
@@ -17,9 +23,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -47,7 +51,11 @@ public class Scavenger extends JavaPlugin {
     private ScavengerEventListenerOnline eventListenerOnline;
     public ScavengerFactions factionHook = null;
     public ScavengerDungeonMaze dmHook = null;
-    public ScavengerMyWorlds myWorldsHook = null;
+    public ScavengerMyWorlds myWorldsHook = null;    
+    
+    public boolean hasPermission(CommandSender sender, String perm) {
+        return sender.hasPermission(perm) || (sender.isOp() && config.opsAllPerms());
+    }
 
     @Override
     public void onEnable() {
@@ -98,6 +106,13 @@ public class Scavenger extends JavaPlugin {
                 logInfo("Offline-mode is set to false, no Authenticator Hook");
             }
             getServer().getPluginManager().registerEvents(new ScavengerEvents(this, rm), this);
+            
+            getCommand("scvrdisable").setExecutor(new ScavengerDisable(this));
+            getCommand("scvrenable").setExecutor(new ScavengerEnable(this));
+            getCommand("scvrlist").setExecutor(new ScavengerList(this));
+            getCommand("scvroff").setExecutor(new ScavengerOff(this));
+            getCommand("scvron").setExecutor(new ScavengerOn(this));
+            getCommand("scavengerreload").setExecutor(new ScavengerReload(this));
         }
     }
 
@@ -231,7 +246,7 @@ public class Scavenger extends JavaPlugin {
 
     public WorldGuardPlugin getWorldGuard() {
         Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
-        if (plugin != null)  {
+        if (plugin != null) {
             if (!plugin.getDescription().getVersion().startsWith("6.")) {
                 logInfo("Invalid version of WorldGuard detected. Please use 6.0.0 or newer.");
                 plugin = null;
@@ -259,16 +274,16 @@ public class Scavenger extends JavaPlugin {
         log.log(Level.SEVERE, String.format("%s %s", LOG_HEADER, _message));
     }
 
-    void loadConfig() {
+    public void loadConfig() {
         if (!this.configLoaded) {
             getConfig().options().copyDefaults(true);
             saveConfig();
             logInfo("Configuration loaded.");
-            config = new ScavengerConfig(this);
+            config = new ScavengerConfig(this, getConfig());
         } else {
             reloadConfig();
             getConfig().options().copyDefaults(false);
-            config = new ScavengerConfig(this);
+            config = new ScavengerConfig(this, getConfig());
             logInfo("Configuration reloaded.");
         }
 
@@ -336,58 +351,7 @@ public class Scavenger extends JavaPlugin {
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandlabel, String[] args) {
-        if (sender instanceof Player) {
-            Player p = (Player) sender;
-            if (commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
-                if (p.hasPermission("scavenger.reload")
-                        || (p.isOp() && config.opsAllPerms())) {
-                    loadConfig();
-                    message(p, "Configuration reloaded.");
-                } else {
-                    message(p, "No permission to reload scavenger config!");
-                }
-            }
-            if (commandlabel.equalsIgnoreCase("scvron")) {
-                if (p.hasPermission("scavenger.self.on")
-                        || (p.isOp() && config.opsAllPerms())
-                        || !config.permsEnabled()) {
-                    ignoreList.removePlayer(sender.getName());
-                    message(p, "You have enabled item recovery for yourself!");
-                } else {
-                    message(p, "No permission to do this!");
-                }
-            }
-            if (commandlabel.equalsIgnoreCase("scvroff")) {
-                if (p.hasPermission("scavenger.self.off")
-                        || (p.isOp() && config.opsAllPerms())
-                        || !config.permsEnabled()) {
-                    ignoreList.addPlayer(sender.getName());
-                    message(p, "You have disabled item recovery for yourself!");
-                } else {
-                    message(p, "No permission to do this!");
-                }
-            }
-            if (commandlabel.equalsIgnoreCase("scvrlist")) {
-                if (p.hasPermission("scavenger.list")
-                        || (p.isOp() && config.opsAllPerms())
-                        || !config.permsEnabled()) {
-                    rm.printRestorations(p);
-                } else {
-                    message(p, "No permission to do this!");
-                }
-            }
-        } else if (sender instanceof ConsoleCommandSender) {
-            if (commandlabel.equalsIgnoreCase("scvr") || commandlabel.equalsIgnoreCase("scavengerreload")) {
-                loadConfig();
-            }
-            if (commandlabel.equalsIgnoreCase("scvrlist")) {
-                rm.printRestorations();
-            }
-        }
-        return true;
-    }
+       
 
     private String headerStr() {
         ChatColor headerColor = config.headerColor();
@@ -408,6 +372,14 @@ public class Scavenger extends JavaPlugin {
             } else {
                 logInfo(msg);
             }
+        }
+    }
+
+    public void message(CommandSender cs, String msg) {
+        if (config.shouldNotify()) {
+            cs.sendMessage(headerStr() + msg);
+        } else {
+            logInfo(msg);
         }
     }
 

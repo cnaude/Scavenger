@@ -40,6 +40,14 @@ commands:
     description: List all pending recoveries.
     usage: /scvrlist
     aliases: scavengerlist
+  scvrdisable:
+    description: Disable Scavenger plugin.
+    usage: /scvrdisable
+    aliases: scavengerdisable
+  scvrenable:
+    description: Enable Scavenger plugin.
+    usage: /scvrenable
+    aliases: scavengerenable    
 permissions:
   scavenger.scavenge:
     description: Allows players to automatically recover items on death.
@@ -49,6 +57,12 @@ permissions:
     default: false
   scavenger.reload:
     description: Reload config.
+    default: op
+  scavenger.disable:
+    description: Disable Scavenger.
+    default: op
+  scavenger.enable:
+    description: Enable Scavenger.
     default: op
   scavenger.level:
     description: Allows players to automatically recover experience level on death.

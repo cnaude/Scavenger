@@ -67,6 +67,10 @@ public class ScavengerEventListenerOnline implements Listener {
     }
 
     private boolean isScavengeAllowed(Player player) {
+        if (!plugin.config.isScavengerEnabled()) {
+            plugin.logDebug("Scavenger is disabled. Not saving inventory for " + player.getDisplayName());
+            return false;
+        }
         String dcString = "NULL";
         if (player.getLastDamageCause() != null) {
             if (player.getLastDamageCause().getCause() != null) {
