@@ -306,8 +306,8 @@ public final class RestorationManager implements Serializable {
             }
         }
 
-        if (plugin.getMinigames() != null) {
-            if (plugin.getMinigames().getPlayerData().playerInMinigame(player)) {
+        if (plugin.minigames != null) {
+            if (plugin.minigames.playerInMinigame(player)) {
                 plugin.logInfo("Player '" + player.getName() + "' is in a Minigame. Not recovering items.");
                 return;
             }

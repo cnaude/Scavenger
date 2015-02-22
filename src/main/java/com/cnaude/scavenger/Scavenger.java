@@ -9,6 +9,7 @@ import com.cnaude.scavenger.Commands.ScavengerOn;
 import com.cnaude.scavenger.Commands.ScavengerReload;
 import com.cnaude.scavenger.Hooks.ScavengerDungeonMaze;
 import com.cnaude.scavenger.Hooks.ScavengerFactions;
+import com.cnaude.scavenger.Hooks.ScavengerMinigames;
 import com.cnaude.scavenger.Hooks.ScavengerMyWorlds;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
@@ -42,7 +43,7 @@ public class Scavenger extends JavaPlugin {
     public MultiInv multiinvHandler;
     public RestorationManager rm;
     public boolean battleArena = false;
-    public boolean minigames = false;
+    public ScavengerMinigames minigames;
     public ScavengerIgnoreList ignoreList;
     public boolean configLoaded = false;
     static final Logger log = Logger.getLogger("Minecraft");
@@ -79,11 +80,13 @@ public class Scavenger extends JavaPlugin {
             checkForDungeonMaze();
             checkForMyWorlds();
             setupResidence();
+            setupMinigames();
 
             rm = new RestorationManager(this);
             eventListener = new ScavengerEventListenerOffline(this, rm);
             eventListenerOnline = new ScavengerEventListenerOnline(this, rm);
             ignoreList = new ScavengerIgnoreList(this);
+            
 
             if (config.offlineMode()) {
                 Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
@@ -196,6 +199,14 @@ public class Scavenger extends JavaPlugin {
 
     public Minigames getMinigames() {
         Plugin plugin = getServer().getPluginManager().getPlugin("Minigames");
+        
+        if (plugin != null) {
+            if (plugin.getDescription().getVersion().startsWith("1.6")) {
+                
+            }
+        }
+        
+        
         Minigames mg = null;
         if (plugin != null) {
             mg = (Minigames) Bukkit.getServer().getPluginManager().getPlugin("Minigames");
@@ -222,6 +233,10 @@ public class Scavenger extends JavaPlugin {
             myWorldsHook = new ScavengerMyWorlds();
             logInfo("MyWorlds detected.");
         }
+    }
+    
+    public void setupMinigames() {
+        minigames = new ScavengerMinigames(this);
     }
 
     public void setupResidence() {
