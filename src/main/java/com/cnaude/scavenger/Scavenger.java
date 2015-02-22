@@ -61,7 +61,11 @@ public class Scavenger extends JavaPlugin {
     @Override
     public void onEnable() {
         if (!checkForProtocolLib()) {
-            logError("This plugin requires ProtocolLib. Please download the latest: http://dev.bukkit.org/server-mods/protocollib/");
+            if (getServer().getVersion().contains("MC: 1.8")) {
+                logError("This plugin requires ProtocolLib. Please download the latest: http://ci.shadowvolt.com/job/ProtocolLib/");
+            } else {
+                logError("This plugin requires ProtocolLib. Please download the latest: http://dev.bukkit.org/server-mods/protocollib/");
+            }
             Bukkit.getServer().getPluginManager().disablePlugin(this);
         } else {
 

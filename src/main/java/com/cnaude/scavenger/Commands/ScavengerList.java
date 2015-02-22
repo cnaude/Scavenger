@@ -20,12 +20,10 @@ public class ScavengerList implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandlabel, String[] args) {
-        if (sender instanceof Player) {
-            if (plugin.hasPermission(sender, "scavenger.list")) {
-                plugin.rm.printRestorations((Player) sender);
-            } else {
-                plugin.message(sender, plugin.config.msgNoPerm());
-            }
+        if (plugin.hasPermission(sender, "scavenger.list")) {
+            plugin.rm.printRestorations(sender);
+        } else {
+            plugin.message(sender, plugin.config.msgNoPerm());
         }
         return true;
     }

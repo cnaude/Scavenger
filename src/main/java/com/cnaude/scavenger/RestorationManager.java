@@ -18,6 +18,7 @@ import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -522,18 +523,11 @@ public final class RestorationManager implements Serializable {
                 || !plugin.config.permsEnabled()
                 || (p.isOp() && plugin.config.opsAllPerms())) && p.getExhaustion() > 0;
     }
-
-    public void printRestorations(Player p) {
+    
+    public void printRestorations(CommandSender p) {
         plugin.message(p, "Restorations:");
         for (String key : restorations.keySet()) {
             plugin.message(p, "  " + key);
-        }
-    }
-
-    public void printRestorations() {
-        plugin.logInfo("Restorations:");
-        for (String key : restorations.keySet()) {
-            plugin.logInfo("  " + key);
         }
     }
 
