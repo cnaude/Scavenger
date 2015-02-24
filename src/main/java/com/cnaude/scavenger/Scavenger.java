@@ -52,8 +52,8 @@ public class Scavenger extends JavaPlugin {
     private ScavengerEventListenerOnline eventListenerOnline;
     public ScavengerFactions factionHook = null;
     public ScavengerDungeonMaze dmHook = null;
-    public ScavengerMyWorlds myWorldsHook = null;    
-    
+    public ScavengerMyWorlds myWorldsHook = null;
+
     public boolean hasPermission(CommandSender sender, String perm) {
         return sender.hasPermission(perm) || (sender.isOp() && config.opsAllPerms());
     }
@@ -90,7 +90,6 @@ public class Scavenger extends JavaPlugin {
             eventListener = new ScavengerEventListenerOffline(this, rm);
             eventListenerOnline = new ScavengerEventListenerOnline(this, rm);
             ignoreList = new ScavengerIgnoreList(this);
-            
 
             if (config.offlineMode()) {
                 Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
@@ -113,7 +112,7 @@ public class Scavenger extends JavaPlugin {
                 logInfo("Offline-mode is set to false, no Authenticator Hook");
             }
             getServer().getPluginManager().registerEvents(new ScavengerEvents(this, rm), this);
-            
+
             getCommand("scvrdisable").setExecutor(new ScavengerDisable(this));
             getCommand("scvrenable").setExecutor(new ScavengerEnable(this));
             getCommand("scvrlist").setExecutor(new ScavengerList(this));
@@ -203,14 +202,13 @@ public class Scavenger extends JavaPlugin {
 
     public Minigames getMinigames() {
         Plugin plugin = getServer().getPluginManager().getPlugin("Minigames");
-        
+
         if (plugin != null) {
             if (plugin.getDescription().getVersion().startsWith("1.6")) {
-                
+
             }
         }
-        
-        
+
         Minigames mg = null;
         if (plugin != null) {
             mg = (Minigames) Bukkit.getServer().getPluginManager().getPlugin("Minigames");
@@ -238,9 +236,12 @@ public class Scavenger extends JavaPlugin {
             logInfo("MyWorlds detected.");
         }
     }
-    
+
     public void setupMinigames() {
-        minigames = new ScavengerMinigames(this);
+        if (getServer().getPluginManager().getPlugin("Minigames") != null) {
+            logInfo("Hooking into Minigames");
+            minigames = new ScavengerMinigames(this);
+        }
     }
 
     public void setupResidence() {
@@ -369,8 +370,6 @@ public class Scavenger extends JavaPlugin {
 
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
-
-       
 
     private String headerStr() {
         ChatColor headerColor = config.headerColor();

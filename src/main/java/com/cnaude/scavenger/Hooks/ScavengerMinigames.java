@@ -22,6 +22,9 @@ public class ScavengerMinigames {
     }
         
     public boolean playerInMinigame(Player player) {
+        if (minigamesPlugin == null) {
+            return false;
+        }
         if (minigamesPlugin.getDescription().getMain().contains("com.pauldavdesign.mineauz.minigames.Minigames")) {
             return ((com.pauldavdesign.mineauz.minigames.Minigames)minigamesPlugin).getPlayerData().playerInMinigame(player);
         } else if (minigamesPlugin.getDescription().getMain().contains("au.com.mineauz.minigames.Minigames")) {
