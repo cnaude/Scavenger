@@ -29,6 +29,17 @@ public final class RestorationManager implements Serializable {
     Scavenger plugin;
     private static final HashMap<String, Restoration> restorations = new HashMap<>();
 
+    final String PERM_DROP_PREFIX = "scavenger.drop.";
+    final String PERM_DROP_ALL = "scavenger.drop.*";
+    final String PERM_KEEP_PREFIX = "scavenger.keep.";
+    final String PERM_KEEP_ALL = "scavenger.keep.*";
+    final String PERM_SCAVENGE_PREFIX = "scavenger.scavenge.";
+    final String PERM_SCAVENGE = "scavenger.scavenge";
+    final String PERM_FREE = "scavenger.free";
+    final String PERM_NO_CHANCE = "scavenger.nochance";
+    final String PERM_LEVEL = "scavenger.level";
+    final String PERM_EXP = "scavenger.exp";
+
     public RestorationManager(Scavenger plugin) {
         this.plugin = plugin;
         this.load();
@@ -166,29 +177,29 @@ public final class RestorationManager implements Serializable {
                 || plugin.getWorldInvAPI();
     }
 
-    public boolean hasRestoration(Player p) {
-        UUID uuid = p.getUniqueId();
+    public boolean hasRestoration(Player player) {
+        UUID uuid = player.getUniqueId();
         if (multipleInventories()) {
-            return restorations.containsKey(uuid + "." + getWorldGroups(p));
+            return restorations.containsKey(uuid + "." + getWorldGroups(player));
         }
         return restorations.containsKey(uuid.toString());
     }
 
-    public Restoration getRestoration(Player p) {
-        UUID uuid = p.getUniqueId();
+    public Restoration getRestoration(Player player) {
+        UUID uuid = player.getUniqueId();
         Restoration restoration = new Restoration();
         restoration.enabled = false;
         if (multipleInventories()) {
-            String keyName = uuid + "." + getWorldGroups(p);
+            String keyName = uuid + "." + getWorldGroups(player);
             if (restorations.containsKey(keyName)) {
                 plugin.logDebug("Getting: " + keyName);
                 restoration = restorations.get(keyName);
             }
         }
         if (!restoration.enabled) {
-            String keyName = p.getUniqueId().toString();
+            String keyName = player.getUniqueId().toString();
             if (restorations.containsKey(keyName)) {
-                plugin.logDebug("Getting: " + keyName + ":" + p.getName());
+                plugin.logDebug("Getting: " + keyName + ":" + player.getName());
                 restoration = restorations.get(keyName);
             }
         }
@@ -320,7 +331,7 @@ public final class RestorationManager implements Serializable {
         }
 
         if (plugin.getEconomy() != null
-                && !(player.hasPermission("scavenger.free")
+                && !(player.hasPermission(PERM_FREE)
                 || (player.isOp() && plugin.config.opsAllPerms()))
                 && plugin.config.economyEnabled()) {
             double restoreCost = plugin.config.restoreCost();
@@ -418,84 +429,25 @@ public final class RestorationManager implements Serializable {
             event.setDroppedExp(0);
         }
 
-        String dcString = "NULL";
+        String deathCause = "NULL";
         if (player.getLastDamageCause() != null) {
             if (player.getLastDamageCause().getCause() != null) {
-                dcString = player.getLastDamageCause().getCause().toString();
+                deathCause = player.getLastDamageCause().getCause().toString();
             }
         }
-        String dcPerm = "scavenger.scavenge." + dcString;
-        plugin.logDebug("[" + player.getName() + "] scavenger.scavenge = " + player.hasPermission("scavenger.scavenge"));
-        plugin.logDebug("[" + player.getName() + "] " + dcPerm + " = " + player.hasPermission(dcPerm));
-        if (player.hasPermission("scavenger.scavenge") || player.hasPermission(dcPerm)) {
+        String deathCausePermission = PERM_SCAVENGE_PREFIX + deathCause;
+        plugin.logDebug("[" + player.getName() + "] scavenger.scavenge = " + player.hasPermission(PERM_SCAVENGE));
+        plugin.logDebug("[" + player.getName() + "] " + deathCausePermission + " = " + player.hasPermission(deathCausePermission));
+        if (player.hasPermission(PERM_SCAVENGE) || player.hasPermission(deathCausePermission)) {
             plugin.logDebug("Permission okay...");
             if (plugin.config.singleItemDrops()) {
-                plugin.logDebug("singleItemDrops()");
-                ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-                for (ItemStack[] a : invAndArmour) {
-                    for (ItemStack i : a) {
-                        if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                            plugin.logDebug(
-                                    "[p:" + player.getName() + "] "
-                                    + "[scavenger.drop." + i.getTypeId() + ":" + player.hasPermission("scavenger.drop." + i.getTypeId()) + "] "
-                                    + "[scavenger.drop." + i.getType().name().toLowerCase() + ":" + player.hasPermission("scavenger.drop." + i.getType().name().toLowerCase()) + "] "
-                                    + "scavenger.drop.*:" + player.hasPermission("scavenger.drop.*") + "]");
-                            if (player.hasPermission("scavenger.drop." + i.getTypeId())
-                                    || player.hasPermission("scavenger.drop." + i.getType().name().toLowerCase())
-                                    || player.hasPermission("scavenger.drop.*")) {
-                                plugin.debugMessage(player, "[sd]Dropping item " + i.getType());
-                                itemDrops.add(i.clone());
-                                i.setAmount(0);
-                            } else {
-                                plugin.debugMessage(player, "[sd]Keeping item " + i.getType());
-                            }
-                        }
-                    }
-                }
-            } 
-            if (plugin.config.singleItemKeeps()) {
-                plugin.logDebug("singleItemKeeps()");
-                ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-                for (ItemStack[] a : invAndArmour) {
-                    for (ItemStack i : a) {
-                        if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                            plugin.logDebug(
-                                    "[p:" + player.getName() + "] "
-                                    + "[scavenger.keep." + i.getTypeId() + ":" + player.hasPermission("scavenger.keep." + i.getTypeId()) + "] "
-                                    + "[scavenger.keep." + i.getType().name().toLowerCase() + ":" + player.hasPermission("scavenger.keep." + i.getType().name().toLowerCase()) + "] "
-                                    + "scavenger.keep.*:" + player.hasPermission("scavenger.keep.*") + "]");
-                            if (player.hasPermission("scavenger.keep." + i.getTypeId())
-                                    || player.hasPermission("scavenger.keep." + i.getType().name().toLowerCase())
-                                    || player.hasPermission("scavenger.keep.*")) {
-                                plugin.debugMessage(player, "[sk]Keeping item " + i.getType());
-                            } else {
-                                plugin.debugMessage(player, "[sk]Dropping item " + i.getType());
-                                itemDrops.add(i.clone());
-                                i.setAmount(0);
-                            }
-                        }
-                    }
-                }
+                checkSingleItemDrops(player, restoration, itemDrops);
             }
-            if (plugin.config.chanceToDrop() > 0
-                    && !player.hasPermission("scavenger.nochance")) {
-                ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-                for (ItemStack[] a : invAndArmour) {
-                    for (ItemStack i : a) {
-                        if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                            Random randomGenerator = new Random();
-                            int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
-                            plugin.debugMessage(player, "Random number is " + randomInt);
-                            if (randomInt == plugin.config.chanceToDrop()) {
-                                plugin.debugMessage(player, "Randomly dropping item " + i.getType());
-                                itemDrops.add(i.clone());
-                                i.setAmount(0);
-                            } else {
-                                plugin.debugMessage(player, "Randomly keeping item " + i.getType());
-                            }
-                        }
-                    }
-                }
+            if (plugin.config.singleItemKeeps()) {
+                checkSingleItemKeeps(player, restoration, itemDrops);
+            }
+            if (plugin.config.chanceToDrop() > 0 && !player.hasPermission(PERM_NO_CHANCE)) {
+                checkChanceToDropItems(player, restoration, itemDrops);
             }
             if (plugin.config.slotBasedRecovery()) {
                 checkSlots(player, "armour", restoration.armour, itemDrops);
@@ -516,6 +468,26 @@ public final class RestorationManager implements Serializable {
         addRestoration(player, restoration);
     }
 
+    private void checkChanceToDropItems(Player player, Restoration restoration, List<ItemStack> itemDrops) {
+        ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+        for (ItemStack[] a : invAndArmour) {
+            for (ItemStack i : a) {
+                if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
+                    Random randomGenerator = new Random();
+                    int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
+                    plugin.debugMessage(player, "Random number is " + randomInt);
+                    if (randomInt == plugin.config.chanceToDrop()) {
+                        plugin.debugMessage(player, "Randomly dropping item " + i.getType());
+                        itemDrops.add(i.clone());
+                        i.setAmount(0);
+                    } else {
+                        plugin.debugMessage(player, "Randomly keeping item " + i.getType());
+                    }
+                }
+            }
+        }
+    }
+
     private void checkSlots(Player p, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         for (int i = 0; i < itemStackArray.length; i++) {
             String itemType;
@@ -527,23 +499,82 @@ public final class RestorationManager implements Serializable {
             plugin.debugMessage("[type:" + type + "] [p:" + p.getName() + "] [slot:" + i + "] [item:"
                     + itemType + "] [perm:" + p.hasPermission("scavenger." + type + "." + i) + "]");
             if (!p.hasPermission("scavenger." + type + "." + i) && !itemType.equals("NULL")) {
-                plugin.debugMessage(p, "[cs]Dropping: " + itemType);
+                if (!itemType.equals("NULL") && !itemType.equals("AIR")) {
+                    plugin.debugMessage(p, "[cs]Dropping slot " + i + ": " + itemType);
+                }
                 itemDrops.add(itemStackArray[i].clone());
                 itemStackArray[i].setAmount(0);
-            } else {
-                plugin.debugMessage(p, "[cs]Keeping: " + itemType);
+            } else if (!itemType.equals("NULL") && !itemType.equals("AIR")) {
+                plugin.debugMessage(p, "[cs]Keeping slot " + i + ": " + itemType);
+            }
+        }
+    }
+
+    private void checkSingleItemDrops(Player player, Restoration restoration, List<ItemStack> itemDrops) {
+        plugin.logDebug("singleItemDrops()");
+        ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+        for (ItemStack[] items : invAndArmour) {
+            for (ItemStack itemStack : items) {
+                if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+                    plugin.logDebug(
+                            "[p:" + player.getName() + "] "
+                            + "[" + PERM_DROP_PREFIX + itemStack.getTypeId() + ":"
+                            + player.hasPermission(PERM_DROP_PREFIX + itemStack.getTypeId()) + "] "
+                            + "[" + PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase() + ":"
+                            + player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase()) + "] "
+                            + "[" + PERM_DROP_ALL + ":" + player.hasPermission(PERM_DROP_ALL) + "]");
+                    if (player.hasPermission(PERM_DROP_PREFIX + itemStack.getTypeId())
+                            || player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase())
+                            || player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name())
+                            || player.hasPermission(PERM_DROP_ALL)) {
+                        plugin.debugMessage(player, "[sd]Dropping item " + itemStack.getType());
+                        itemDrops.add(itemStack.clone());
+                        itemStack.setAmount(0);
+                    } else {
+                        plugin.debugMessage(player, "[sd]Keeping item " + itemStack.getType());
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkSingleItemKeeps(Player player, Restoration restoration, List<ItemStack> itemDrops) {
+        plugin.logDebug("singleItemKeeps()");
+        ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+        for (ItemStack[] items : invAndArmour) {
+            for (ItemStack itemStack : items) {
+                if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+                    plugin.logDebug(
+                            "[p:" + player.getName() + "] "
+                            + "[" + PERM_KEEP_PREFIX + itemStack.getTypeId() + ":"
+                            + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getTypeId()) + "] "
+                            + "[" + PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase() + ":"
+                            + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase()) + "] "
+                            + "[" + PERM_KEEP_ALL + ":"
+                            + player.hasPermission(PERM_KEEP_ALL) + "]");
+                    if (player.hasPermission(PERM_KEEP_PREFIX + itemStack.getTypeId())
+                            || player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase())
+                            || player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name())
+                            || player.hasPermission(PERM_KEEP_ALL)) {
+                        plugin.debugMessage(player, "[sk]Keeping item " + itemStack.getType());
+                    } else {
+                        plugin.debugMessage(player, "[sk]Dropping item " + itemStack.getType());
+                        itemDrops.add(itemStack.clone());
+                        itemStack.setAmount(0);
+                    }
+                }
             }
         }
     }
 
     public boolean levelAllow(Player p) {
-        return (p.hasPermission("scavenger.level")
+        return (p.hasPermission(PERM_LEVEL)
                 || !plugin.config.permsEnabled()
                 || (p.isOp() && plugin.config.opsAllPerms())) && p.getLevel() > 0;
     }
 
     public boolean expAllow(Player p) {
-        return (p.hasPermission("scavenger.exp")
+        return (p.hasPermission(PERM_EXP)
                 || !plugin.config.permsEnabled()
                 || (p.isOp() && plugin.config.opsAllPerms())) && p.getExhaustion() > 0;
     }
@@ -582,8 +613,7 @@ public final class RestorationManager implements Serializable {
             plugin.debugMessage("Player " + p.getName() + " is offline. Skipping restore...");
             return;
         }
-        String permLevel = "scavenger.level";
-        String permExp = "scavenger.exp";
+
         Restoration restoration = getRestoration(p);
 
         if (restoration.enabled) {
@@ -591,23 +621,23 @@ public final class RestorationManager implements Serializable {
 
             p.getInventory().setContents(restoration.inventory);
             p.getInventory().setArmorContents(restoration.armour);
-            if (p.hasPermission(permLevel)
+            if (p.hasPermission(PERM_LEVEL)
                     || !plugin.config.permsEnabled()
                     || (p.isOp() && plugin.config.opsAllPerms())) {
-                plugin.logDebug("Player " + p.getName() + " does have " + permLevel + " permission.");
+                plugin.logDebug("Player " + p.getName() + " does have " + PERM_LEVEL + " permission.");
                 p.setLevel(restoration.level);
                 plugin.logDebug("Player " + p.getName() + " gets " + restoration.level + " level.");
             } else {
-                plugin.logDebug("Player " + p.getName() + " does NOT have " + permLevel + " permission.");
+                plugin.logDebug("Player " + p.getName() + " does NOT have " + PERM_LEVEL + " permission.");
             }
-            if (p.hasPermission(permExp)
+            if (p.hasPermission(PERM_EXP)
                     || !plugin.config.permsEnabled()
                     || (p.isOp() && plugin.config.opsAllPerms())) {
-                plugin.logDebug("Player " + p.getName() + " does have " + permExp + " permission.");
+                plugin.logDebug("Player " + p.getName() + " does have " + PERM_EXP + " permission.");
                 p.setExp(restoration.exp);
                 plugin.logDebug("Player " + p.getName() + " gets " + restoration.exp + " XP.");
             } else {
-                plugin.logDebug("Player " + p.getName() + " does NOT have " + permExp + " permission.");
+                plugin.logDebug("Player " + p.getName() + " does NOT have " + PERM_EXP + " permission.");
             }
             if (plugin.config.shouldNotify()) {
                 plugin.message(p, plugin.config.msgRecovered());
