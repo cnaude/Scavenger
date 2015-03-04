@@ -430,28 +430,53 @@ public final class RestorationManager implements Serializable {
         if (player.hasPermission("scavenger.scavenge") || player.hasPermission(dcPerm)) {
             plugin.logDebug("Permission okay...");
             if (plugin.config.singleItemDrops()) {
+                plugin.logDebug("singleItemDrops()");
                 ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
                 for (ItemStack[] a : invAndArmour) {
                     for (ItemStack i : a) {
-                        boolean dropIt;
                         if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                            if (plugin.config.singleItemDropsOnly() == true) {
-                                dropIt = (player.hasPermission("scavenger.drop." + i.getTypeId())) && (player.hasPermission("scavenger.drop.*"));
-                            } else {
-                                dropIt = player.hasPermission("scavenger.drop." + i.getTypeId()) && (player.hasPermission("scavenger.drop.*"));
-                            }
-                            if (dropIt) {
-                                plugin.debugMessage(player, "Dropping item " + i.getType());
+                            plugin.logDebug(
+                                    "[p:" + player.getName() + "] "
+                                    + "[scavenger.drop." + i.getTypeId() + ":" + player.hasPermission("scavenger.drop." + i.getTypeId()) + "] "
+                                    + "[scavenger.drop." + i.getType().name().toLowerCase() + ":" + player.hasPermission("scavenger.drop." + i.getType().name().toLowerCase()) + "] "
+                                    + "scavenger.drop.*:" + player.hasPermission("scavenger.drop.*") + "]");
+                            if (player.hasPermission("scavenger.drop." + i.getTypeId())
+                                    || player.hasPermission("scavenger.drop." + i.getType().name().toLowerCase())
+                                    || player.hasPermission("scavenger.drop.*")) {
+                                plugin.debugMessage(player, "[sd]Dropping item " + i.getType());
                                 itemDrops.add(i.clone());
                                 i.setAmount(0);
                             } else {
-                                plugin.debugMessage(player, "Keeping item " + i.getType());
+                                plugin.debugMessage(player, "[sd]Keeping item " + i.getType());
+                            }
+                        }
+                    }
+                }
+            } 
+            if (plugin.config.singleItemKeeps()) {
+                plugin.logDebug("singleItemKeeps()");
+                ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
+                for (ItemStack[] a : invAndArmour) {
+                    for (ItemStack i : a) {
+                        if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
+                            plugin.logDebug(
+                                    "[p:" + player.getName() + "] "
+                                    + "[scavenger.keep." + i.getTypeId() + ":" + player.hasPermission("scavenger.keep." + i.getTypeId()) + "] "
+                                    + "[scavenger.keep." + i.getType().name().toLowerCase() + ":" + player.hasPermission("scavenger.keep." + i.getType().name().toLowerCase()) + "] "
+                                    + "scavenger.keep.*:" + player.hasPermission("scavenger.keep.*") + "]");
+                            if (player.hasPermission("scavenger.keep." + i.getTypeId())
+                                    || player.hasPermission("scavenger.keep." + i.getType().name().toLowerCase())
+                                    || player.hasPermission("scavenger.keep.*")) {
+                                plugin.debugMessage(player, "[sk]Keeping item " + i.getType());
+                            } else {
+                                plugin.debugMessage(player, "[sk]Dropping item " + i.getType());
+                                itemDrops.add(i.clone());
+                                i.setAmount(0);
                             }
                         }
                     }
                 }
             }
-
             if (plugin.config.chanceToDrop() > 0
                     && !player.hasPermission("scavenger.nochance")) {
                 ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
@@ -472,7 +497,6 @@ public final class RestorationManager implements Serializable {
                     }
                 }
             }
-
             if (plugin.config.slotBasedRecovery()) {
                 checkSlots(player, "armour", restoration.armour, itemDrops);
                 checkSlots(player, "inv", restoration.inventory, itemDrops);
@@ -503,11 +527,11 @@ public final class RestorationManager implements Serializable {
             plugin.debugMessage("[type:" + type + "] [p:" + p.getName() + "] [slot:" + i + "] [item:"
                     + itemType + "] [perm:" + p.hasPermission("scavenger." + type + "." + i) + "]");
             if (!p.hasPermission("scavenger." + type + "." + i) && !itemType.equals("NULL")) {
-                plugin.debugMessage(p, "Dropping: " + itemType);
+                plugin.debugMessage(p, "[cs]Dropping: " + itemType);
                 itemDrops.add(itemStackArray[i].clone());
                 itemStackArray[i].setAmount(0);
             } else {
-                plugin.debugMessage(p, "Keeping: " + itemType);
+                plugin.debugMessage(p, "[cs]Keeping: " + itemType);
             }
         }
     }
@@ -523,7 +547,7 @@ public final class RestorationManager implements Serializable {
                 || !plugin.config.permsEnabled()
                 || (p.isOp() && plugin.config.opsAllPerms())) && p.getExhaustion() > 0;
     }
-    
+
     public void printRestorations(CommandSender p) {
         plugin.message(p, "Restorations:");
         for (String key : restorations.keySet()) {
@@ -621,7 +645,7 @@ public final class RestorationManager implements Serializable {
 
     public String getWorldGroups(Player player) {
         World world = player.getWorld();
-        List<String> returnData = new ArrayList<>();        
+        List<String> returnData = new ArrayList<>();
         if (plugin.getMultiInvAPI() != null) {
             String worldname = world.getName();
             MultiInvAPI multiInvAPI = plugin.getMultiInvAPI();

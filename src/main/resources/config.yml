@@ -8,11 +8,13 @@ Global:
   Color: gold
   # Message text color
   TextColor: white
-  # Enable this for permission based per item exclusions. See online documentation for details.
+  # Enable this for permission based drops. Players that have scavenger.drop.[ITEM_NAME] or scavenger.drop.[ITEM_NUMBER] will drop the item.
   SingleItemDrops: false
-  # If SingleItemDrops is true and SingleItemDropsOnly is false then only explicitely denied drops will be dropped. If this is true then you must explicetly allow players to keep each item and everything else is dropped.
-  SingleItemDropsOnly: false
+  # Enable this for permission based keeps. Players that have scavenger.keep.[ITEM_NAME] or scavenger.keep.[ITEM_NUMBER] will keep the item.
+  SingleItemKeeps: false
+  # Enable this to see what's going on
   Debug: false
+  # Are we using permissions?
   Permissions: true
   OpsAllPerms: false
   # If true then Scavenger will not recover items in a WorldGuard PVP zone.

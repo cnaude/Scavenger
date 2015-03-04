@@ -34,7 +34,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_TEXTCOLOR = "Global.TextColor";
     private static final String DEBUG_ENABLED = "Global.Debug";
     private static final String GLOBAL_SIDROPS = "Global.SingleItemDrops";
-    private static final String GLOBAL_SIDROPS_ONLY = "Global.SingleItemDropsOnly";
+    private static final String GLOBAL_SIKEEPS = "Global.SingleItemKeeps";
     private static final String GLOBAL_PERMS = "Global.Permissions";
     private static final String GLOBAL_WGPVPIGNORE = "Global.WorldGuardPVPIgnore";
     private static final String GLOBAL_WGPVPONLY = "Global.WorldGuardPVPOnly";
@@ -99,7 +99,7 @@ public final class ScavengerConfig {
     private ChatColor headerColor;
     private ChatColor textColor;
     private boolean singleItemDrops;
-    private boolean singleItemDropsOnly;
+    private boolean singleItemKeeps;
     private boolean permsEnabled;
     private String msgRecovered;
     private String msgSaving;
@@ -162,7 +162,7 @@ public final class ScavengerConfig {
 
         shouldNotify = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops = config.getBoolean(GLOBAL_SIDROPS, false);
-        singleItemDropsOnly = config.getBoolean(GLOBAL_SIDROPS_ONLY, false);
+        singleItemKeeps = config.getBoolean(GLOBAL_SIKEEPS, false);
         permsEnabled = config.getBoolean(GLOBAL_PERMS, true);
         wgPVPIgnore = config.getBoolean(GLOBAL_WGPVPIGNORE, false);
         wgGuardPVPOnly = config.getBoolean(GLOBAL_WGPVPONLY, false);
@@ -400,8 +400,8 @@ public final class ScavengerConfig {
         return singleItemDrops;
     }
 
-    public boolean singleItemDropsOnly() {
-        return singleItemDropsOnly;
+    public boolean singleItemKeeps() {
+        return singleItemKeeps;
     }
 
     public boolean permsEnabled() {
