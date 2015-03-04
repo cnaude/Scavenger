@@ -522,6 +522,8 @@ public final class RestorationManager implements Serializable {
                             + player.hasPermission(PERM_DROP_PREFIX + itemStack.getTypeId()) + "] "
                             + "[" + PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase() + ":"
                             + player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase()) + "] "
+                            + "[" + PERM_DROP_PREFIX + itemStack.getType().name() + ":"
+                            + player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name()) + "] "
                             + "[" + PERM_DROP_ALL + ":" + player.hasPermission(PERM_DROP_ALL) + "]");
                     if (player.hasPermission(PERM_DROP_PREFIX + itemStack.getTypeId())
                             || player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase())
@@ -550,6 +552,8 @@ public final class RestorationManager implements Serializable {
                             + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getTypeId()) + "] "
                             + "[" + PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase() + ":"
                             + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase()) + "] "
+                            + "[" + PERM_KEEP_PREFIX + itemStack.getType().name() + ":"
+                            + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name()) + "] "
                             + "[" + PERM_KEEP_ALL + ":"
                             + player.hasPermission(PERM_KEEP_ALL) + "]");
                     if (player.hasPermission(PERM_KEEP_PREFIX + itemStack.getTypeId())
