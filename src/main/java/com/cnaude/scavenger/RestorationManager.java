@@ -531,11 +531,11 @@ public final class RestorationManager implements Serializable {
                             || player.hasPermission(PERM_DROP_PREFIX + itemType.toLowerCase())
                             || player.hasPermission(PERM_DROP_PREFIX + itemType)
                             || player.hasPermission(PERM_DROP_ALL)) {
-                        plugin.debugMessage(player, "[sd]Dropping item " + itemStack.getType());
+                        plugin.debugMessage(player, "[sd]Dropping item: " + itemType);
                         itemDrops.add(itemStack.clone());
                         itemStack.setAmount(0);
                     } else {
-                        plugin.debugMessage(player, "[sd]Keeping item " + itemStack.getType());
+                        plugin.debugMessage(player, "[sd]Keeping item: " + itemType);
                     }
                 }
             }
@@ -564,9 +564,9 @@ public final class RestorationManager implements Serializable {
                             || player.hasPermission(PERM_KEEP_PREFIX + itemType.toLowerCase())
                             || player.hasPermission(PERM_KEEP_PREFIX + itemType)
                             || player.hasPermission(PERM_KEEP_ALL)) {
-                        plugin.debugMessage(player, "[sk]Keeping item " + itemStack.getType());
+                        plugin.debugMessage(player, "[sk]Keeping item: " + itemType);
                     } else {
-                        plugin.debugMessage(player, "[sk]Dropping item " + itemStack.getType());
+                        plugin.debugMessage(player, "[sk]Dropping item: " + itemType);
                         itemDrops.add(itemStack.clone());
                         itemStack.setAmount(0);
                     }
