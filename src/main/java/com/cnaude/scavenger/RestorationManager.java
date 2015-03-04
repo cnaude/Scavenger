@@ -516,18 +516,20 @@ public final class RestorationManager implements Serializable {
         for (ItemStack[] items : invAndArmour) {
             for (ItemStack itemStack : items) {
                 if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+                    String itemType = itemStack.getType().name();
+                    int itemTypeId = itemStack.getTypeId();
                     plugin.logDebug(
                             "[p:" + player.getName() + "] "
-                            + "[" + PERM_DROP_PREFIX + itemStack.getTypeId() + ":"
-                            + player.hasPermission(PERM_DROP_PREFIX + itemStack.getTypeId()) + "] "
-                            + "[" + PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase() + ":"
-                            + player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase()) + "] "
-                            + "[" + PERM_DROP_PREFIX + itemStack.getType().name() + ":"
-                            + player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name()) + "] "
+                            + "[" + PERM_DROP_PREFIX + itemTypeId + ":"
+                            + player.hasPermission(PERM_DROP_PREFIX + itemTypeId) + "] "
+                            + "[" + PERM_DROP_PREFIX + itemType.toLowerCase() + ":"
+                            + player.hasPermission(PERM_DROP_PREFIX + itemType.toLowerCase()) + "] "
+                            + "[" + PERM_DROP_PREFIX + itemType + ":"
+                            + player.hasPermission(PERM_DROP_PREFIX + itemType) + "] "
                             + "[" + PERM_DROP_ALL + ":" + player.hasPermission(PERM_DROP_ALL) + "]");
-                    if (player.hasPermission(PERM_DROP_PREFIX + itemStack.getTypeId())
-                            || player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name().toLowerCase())
-                            || player.hasPermission(PERM_DROP_PREFIX + itemStack.getType().name())
+                    if (player.hasPermission(PERM_DROP_PREFIX + itemTypeId)
+                            || player.hasPermission(PERM_DROP_PREFIX + itemType.toLowerCase())
+                            || player.hasPermission(PERM_DROP_PREFIX + itemType)
                             || player.hasPermission(PERM_DROP_ALL)) {
                         plugin.debugMessage(player, "[sd]Dropping item " + itemStack.getType());
                         itemDrops.add(itemStack.clone());
@@ -546,19 +548,21 @@ public final class RestorationManager implements Serializable {
         for (ItemStack[] items : invAndArmour) {
             for (ItemStack itemStack : items) {
                 if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+                    String itemType = itemStack.getType().toString();
+                    int itemTypeId = itemStack.getTypeId();
                     plugin.logDebug(
                             "[p:" + player.getName() + "] "
-                            + "[" + PERM_KEEP_PREFIX + itemStack.getTypeId() + ":"
-                            + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getTypeId()) + "] "
-                            + "[" + PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase() + ":"
-                            + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase()) + "] "
-                            + "[" + PERM_KEEP_PREFIX + itemStack.getType().name() + ":"
-                            + player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name()) + "] "
+                            + "[" + PERM_KEEP_PREFIX + itemTypeId + ":"
+                            + player.hasPermission(PERM_KEEP_PREFIX + itemTypeId) + "] "
+                            + "[" + PERM_KEEP_PREFIX + itemType.toLowerCase() + ":"
+                            + player.hasPermission(PERM_KEEP_PREFIX + itemType.toLowerCase()) + "] "
+                            + "[" + PERM_KEEP_PREFIX + itemType + ":"
+                            + player.hasPermission(PERM_KEEP_PREFIX + itemType) + "] "
                             + "[" + PERM_KEEP_ALL + ":"
                             + player.hasPermission(PERM_KEEP_ALL) + "]");
-                    if (player.hasPermission(PERM_KEEP_PREFIX + itemStack.getTypeId())
-                            || player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name().toLowerCase())
-                            || player.hasPermission(PERM_KEEP_PREFIX + itemStack.getType().name())
+                    if (player.hasPermission(PERM_KEEP_PREFIX + itemTypeId)
+                            || player.hasPermission(PERM_KEEP_PREFIX + itemType.toLowerCase())
+                            || player.hasPermission(PERM_KEEP_PREFIX + itemType)
                             || player.hasPermission(PERM_KEEP_ALL)) {
                         plugin.debugMessage(player, "[sk]Keeping item " + itemStack.getType());
                     } else {
