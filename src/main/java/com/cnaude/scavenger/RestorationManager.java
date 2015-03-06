@@ -488,24 +488,24 @@ public final class RestorationManager implements Serializable {
         }
     }
 
-    private void checkSlots(Player p, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
-        for (int i = 0; i < itemStackArray.length; i++) {
+    private void checkSlots(Player player, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
+        for (int slot = 0; slot < itemStackArray.length; slot++) {
             String itemType;
-            if (itemStackArray[i] != null) {
-                itemType = itemStackArray[i].getType().toString();
+            if (itemStackArray[slot] != null) {
+                itemType = itemStackArray[slot].getType().toString();
             } else {
                 itemType = "NULL";
             }
-            plugin.debugMessage("[type:" + type + "] [p:" + p.getName() + "] [slot:" + i + "] [item:"
-                    + itemType + "] [perm:" + p.hasPermission("scavenger." + type + "." + i) + "]");
-            if (!p.hasPermission("scavenger." + type + "." + i) && !itemType.equals("NULL")) {
+            String permNode = "scavenger." + type + "." + slot;
+            plugin.debugMessage("[p:" + player.getName() + "] " + "[" + permNode + ":" + player.hasPermission(permNode) + "] " + "[item:" + itemType + "]"); 
+            if (!player.hasPermission(permNode) && !itemType.equals("NULL")) {
                 if (!itemType.equals("NULL") && !itemType.equals("AIR")) {
-                    plugin.debugMessage(p, "[cs]Dropping slot " + i + ": " + itemType);
+                    plugin.debugMessage(player, "[cs]Dropping slot " + slot + ": " + itemType);
                 }
-                itemDrops.add(itemStackArray[i].clone());
-                itemStackArray[i].setAmount(0);
+                itemDrops.add(itemStackArray[slot].clone());
+                itemStackArray[slot].setAmount(0);
             } else if (!itemType.equals("NULL") && !itemType.equals("AIR")) {
-                plugin.debugMessage(p, "[cs]Keeping slot " + i + ": " + itemType);
+                plugin.debugMessage(player, "[cs]Keeping slot " + slot + ": " + itemType);
             }
         }
     }
@@ -616,43 +616,43 @@ public final class RestorationManager implements Serializable {
         }
     }
 
-    public void restore(Player p) {
-        if (!p.isOnline()) {
-            plugin.debugMessage("Player " + p.getName() + " is offline. Skipping restore...");
+    public void restore(Player player) {
+        if (!player.isOnline()) {
+            plugin.debugMessage("Player " + player.getName() + " is offline. Skipping restore...");
             return;
         }
 
-        Restoration restoration = getRestoration(p);
+        Restoration restoration = getRestoration(player);
 
         if (restoration.enabled) {
-            p.getInventory().clear();
+            player.getInventory().clear();
 
-            p.getInventory().setContents(restoration.inventory);
-            p.getInventory().setArmorContents(restoration.armour);
-            if (p.hasPermission(PERM_LEVEL)
+            player.getInventory().setContents(restoration.inventory);
+            player.getInventory().setArmorContents(restoration.armour);
+            if (player.hasPermission(PERM_LEVEL)
                     || !plugin.config.permsEnabled()
-                    || (p.isOp() && plugin.config.opsAllPerms())) {
-                plugin.logDebug("Player " + p.getName() + " does have " + PERM_LEVEL + " permission.");
-                p.setLevel(restoration.level);
-                plugin.logDebug("Player " + p.getName() + " gets " + restoration.level + " level.");
+                    || (player.isOp() && plugin.config.opsAllPerms())) {
+                plugin.logDebug("Player " + player.getName() + " does have " + PERM_LEVEL + " permission.");
+                player.setLevel(restoration.level);
+                plugin.logDebug("Player " + player.getName() + " gets " + restoration.level + " level.");
             } else {
-                plugin.logDebug("Player " + p.getName() + " does NOT have " + PERM_LEVEL + " permission.");
+                plugin.logDebug("Player " + player.getName() + " does NOT have " + PERM_LEVEL + " permission.");
             }
-            if (p.hasPermission(PERM_EXP)
+            if (player.hasPermission(PERM_EXP)
                     || !plugin.config.permsEnabled()
-                    || (p.isOp() && plugin.config.opsAllPerms())) {
-                plugin.logDebug("Player " + p.getName() + " does have " + PERM_EXP + " permission.");
-                p.setExp(restoration.exp);
-                plugin.logDebug("Player " + p.getName() + " gets " + restoration.exp + " XP.");
+                    || (player.isOp() && plugin.config.opsAllPerms())) {
+                plugin.logDebug("Player " + player.getName() + " does have " + PERM_EXP + " permission.");
+                player.setExp(restoration.exp);
+                plugin.logDebug("Player " + player.getName() + " gets " + restoration.exp + " XP.");
             } else {
-                plugin.logDebug("Player " + p.getName() + " does NOT have " + PERM_EXP + " permission.");
+                plugin.logDebug("Player " + player.getName() + " does NOT have " + PERM_EXP + " permission.");
             }
             if (plugin.config.shouldNotify()) {
-                plugin.message(p, plugin.config.msgRecovered());
+                plugin.message(player, plugin.config.msgRecovered());
             }
-            removeRestoration(p);
-            if (hasRestoration(p)) {
-                plugin.message(p, "Restore exists!!!");
+            removeRestoration(player);
+            if (hasRestoration(player)) {
+                plugin.message(player, "Restore exists!!!");
             }
         }
 
