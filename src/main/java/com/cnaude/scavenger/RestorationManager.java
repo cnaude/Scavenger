@@ -30,16 +30,16 @@ public final class RestorationManager implements Serializable {
     private static final HashMap<String, Restoration> restorations = new HashMap<>();
 
     final String PERM_PREFIX = "scavenger.";
-    final String PERM_DROP_PREFIX     = PERM_PREFIX + "drop.";
-    final String PERM_DROP_ALL        = PERM_PREFIX + "drop.*";
-    final String PERM_KEEP_PREFIX     = PERM_PREFIX + "keep.";
-    final String PERM_KEEP_ALL        = PERM_PREFIX + "keep.*";
+    final String PERM_DROP_PREFIX = PERM_PREFIX + "drop.";
+    final String PERM_DROP_ALL = PERM_PREFIX + "drop.*";
+    final String PERM_KEEP_PREFIX = PERM_PREFIX + "keep.";
+    final String PERM_KEEP_ALL = PERM_PREFIX + "keep.*";
     final String PERM_SCAVENGE_PREFIX = PERM_PREFIX + "scavenge.";
-    final String PERM_SCAVENGE        = PERM_PREFIX + "scavenge";
-    final String PERM_FREE            = PERM_PREFIX + "free";
-    final String PERM_NO_CHANCE       = PERM_PREFIX + "nochance";
-    final String PERM_LEVEL           = PERM_PREFIX + "level";
-    final String PERM_EXP             = PERM_PREFIX + "exp";
+    final String PERM_SCAVENGE = PERM_PREFIX + "scavenge";
+    final String PERM_FREE = PERM_PREFIX + "free";
+    final String PERM_NO_CHANCE = PERM_PREFIX + "nochance";
+    final String PERM_LEVEL = PERM_PREFIX + "level";
+    final String PERM_EXP = PERM_PREFIX + "exp";
 
     public RestorationManager(Scavenger plugin) {
         this.plugin = plugin;
@@ -212,11 +212,9 @@ public final class RestorationManager implements Serializable {
             return;
         }
 
-        if (plugin.config.dropOnPVPDeath()) {
-            if (player.getKiller() instanceof Player) {
-                plugin.message(player, plugin.config.msgPVPDeath());
-                return;
-            }
+        if (plugin.config.dropOnPVPDeath() && player.getKiller() instanceof Player) {
+            plugin.message(player, plugin.config.msgPVPDeath());
+            return;
         }
 
         if (plugin.config.residence()) {
@@ -448,12 +446,10 @@ public final class RestorationManager implements Serializable {
             if (plugin.config.singleItemDrops()) {
                 checkSingleItemDrops(player, restoration.armour, itemDrops);
                 checkSingleItemDrops(player, restoration.inventory, itemDrops);
-            }
-            if (plugin.config.singleItemKeeps()) {
-                checkSingleItemKeeps(player, restoration.armour, itemDrops);
-                checkSingleItemKeeps(player, restoration.inventory, itemDrops);
-            }
-            if (plugin.config.slotBasedRecovery()) {
+            } else if (plugin.config.singleItemKeeps()) {
+                checkSingleItemKeeps(player, "armour", restoration.armour, itemDrops);
+                checkSingleItemKeeps(player, "inv", restoration.inventory, itemDrops);
+            } else if (plugin.config.slotBasedRecovery()) {
                 checkSlots(player, "armour", restoration.armour, itemDrops);
                 checkSlots(player, "inv", restoration.inventory, itemDrops);
             }
@@ -547,7 +543,7 @@ public final class RestorationManager implements Serializable {
     }
 
     private void checkSingleItemDrops(Player player, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
-        plugin.logDebug("singleItemDrops()");
+        plugin.logDebug("checkSingleItemDrops()");
         for (int slot = 0; slot < itemStackArray.length; slot++) {
             if (itemStackArray[slot] instanceof ItemStack && !itemStackArray[slot].getType().equals(Material.AIR)) {
                 String itemType = itemStackArray[slot].getType().name();
@@ -572,59 +568,65 @@ public final class RestorationManager implements Serializable {
         return checkPerms(player, perms);
     }
 
-    private void checkSingleItemKeeps(Player player, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
-        plugin.logDebug("singleItemKeeps()");
+    private void checkSingleItemKeeps(Player player, String invType, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
+        plugin.logDebug("checkSingleItemKeeps(" + invType + ")");
         for (int slot = 0; slot < itemStackArray.length; slot++) {
             if (itemStackArray[slot] instanceof ItemStack && !itemStackArray[slot].getType().equals(Material.AIR)) {
                 String itemType = itemStackArray[slot].getType().name();
                 if (checkSingleItemKeep(player, itemStackArray[slot])) {
                     plugin.logDebug("[sk]Keeping item: " + itemType);
-                } else {
-                    plugin.logDebug("[sk]Dropping item: " + itemType);
-                    dropItem(itemStackArray[slot], itemDrops);
+                    continue;
+                } 
+                if (plugin.config.slotBasedRecovery() && plugin.config.useTheOrMethod()) {
+                    if (checkSlot(player, invType, slot, itemType)) {
+                        plugin.logDebug("[cs]Keeping item: " + itemType);
+                        continue;
+                    }
                 }
+                plugin.logDebug("[sk]Dropping item: " + itemType);
+                dropItem(itemStackArray[slot], itemDrops);
             }
         }
     }
 
-    public boolean levelAllow(Player p) {
-        return (p.hasPermission(PERM_LEVEL)
+    public boolean levelAllow(Player player) {
+        return (player.hasPermission(PERM_LEVEL)
                 || !plugin.config.permsEnabled()
-                || (p.isOp() && plugin.config.opsAllPerms())) && p.getLevel() > 0;
+                || (player.isOp() && plugin.config.opsAllPerms())) && player.getLevel() > 0;
     }
 
-    public boolean expAllow(Player p) {
-        return (p.hasPermission(PERM_EXP)
+    public boolean expAllow(Player player) {
+        return (player.hasPermission(PERM_EXP)
                 || !plugin.config.permsEnabled()
-                || (p.isOp() && plugin.config.opsAllPerms())) && p.getExhaustion() > 0;
+                || (player.isOp() && plugin.config.opsAllPerms())) && player.getExhaustion() > 0;
     }
 
-    public void printRestorations(CommandSender p) {
-        plugin.message(p, "Restorations:");
+    public void printRestorations(CommandSender sender) {
+        plugin.message(sender, "Restorations:");
         for (String key : restorations.keySet()) {
-            plugin.message(p, "  " + key);
+            plugin.message(sender, "  " + key);
         }
     }
 
-    public void addRestoration(Player p, Restoration r) {
-        UUID uuid = p.getUniqueId();
+    public void addRestoration(Player player, Restoration restoration) {
+        UUID uuid = player.getUniqueId();
         if (multipleInventories()) {
-            String keyName = uuid + "." + getWorldGroups(p);
-            restorations.put(keyName, r);
-            plugin.logDebug("Adding: " + p.getDisplayName() + ":" + keyName);
+            String keyName = uuid + "." + getWorldGroups(player);
+            restorations.put(keyName, restoration);
+            plugin.logDebug("Adding: " + player.getDisplayName() + ":" + keyName);
         } else {
-            restorations.put(uuid.toString(), r);
-            plugin.logDebug("Adding: " + p.getDisplayName() + ":" + uuid);
+            restorations.put(uuid.toString(), restoration);
+            plugin.logDebug("Adding: " + player.getDisplayName() + ":" + uuid);
         }
     }
 
-    public void enable(Player p) {
-        if (hasRestoration(p)) {
-            Restoration restoration = getRestoration(p);
+    public void enable(Player player) {
+        if (hasRestoration(player)) {
+            Restoration restoration = getRestoration(player);
             restoration.enabled = true;
-            plugin.logDebug("Enabling: " + p.getName());
+            plugin.logDebug("Enabling: " + player.getName());
         } else {
-            plugin.logDebug("Not enabling: " + p.getName());
+            plugin.logDebug("Not enabling: " + player.getName());
         }
     }
 
@@ -681,10 +683,10 @@ public final class RestorationManager implements Serializable {
         }
     }
 
-    public void removeRestoration(Player p) {
-        UUID uuid = p.getUniqueId();
+    public void removeRestoration(Player player) {
+        UUID uuid = player.getUniqueId();
         if (multipleInventories()) {
-            String keyName = uuid + "." + getWorldGroups(p);
+            String keyName = uuid + "." + getWorldGroups(player);
             if (restorations.containsKey(keyName)) {
                 restorations.remove(keyName);
                 plugin.logDebug("Removing: " + keyName);

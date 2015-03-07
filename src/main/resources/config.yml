@@ -12,6 +12,10 @@ Global:
   SingleItemDrops: false
   # Enable this for permission based keeps. Players that have scavenger.keep.[ITEM_NAME] or scavenger.keep.[ITEM_NUMBER] will keep the item.
   SingleItemKeeps: false
+  # Enabled slot based recovery. Players must have scavenger.armour.X, or scavenger.inv.X, where X is the slot number to recover.
+  SlotBasedRecovery: false
+  # Use OR method when checking for slots and single items. If true then an item is saved if it's in the correct slot or player has the permission for that item.
+  UseTheOrMethod: true
   # Enable this to see what's going on
   Debug: false
   # Are we using permissions?
@@ -35,8 +39,6 @@ Global:
   LanguageFile: english.yml  
   # Drop items when killed by another player.
   DropOnPVPDeath: false
-  # Enabled slot based recovery. Players must have scavenger.armour.X, or scavenger.inv.X, where X is the slot number to recover.
-  SlotBasedRecovery: false
   # Restore delay in ticks. 
   RestoreDelayTicks: 10
   # Warn players they enter a blacklisted world

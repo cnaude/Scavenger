@@ -50,6 +50,7 @@ public final class ScavengerConfig {
     private static final String BLACKLISTED_WORLDS = "BlacklistedWorlds";
     private static final String BLACKLISTED_WGREGIONS = "BlacklistedWGRegions";
     private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
+    private static final String GLOBAL_USE_OR_METHOD = "Global.UseTheOrMethod";
     private static final String GLOBAL_RESTOREDELAY = "Global.RestoreDelayTicks";    
     private static final String GLOBAL_BLACKLISTWARN = "Global.BlackListWarn";   
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
@@ -100,6 +101,7 @@ public final class ScavengerConfig {
     private ChatColor textColor;
     private boolean singleItemDrops;
     private boolean singleItemKeeps;
+    private boolean useTheOrMethod;
     private boolean permsEnabled;
     private String msgRecovered;
     private String msgSaving;
@@ -163,6 +165,7 @@ public final class ScavengerConfig {
         shouldNotify = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops = config.getBoolean(GLOBAL_SIDROPS, false);
         singleItemKeeps = config.getBoolean(GLOBAL_SIKEEPS, false);
+        useTheOrMethod = config.getBoolean(GLOBAL_USE_OR_METHOD, true);
         permsEnabled = config.getBoolean(GLOBAL_PERMS, true);
         wgPVPIgnore = config.getBoolean(GLOBAL_WGPVPIGNORE, false);
         wgGuardPVPOnly = config.getBoolean(GLOBAL_WGPVPONLY, false);
@@ -403,6 +406,10 @@ public final class ScavengerConfig {
     public boolean singleItemKeeps() {
         return singleItemKeeps;
     }
+    
+    public boolean useTheOrMethod() {
+        return useTheOrMethod;
+    }   
 
     public boolean permsEnabled() {
         return permsEnabled;
