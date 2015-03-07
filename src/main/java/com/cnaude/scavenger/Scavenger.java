@@ -381,47 +381,31 @@ public class Scavenger extends JavaPlugin {
         }
     }
 
-    public void message(Player p, String msg) {
-        if (p instanceof Player) {
-            msg = msg.replaceAll("%PLAYER%", p.getName());
-            msg = msg.replaceAll("%DPLAYER%", p.getDisplayName());
+    public void message(Player player, String message) {
+        if (player instanceof Player) {
+            message = message.replaceAll("%PLAYER%", player.getName());
+            message = message.replaceAll("%DPLAYER%", player.getDisplayName());
             if (config.shouldNotify()) {
-                p.sendMessage(headerStr() + msg);
+                player.sendMessage(headerStr() + message);
             } else {
-                logInfo(msg);
+                logInfo(message);
             }
         }
     }
 
-    public void message(CommandSender cs, String msg) {
+    public void message(CommandSender sender, String message) {
         if (config.shouldNotify()) {
-            cs.sendMessage(headerStr() + msg);
+            sender.sendMessage(headerStr() + message);
         } else {
-            logInfo(msg);
+            logInfo(message);
         }
     }
 
-    public void debugMessage(Player _player, String _message) {
-        if (config.debugEnabled()) {
-            if (_player != null) {
-                _player.sendMessage(headerStr() + _message);
-            } else {
-                logDebug(_message);
-            }
-        }
-    }
-
-    public void debugMessage(String _message) {
-        if (config.debugEnabled()) {
-            logDebug(_message);
-        }
-    }
-
-    public void error(Player _player, String _message) {
-        if (_player != null && config.shouldNotify()) {
-            _player.sendMessage(headerStr() + ChatColor.RED + "Error: " + _message);
+    public void error(Player player, String message) {
+        if (player != null && config.shouldNotify()) {
+            player.sendMessage(headerStr() + ChatColor.RED + "Error: " + message);
         } else {
-            logError(_message);
+            logError(message);
         }
     }
 }

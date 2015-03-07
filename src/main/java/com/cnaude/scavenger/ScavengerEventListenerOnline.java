@@ -24,16 +24,16 @@ public class ScavengerEventListenerOnline implements Listener {
     }
 
     public void delayedRestore(final Player player) {
-        plugin.debugMessage("Delayed restore for " + player.getName());
+        plugin.logDebug("Delayed restore for " + player.getName());
         plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
-                    plugin.debugMessage("Player " + player.getName() + " has a restore. Initiating restore.");
+                    plugin.logDebug("Player " + player.getName() + " has a restore. Initiating restore.");
                     rm.enable(player);
                     rm.restore(player);
                 } else {
-                    plugin.debugMessage("Player " + player.getName() + " has NO restore. Nothing to restore.");
+                    plugin.logDebug("Player " + player.getName() + " has NO restore. Nothing to restore.");
                 }
             }
         }, plugin.config.restoreDelayTicks());

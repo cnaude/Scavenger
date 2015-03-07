@@ -29,16 +29,17 @@ public final class RestorationManager implements Serializable {
     Scavenger plugin;
     private static final HashMap<String, Restoration> restorations = new HashMap<>();
 
-    final String PERM_DROP_PREFIX = "scavenger.drop.";
-    final String PERM_DROP_ALL = "scavenger.drop.*";
-    final String PERM_KEEP_PREFIX = "scavenger.keep.";
-    final String PERM_KEEP_ALL = "scavenger.keep.*";
-    final String PERM_SCAVENGE_PREFIX = "scavenger.scavenge.";
-    final String PERM_SCAVENGE = "scavenger.scavenge";
-    final String PERM_FREE = "scavenger.free";
-    final String PERM_NO_CHANCE = "scavenger.nochance";
-    final String PERM_LEVEL = "scavenger.level";
-    final String PERM_EXP = "scavenger.exp";
+    final String PERM_PREFIX = "scavenger.";
+    final String PERM_DROP_PREFIX     = PERM_PREFIX + "drop.";
+    final String PERM_DROP_ALL        = PERM_PREFIX + "drop.*";
+    final String PERM_KEEP_PREFIX     = PERM_PREFIX + "keep.";
+    final String PERM_KEEP_ALL        = PERM_PREFIX + "keep.*";
+    final String PERM_SCAVENGE_PREFIX = PERM_PREFIX + "scavenge.";
+    final String PERM_SCAVENGE        = PERM_PREFIX + "scavenge";
+    final String PERM_FREE            = PERM_PREFIX + "free";
+    final String PERM_NO_CHANCE       = PERM_PREFIX + "nochance";
+    final String PERM_LEVEL           = PERM_PREFIX + "level";
+    final String PERM_EXP             = PERM_PREFIX + "exp";
 
     public RestorationManager(Scavenger plugin) {
         this.plugin = plugin;
@@ -55,7 +56,7 @@ public final class RestorationManager implements Serializable {
             for (ItemStack i : value.inventory) {
                 boolean error = false;
                 if (i instanceof ItemStack) {
-                    plugin.debugMessage("Serializing: " + i.toString());
+                    plugin.logDebug("Serializing: " + i.toString());
                     try {
                         tmpRestoration.inventory.add(serializer.serializeItemStack(i));
                     } catch (IOException e) {
@@ -65,18 +66,18 @@ public final class RestorationManager implements Serializable {
                     if (error) {
                         plugin.logError("Problem serializing item: " + i.toString());
                     }
-                    plugin.debugMessage("Done: " + i.toString());
+                    plugin.logDebug("Done: " + i.toString());
                 }
             }
             for (ItemStack i : value.armour) {
                 if (i instanceof ItemStack) {
-                    plugin.debugMessage("Serializing: " + i.toString());
+                    plugin.logDebug("Serializing: " + i.toString());
                     try {
                         tmpRestoration.armour.add(serializer.serializeItemStack(i));
                     } catch (IOException e) {
                         plugin.logError(e.getMessage());
                     }
-                    plugin.debugMessage("Done: " + i.toString());
+                    plugin.logDebug("Done: " + i.toString());
                 }
             }
             tmpRestoration.enabled = value.enabled;
@@ -125,7 +126,7 @@ public final class RestorationManager implements Serializable {
                 if (value.inventory.get(i) instanceof String) {
                     boolean error = false;
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.debugMessage("Deserializing: " + value.inventory.get(i));
+                    plugin.logDebug("Deserializing: " + value.inventory.get(i));
                     try {
                         tmpStack = serializer.deserializeItemStack(value.inventory.get(i));
                     } catch (Exception e) {
@@ -140,14 +141,14 @@ public final class RestorationManager implements Serializable {
                     } else {
                         tmpRestoration.inventory[i] = tmpStack;
                     }
-                    plugin.debugMessage("Done: " + tmpRestoration.inventory[i].toString());
+                    plugin.logDebug("Done: " + tmpRestoration.inventory[i].toString());
                 }
             }
 
             for (int i = 0; i < value.armour.size(); i++) {
                 if (value.armour.get(i) instanceof String) {
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.debugMessage("Deserializing: " + value.armour.get(i));
+                    plugin.logDebug("Deserializing: " + value.armour.get(i));
                     try {
                         tmpStack = serializer.deserializeItemStack(value.armour.get(i));
                     } catch (IOException e) {
@@ -158,7 +159,7 @@ public final class RestorationManager implements Serializable {
                     } else {
                         tmpRestoration.armour[i] = tmpStack;
                     }
-                    plugin.debugMessage("Done: " + tmpRestoration.armour[i].toString());
+                    plugin.logDebug("Done: " + tmpRestoration.armour[i].toString());
                 }
             }
 
@@ -436,140 +437,151 @@ public final class RestorationManager implements Serializable {
             }
         }
         String deathCausePermission = PERM_SCAVENGE_PREFIX + deathCause;
-        plugin.logDebug("[" + player.getName() + "] scavenger.scavenge = " + player.hasPermission(PERM_SCAVENGE));
-        plugin.logDebug("[" + player.getName() + "] " + deathCausePermission + " = " + player.hasPermission(deathCausePermission));
+        plugin.logDebug("[p:" + player.getName() + "] [" + PERM_SCAVENGE + ":" + player.hasPermission(PERM_SCAVENGE) + "]"
+                + " [" + deathCausePermission + ":" + player.hasPermission(deathCausePermission) + "]");
         if (player.hasPermission(PERM_SCAVENGE) || player.hasPermission(deathCausePermission)) {
-            plugin.logDebug("Permission okay...");
+            plugin.logDebug("Permissions are okay. Time to scavenge...");
+            if (plugin.config.chanceToDrop() > 0 && !player.hasPermission(PERM_NO_CHANCE)) {
+                checkChanceToDropItems(restoration.armour, itemDrops);
+                checkChanceToDropItems(restoration.inventory, itemDrops);
+            }
             if (plugin.config.singleItemDrops()) {
-                checkSingleItemDrops(player, restoration, itemDrops);
+                checkSingleItemDrops(player, restoration.armour, itemDrops);
+                checkSingleItemDrops(player, restoration.inventory, itemDrops);
             }
             if (plugin.config.singleItemKeeps()) {
-                checkSingleItemKeeps(player, restoration, itemDrops);
-            }
-            if (plugin.config.chanceToDrop() > 0 && !player.hasPermission(PERM_NO_CHANCE)) {
-                checkChanceToDropItems(player, restoration, itemDrops);
+                checkSingleItemKeeps(player, restoration.armour, itemDrops);
+                checkSingleItemKeeps(player, restoration.inventory, itemDrops);
             }
             if (plugin.config.slotBasedRecovery()) {
                 checkSlots(player, "armour", restoration.armour, itemDrops);
                 checkSlots(player, "inv", restoration.inventory, itemDrops);
             }
         } else {
-            ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-            for (ItemStack[] a : invAndArmour) {
-                for (ItemStack i : a) {
-                    if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                        plugin.debugMessage(player, "Dropping item " + i.getType());
-                        itemDrops.add(i.clone());
-                        i.setAmount(0);
-                    }
-                }
-            }
+            plugin.logDebug("Permissions are NOT okay. Dropping items...");
+            dropItems(restoration.armour, itemDrops);
+            dropItems(restoration.inventory, itemDrops);
         }
         addRestoration(player, restoration);
     }
 
-    private void checkChanceToDropItems(Player player, Restoration restoration, List<ItemStack> itemDrops) {
-        ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-        for (ItemStack[] a : invAndArmour) {
-            for (ItemStack i : a) {
-                if (i instanceof ItemStack && !i.getType().equals(Material.AIR)) {
-                    Random randomGenerator = new Random();
-                    int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
-                    plugin.debugMessage(player, "Random number is " + randomInt);
-                    if (randomInt == plugin.config.chanceToDrop()) {
-                        plugin.debugMessage(player, "Randomly dropping item " + i.getType());
-                        itemDrops.add(i.clone());
-                        i.setAmount(0);
-                    } else {
-                        plugin.debugMessage(player, "Randomly keeping item " + i.getType());
-                    }
+    private void dropItem(ItemStack itemStack, List<ItemStack> itemDrops) {
+        if (itemStack == null) {
+            plugin.logDebug("Ignoring null item");
+            return;
+        }
+        plugin.logDebug("Dropping item " + itemStack.getType());
+        itemDrops.add(itemStack.clone());
+        itemStack.setAmount(0);
+    }
+
+    private void dropItems(ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
+        for (ItemStack itemStack : itemStackArray) {
+            if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+                dropItem(itemStack, itemDrops);
+            }
+        }
+    }
+
+    private void checkChanceToDropItems(ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
+        for (ItemStack itemStack : itemStackArray) {
+            if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+                Random randomGenerator = new Random();
+                int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
+                plugin.logDebug("Random number is " + randomInt);
+                if (randomInt == plugin.config.chanceToDrop()) {
+                    plugin.logDebug("Randomly dropping item " + itemStack.getType());
+                    dropItem(itemStack, itemDrops);
+                } else {
+                    plugin.logDebug("Randomly keeping item " + itemStack.getType());
                 }
             }
         }
     }
 
-    private void checkSlots(Player player, String type, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
+    private boolean checkSlot(Player player, String type, int slot, String itemType) {
+        final String PERM = PERM_PREFIX + type + "." + slot;
+        plugin.logDebug("[p:" + player.getName() + "] " + "[" + PERM + ":" + player.hasPermission(PERM) + "] " + "[item:" + itemType + "]");
+        return (player.hasPermission(PERM));
+    }
+
+    private void checkSlots(Player player, String invType, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         for (int slot = 0; slot < itemStackArray.length; slot++) {
             String itemType;
             if (itemStackArray[slot] != null) {
-                itemType = itemStackArray[slot].getType().toString();
+                itemType = itemStackArray[slot].getType().name();
             } else {
                 itemType = "NULL";
             }
-            String permNode = "scavenger." + type + "." + slot;
-            plugin.debugMessage("[p:" + player.getName() + "] " + "[" + permNode + ":" + player.hasPermission(permNode) + "] " + "[item:" + itemType + "]"); 
-            if (!player.hasPermission(permNode) && !itemType.equals("NULL")) {
-                if (!itemType.equals("NULL") && !itemType.equals("AIR")) {
-                    plugin.debugMessage(player, "[cs]Dropping slot " + slot + ": " + itemType);
-                }
-                itemDrops.add(itemStackArray[slot].clone());
-                itemStackArray[slot].setAmount(0);
-            } else if (!itemType.equals("NULL") && !itemType.equals("AIR")) {
-                plugin.debugMessage(player, "[cs]Keeping slot " + slot + ": " + itemType);
+            if (!checkSlot(player, invType, slot, itemType)) {
+                plugin.logDebug("[cs]Dropping slot " + slot + ": " + itemType);
+                dropItem(itemStackArray[slot], itemDrops);
+            } else {
+                plugin.logDebug("[cs]Keeping slot " + slot + ": " + itemType);
             }
         }
     }
 
-    private void checkSingleItemDrops(Player player, Restoration restoration, List<ItemStack> itemDrops) {
+    private boolean checkPerms(Player player, List<String> perms) {
+        String debugMessage = "[p:" + player.getName() + "]";
+        boolean bool = false;
+        for (String perm : perms) {
+            debugMessage += " [" + perm + ":" + player.hasPermission(perm) + "]";
+            if (player.hasPermission(perm)) {
+                bool = true;
+            }
+        }
+        plugin.logDebug(debugMessage);
+        return bool;
+    }
+
+    private boolean checkSingleItemDrop(Player player, ItemStack itemStack) {
+        String itemType = itemStack.getType().name();
+        int itemTypeId = itemStack.getTypeId();
+        List<String> perms = new ArrayList<>();
+        perms.add(PERM_DROP_PREFIX + itemTypeId);
+        perms.add(PERM_DROP_PREFIX + itemType.toLowerCase());
+        perms.add(PERM_DROP_PREFIX + itemType);
+        perms.add(PERM_DROP_ALL);
+        return checkPerms(player, perms);
+    }
+
+    private void checkSingleItemDrops(Player player, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         plugin.logDebug("singleItemDrops()");
-        ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-        for (ItemStack[] items : invAndArmour) {
-            for (ItemStack itemStack : items) {
-                if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
-                    String itemType = itemStack.getType().name();
-                    int itemTypeId = itemStack.getTypeId();
-                    plugin.logDebug(
-                            "[p:" + player.getName() + "] "
-                            + "[" + PERM_DROP_PREFIX + itemTypeId + ":"
-                            + player.hasPermission(PERM_DROP_PREFIX + itemTypeId) + "] "
-                            + "[" + PERM_DROP_PREFIX + itemType.toLowerCase() + ":"
-                            + player.hasPermission(PERM_DROP_PREFIX + itemType.toLowerCase()) + "] "
-                            + "[" + PERM_DROP_PREFIX + itemType + ":"
-                            + player.hasPermission(PERM_DROP_PREFIX + itemType) + "] "
-                            + "[" + PERM_DROP_ALL + ":" + player.hasPermission(PERM_DROP_ALL) + "]");
-                    if (player.hasPermission(PERM_DROP_PREFIX + itemTypeId)
-                            || player.hasPermission(PERM_DROP_PREFIX + itemType.toLowerCase())
-                            || player.hasPermission(PERM_DROP_PREFIX + itemType)
-                            || player.hasPermission(PERM_DROP_ALL)) {
-                        plugin.debugMessage(player, "[sd]Dropping item: " + itemType);
-                        itemDrops.add(itemStack.clone());
-                        itemStack.setAmount(0);
-                    } else {
-                        plugin.debugMessage(player, "[sd]Keeping item: " + itemType);
-                    }
+        for (int slot = 0; slot < itemStackArray.length; slot++) {
+            if (itemStackArray[slot] instanceof ItemStack && !itemStackArray[slot].getType().equals(Material.AIR)) {
+                String itemType = itemStackArray[slot].getType().name();
+                if (checkSingleItemDrop(player, itemStackArray[slot])) {
+                    plugin.logDebug("[sd]Dropping item: " + itemType);
+                    dropItem(itemStackArray[slot], itemDrops);
+                } else {
+                    plugin.logDebug("[sd]Keeping item: " + itemType);
                 }
             }
         }
     }
 
-    private void checkSingleItemKeeps(Player player, Restoration restoration, List<ItemStack> itemDrops) {
+    private boolean checkSingleItemKeep(Player player, ItemStack itemStack) {
+        String itemType = itemStack.getType().toString();
+        int itemTypeId = itemStack.getTypeId();
+        List<String> perms = new ArrayList<>();
+        perms.add(PERM_KEEP_PREFIX + itemTypeId);
+        perms.add(PERM_KEEP_PREFIX + itemType.toLowerCase());
+        perms.add(PERM_KEEP_PREFIX + itemType);
+        perms.add(PERM_DROP_ALL);
+        return checkPerms(player, perms);
+    }
+
+    private void checkSingleItemKeeps(Player player, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         plugin.logDebug("singleItemKeeps()");
-        ItemStack[][] invAndArmour = {restoration.inventory, restoration.armour};
-        for (ItemStack[] items : invAndArmour) {
-            for (ItemStack itemStack : items) {
-                if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
-                    String itemType = itemStack.getType().toString();
-                    int itemTypeId = itemStack.getTypeId();
-                    plugin.logDebug(
-                            "[p:" + player.getName() + "] "
-                            + "[" + PERM_KEEP_PREFIX + itemTypeId + ":"
-                            + player.hasPermission(PERM_KEEP_PREFIX + itemTypeId) + "] "
-                            + "[" + PERM_KEEP_PREFIX + itemType.toLowerCase() + ":"
-                            + player.hasPermission(PERM_KEEP_PREFIX + itemType.toLowerCase()) + "] "
-                            + "[" + PERM_KEEP_PREFIX + itemType + ":"
-                            + player.hasPermission(PERM_KEEP_PREFIX + itemType) + "] "
-                            + "[" + PERM_KEEP_ALL + ":"
-                            + player.hasPermission(PERM_KEEP_ALL) + "]");
-                    if (player.hasPermission(PERM_KEEP_PREFIX + itemTypeId)
-                            || player.hasPermission(PERM_KEEP_PREFIX + itemType.toLowerCase())
-                            || player.hasPermission(PERM_KEEP_PREFIX + itemType)
-                            || player.hasPermission(PERM_KEEP_ALL)) {
-                        plugin.debugMessage(player, "[sk]Keeping item: " + itemType);
-                    } else {
-                        plugin.debugMessage(player, "[sk]Dropping item: " + itemType);
-                        itemDrops.add(itemStack.clone());
-                        itemStack.setAmount(0);
-                    }
+        for (int slot = 0; slot < itemStackArray.length; slot++) {
+            if (itemStackArray[slot] instanceof ItemStack && !itemStackArray[slot].getType().equals(Material.AIR)) {
+                String itemType = itemStackArray[slot].getType().name();
+                if (checkSingleItemKeep(player, itemStackArray[slot])) {
+                    plugin.logDebug("[sk]Keeping item: " + itemType);
+                } else {
+                    plugin.logDebug("[sk]Dropping item: " + itemType);
+                    dropItem(itemStackArray[slot], itemDrops);
                 }
             }
         }
@@ -599,10 +611,10 @@ public final class RestorationManager implements Serializable {
         if (multipleInventories()) {
             String keyName = uuid + "." + getWorldGroups(p);
             restorations.put(keyName, r);
-            plugin.debugMessage("Adding: " + p.getDisplayName() + ":" + keyName);
+            plugin.logDebug("Adding: " + p.getDisplayName() + ":" + keyName);
         } else {
             restorations.put(uuid.toString(), r);
-            plugin.debugMessage("Adding: " + p.getDisplayName() + ":" + uuid);
+            plugin.logDebug("Adding: " + p.getDisplayName() + ":" + uuid);
         }
     }
 
@@ -610,7 +622,7 @@ public final class RestorationManager implements Serializable {
         if (hasRestoration(p)) {
             Restoration restoration = getRestoration(p);
             restoration.enabled = true;
-            plugin.debugMessage("Enabling: " + p.getName());
+            plugin.logDebug("Enabling: " + p.getName());
         } else {
             plugin.logDebug("Not enabling: " + p.getName());
         }
@@ -618,7 +630,7 @@ public final class RestorationManager implements Serializable {
 
     public void restore(Player player) {
         if (!player.isOnline()) {
-            plugin.debugMessage("Player " + player.getName() + " is offline. Skipping restore...");
+            plugin.logDebug("Player " + player.getName() + " is offline. Skipping restore...");
             return;
         }
 
