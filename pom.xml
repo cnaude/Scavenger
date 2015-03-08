@@ -215,6 +215,13 @@
             <version>3.2.7</version>
         </dependency>
         
+        <!-- xInventories -->
+        <dependency>
+            <artifactId>xInventories</artifactId>
+            <groupId>com.cnaude.xinventories</groupId>
+            <version>1.1</version>
+        </dependency>
+        
         <!-- WorldInventories -->
         <dependency>
             <artifactId>WorldInventories</artifactId>

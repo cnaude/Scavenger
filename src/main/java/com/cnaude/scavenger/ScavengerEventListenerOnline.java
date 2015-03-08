@@ -12,6 +12,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 
 public class ScavengerEventListenerOnline implements Listener {
 
@@ -64,6 +65,24 @@ public class ScavengerEventListenerOnline implements Listener {
             return;
         }
         delayedRestore(event.getPlayer());
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        Player player = event.getPlayer();
+        World world = player.getWorld();
+        World fromWorld = event.getFrom();
+        plugin.logInfo("Player " + player.getName() + " changed from " + fromWorld.getName() + " to " + world.getName());
+        if (plugin.config.blackListWarn()) {
+            if (plugin.config.blacklistedWorlds().contains(world.getName().toLowerCase())) {
+                plugin.logInfo("Blacklisted world: " + world.getName());
+                player.sendMessage(plugin.config.MsgBlacklistedWorld());
+                return;
+            } else {
+                plugin.logInfo("Non-blacklisted world: " + world.getName());
+            }
+        }
+        delayedRestore(player);
     }
 
     private boolean isScavengeAllowed(Player player) {

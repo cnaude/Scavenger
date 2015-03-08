@@ -18,6 +18,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.x128.xInventories.Main;
 import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
@@ -111,7 +112,6 @@ public class Scavenger extends JavaPlugin {
                 getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                 logInfo("Offline-mode is set to false, no Authenticator Hook");
             }
-            getServer().getPluginManager().registerEvents(new ScavengerEvents(this, rm), this);
 
             getCommand("scvrdisable").setExecutor(new ScavengerDisable(this));
             getCommand("scvrenable").setExecutor(new ScavengerEnable(this));
@@ -188,6 +188,15 @@ public class Scavenger extends JavaPlugin {
         } catch (NoClassDefFoundError ex) {
         }
         return multiInvAPI;
+    }
+
+    public Main getXInventories() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("xInventories");
+        Main xInventories = null;
+            if (plugin instanceof Main) {
+                xInventories = ((Main) plugin);
+            }
+        return xInventories;
     }
 
     public boolean getWorldInvAPI() {

@@ -14,6 +14,7 @@ import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
 import me.cnaude.plugin.Scavenger.RestorationS1;
 import me.drayshak.WorldInventories.api.WorldInventoriesAPI;
+import me.x128.xInventories.Main;
 import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
@@ -175,7 +176,8 @@ public final class RestorationManager implements Serializable {
     public boolean multipleInventories() {
         return plugin.getMultiInvAPI() != null
                 || plugin.myWorldsHook != null
-                || plugin.getWorldInvAPI();
+                || plugin.getWorldInvAPI()
+                || plugin.getXInventories() != null;
     }
 
     public boolean hasRestoration(Player player) {
@@ -698,6 +700,16 @@ public final class RestorationManager implements Serializable {
     public String getWorldGroups(Player player) {
         World world = player.getWorld();
         List<String> returnData = new ArrayList<>();
+        
+        if (plugin.getXInventories() != null) {
+            Main xInventories = plugin.getXInventories();
+            String xGroup = xInventories.getConfig().getString("worlds." + world.getName());
+            plugin.logDebug("xGroup: " + xGroup);
+            if (xGroup != null) {
+                returnData.add(xGroup);
+            }
+        }
+        
         if (plugin.getMultiInvAPI() != null) {
             String worldname = world.getName();
             MultiInvAPI multiInvAPI = plugin.getMultiInvAPI();

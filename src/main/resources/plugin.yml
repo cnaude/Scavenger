@@ -23,6 +23,7 @@ softdepend:
   - WorldInventories
   - Minigames
   - MyWorlds
+  - xInventories
 commands:
   scavengerreload:
     description: Reload config
@@ -78,7 +79,7 @@ permissions:
     default: false
   scavenger.list:
     description: Allows players to list all pending recoveries.
-    default: false
+    default: op
   scavenger.dropinv:
     description: Inventory recovery
     default: false

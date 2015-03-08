@@ -2,11 +2,13 @@ package com.cnaude.scavenger;
 
 import fr.areku.Authenticator.Authenticator;
 import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -78,6 +80,24 @@ public class ScavengerEventListenerOffline implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         delayedRestore(event.getPlayer());
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        Player player = event.getPlayer();
+        World world = player.getWorld();
+        World fromWorld = event.getFrom();
+        plugin.logInfo("Player " + player.getName() + " changed from " + fromWorld.getName() + " to " + world.getName());
+        if (plugin.config.blackListWarn()) {
+            if (plugin.config.blacklistedWorlds().contains(world.getName().toLowerCase())) {
+                plugin.logInfo("Blacklisted world: " + world.getName());
+                player.sendMessage(plugin.config.MsgBlacklistedWorld());
+                return;
+            } else {
+                plugin.logInfo("Non-blacklisted world: " + world.getName());
+            }
+        }
+        delayedRestore(player);
     }
 
     private boolean isScavengeAllowed(Player player) {
