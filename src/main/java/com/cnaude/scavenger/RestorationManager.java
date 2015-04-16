@@ -59,7 +59,7 @@ public final class RestorationManager implements Serializable {
                 if (i instanceof ItemStack) {
                     plugin.logDebug("Serializing: " + i.toString());
                     try {
-                        tmpRestoration.inventory.add(serializer.serializeItemStack(i));
+                        tmpRestoration.inventory.add(serializer.serializeItemStack(i.clone()));
                     } catch (IOException e) {
                         plugin.logError(e.getMessage());
                         error = true;
@@ -74,7 +74,7 @@ public final class RestorationManager implements Serializable {
                 if (i instanceof ItemStack) {
                     plugin.logDebug("Serializing: " + i.toString());
                     try {
-                        tmpRestoration.armour.add(serializer.serializeItemStack(i));
+                        tmpRestoration.armour.add(serializer.serializeItemStack(i.clone()));
                     } catch (IOException e) {
                         plugin.logError(e.getMessage());
                     }
@@ -546,12 +546,12 @@ public final class RestorationManager implements Serializable {
 
     private void checkSingleItemDrops(Player player, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         plugin.logDebug("checkSingleItemDrops()");
-        for (int slot = 0; slot < itemStackArray.length; slot++) {
-            if (itemStackArray[slot] instanceof ItemStack && !itemStackArray[slot].getType().equals(Material.AIR)) {
-                String itemType = itemStackArray[slot].getType().name();
-                if (checkSingleItemDrop(player, itemStackArray[slot])) {
+        for (ItemStack itemStack : itemStackArray) {
+            if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+                String itemType = itemStack.getType().name();
+                if (checkSingleItemDrop(player, itemStack)) {
                     plugin.logDebug("[sd]Dropping item: " + itemType);
-                    dropItem(itemStackArray[slot], itemDrops);
+                    dropItem(itemStack, itemDrops);
                 } else {
                     plugin.logDebug("[sd]Keeping item: " + itemType);
                 }
