@@ -202,11 +202,6 @@
         -->
         
         <!-- ProtocolLib -->
-        <dependency>
-            <groupId>com.cnaude.protocollib</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.0.1</version>
-        </dependency>
         
         <!-- MultiInv -->
         <dependency>

@@ -61,65 +61,55 @@ public class Scavenger extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!checkForProtocolLib()) {
-            if (getServer().getVersion().contains("MC: 1.8")) {
-                logError("This plugin requires ProtocolLib. Please download the latest: http://ci.shadowvolt.com/job/ProtocolLib/");
-            } else {
-                logError("This plugin requires ProtocolLib. Please download the latest: http://dev.bukkit.org/server-mods/protocollib/");
-            }
-            Bukkit.getServer().getPluginManager().disablePlugin(this);
-        } else {
+        loadConfig();
 
-            loadConfig();
+        for (String s : config.blacklistedWorlds()) {
+            logDebug("BlackListedWorld: " + s);
+        }
 
-            for (String s : config.blacklistedWorlds()) {
-                logDebug("BlackListedWorld: " + s);
-            }
+        setupMobArenaHandler();
+        setupPVPArenaHandler();
+        checkForUltimateArena();
+        checkForBattleArena();
+        checkForWorldGuard();
+        checkForFactions();
+        checkForDungeonMaze();
+        checkForMyWorlds();
+        setupResidence();
+        setupMinigames();
 
-            setupMobArenaHandler();
-            setupPVPArenaHandler();
-            checkForUltimateArena();
-            checkForBattleArena();
-            checkForWorldGuard();
-            checkForFactions();
-            checkForDungeonMaze();
-            checkForMyWorlds();
-            setupResidence();
-            setupMinigames();
+        rm = new RestorationManager(this);
+        eventListener = new ScavengerEventListenerOffline(this, rm);
+        eventListenerOnline = new ScavengerEventListenerOnline(this, rm);
+        ignoreList = new ScavengerIgnoreList(this);
 
-            rm = new RestorationManager(this);
-            eventListener = new ScavengerEventListenerOffline(this, rm);
-            eventListenerOnline = new ScavengerEventListenerOnline(this, rm);
-            ignoreList = new ScavengerIgnoreList(this);
-
-            if (config.offlineMode()) {
-                Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
-                {
-                    if (p != null) { //if Authenticator is present..
-                        if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
-                            getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
-                            logInfo("Hook to Authenticator's API and your auth plugin.");
-                        } else {
-                            logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
-                            getServer().getPluginManager().registerEvents(eventListenerOnline, this);
-                        }
+        if (config.offlineMode()) {
+            Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
+            {
+                if (p != null) { //if Authenticator is present..
+                    if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
+                        getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
+                        logInfo("Hook to Authenticator's API and your auth plugin.");
                     } else {
-                        logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
+                        logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
                         getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                     }
+                } else {
+                    logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
+                    getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                 }
-            } else {
-                getServer().getPluginManager().registerEvents(eventListenerOnline, this);
-                logInfo("Offline-mode is set to false, no Authenticator Hook");
             }
-
-            getCommand("scvrdisable").setExecutor(new ScavengerDisable(this));
-            getCommand("scvrenable").setExecutor(new ScavengerEnable(this));
-            getCommand("scvrlist").setExecutor(new ScavengerList(this));
-            getCommand("scvroff").setExecutor(new ScavengerOff(this));
-            getCommand("scvron").setExecutor(new ScavengerOn(this));
-            getCommand("scavengerreload").setExecutor(new ScavengerReload(this));
+        } else {
+            getServer().getPluginManager().registerEvents(eventListenerOnline, this);
+            logInfo("Offline-mode is set to false, no Authenticator Hook");
         }
+
+        getCommand("scvrdisable").setExecutor(new ScavengerDisable(this));
+        getCommand("scvrenable").setExecutor(new ScavengerEnable(this));
+        getCommand("scvrlist").setExecutor(new ScavengerList(this));
+        getCommand("scvroff").setExecutor(new ScavengerOff(this));
+        getCommand("scvron").setExecutor(new ScavengerOn(this));
+        getCommand("scavengerreload").setExecutor(new ScavengerReload(this));
     }
 
     private void checkForWorldGuard() {
@@ -193,9 +183,9 @@ public class Scavenger extends JavaPlugin {
     public Main getXInventories() {
         Plugin plugin = getServer().getPluginManager().getPlugin("xInventories");
         Main xInventories = null;
-            if (plugin instanceof Main) {
-                xInventories = ((Main) plugin);
-            }
+        if (plugin instanceof Main) {
+            xInventories = ((Main) plugin);
+        }
         return xInventories;
     }
 
