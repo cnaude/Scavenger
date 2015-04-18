@@ -1,5 +1,5 @@
 /*
- * https://github.com/mineGeek/ZoneReset/blob/master/src/com/github/mineGeek/ZoneReset/Data/ScavengerItem.java
+ * Borrowed from https://github.com/mineGeek/ZoneReset
  */
 package com.cnaude.scavenger;
 
