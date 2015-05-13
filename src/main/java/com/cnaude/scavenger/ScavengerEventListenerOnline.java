@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -18,23 +19,34 @@ public class ScavengerEventListenerOnline implements Listener {
 
     Scavenger plugin;
     RestorationManager rm;
+    CopyOnWriteArrayList list;
 
     public ScavengerEventListenerOnline(Scavenger plugin, RestorationManager restorationManager) {
         this.plugin = plugin;
         this.rm = restorationManager;
+        this.list = new CopyOnWriteArrayList<>();
     }
 
     public void delayedRestore(final Player player) {
-        plugin.logDebug("Delayed restore for " + player.getName());
+        final String playerName = player.getName();
+        if (list.contains(playerName)) {
+            plugin.logDebug("Delayed restore for " + playerName + " called before previous completed. Aborting.");
+            return;
+        }
+        plugin.logDebug("Delayed restore for " + playerName);
+        list.add(playerName);
         plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
-                    plugin.logDebug("Player " + player.getName() + " has a restore. Initiating restore.");
+                    plugin.logDebug("Player " + playerName + " has a restore. Initiating restore.");
                     rm.enable(player);
                     rm.restore(player);
                 } else {
-                    plugin.logDebug("Player " + player.getName() + " has NO restore. Nothing to restore.");
+                    plugin.logDebug("Player " + playerName + " has NO restore. Nothing to restore.");
+                }
+                if (list.contains(playerName)) {
+                    list.remove(playerName);
                 }
             }
         }, plugin.config.restoreDelayTicks());
@@ -66,7 +78,7 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         delayedRestore(event.getPlayer());
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
@@ -105,7 +117,7 @@ public class ScavengerEventListenerOnline implements Listener {
             return false;
         }
         if (plugin.getWorldGuard() != null) {
-            try {                
+            try {
                 ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
                 for (ProtectedRegion region : set) {
                     plugin.logDebug("Region ID: " + region.getId());
@@ -159,7 +171,5 @@ public class ScavengerEventListenerOnline implements Listener {
         plugin.logDebug("Returning false.");
         return false;
     }
-
-    
 
 }
