@@ -108,21 +108,22 @@ public class ScavengerEventListenerOnline implements Listener {
                 dcString = player.getLastDamageCause().getCause().toString();
             }
         }
-        plugin.logDebug("Player: " + player + "World: "
-                + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
-
         World world = player.getWorld();
+        String worldName = world.getName().toLowerCase();
+        plugin.logDebug("[isScavengeAllowed]: Player: " + player + "World: " + worldName + " DamageCause: " + dcString);
+        
         Location location = player.getLocation();
-        if (plugin.config.blacklistedWorlds().contains(player.getWorld().getName().toLowerCase())) {
+        if (plugin.config.blacklistedWorlds().contains(worldName)) {
+            plugin.logDebug("[isScavengeAllowed]: Blacklisted world: " + worldName);
             return false;
         }
         if (plugin.getWorldGuard() != null) {
             try {
                 ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
                 for (ProtectedRegion region : set) {
-                    plugin.logDebug("Region ID: " + region.getId());
+                    plugin.logDebug("[isScavengeAllowed]: Region ID: " + region.getId());
                     if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
-                        plugin.logDebug("Region ID " + region.getId() + " is blacklisted. Dropping items.");
+                        plugin.logDebug("[isScavengeAllowed]: Region ID " + region.getId() + " is blacklisted. Dropping items.");
                         return false;
                     }
                 }
@@ -134,42 +135,40 @@ public class ScavengerEventListenerOnline implements Listener {
             return false;
         }
         if (!plugin.config.permsEnabled()) {
-            plugin.logDebug("Permissions are disabled. Enabling restore for " + player.getName());
+            plugin.logDebug("[isScavengeAllowed]: Permissions are disabled. Enabling restore for " + player.getName());
             return true;
         }
-        if (player.hasPermission("scavenger.scavenge")) {
-            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.scavenge");
+        
+        if (hasPermission(player, "scavenger.scavenge")) {
             return true;
         }
-        if (player.hasPermission("scavenger.exp")) {
-            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.exp");
+        if (hasPermission(player, "scavenger.exp")) {
             return true;
         }
-        if (player.hasPermission("scavenger.level")) {
-            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.level");
+        if (hasPermission(player, "scavenger.level")) {
             return true;
         }
-        String dcPerm = "scavenger.scavenge." + dcString;
-        if (player.hasPermission(dcPerm)) {
-            plugin.logDebug("Player " + player.getName() + " has " + dcPerm);
+        if (player.hasPermission("scavenger.scavenge." + dcString)) {
             return true;
-        } else {
-            plugin.logDebug("Player " + player.getName() + " does NOT have " + dcPerm);
-        }
-        if (player.hasPermission("scavenger.inv")) {
-            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.inv");
+        } 
+        if (hasPermission(player, "scavenger.inv")) {
             return true;
         }
-        if (player.hasPermission("scavenger.armour")) {
-            plugin.logDebug("Player " + player.getName() + " has " + "scavenger.armour");
+        if (hasPermission(player, "scavenger.armour")) {            
             return true;
         }
         if (player.isOp() && plugin.config.opsAllPerms()) {
-            plugin.logDebug("Player " + player.getName() + " is op and ops have all permissions.");
+            plugin.logDebug("[isScavengeAllowed]: Player " + player.getName() + " is op and ops have all permissions.");
             return true;
         }
-        plugin.logDebug("Returning false.");
+        plugin.logDebug("[isScavengeAllowed]: No scavenge will occur.");
         return false;
+    }
+    
+    private boolean hasPermission(Player player, String perm) {
+        boolean b = player.hasPermission(perm);
+        plugin.logDebug("[isScavengeAllowed]: " + player.getName() + " : " + perm + " : " + b);
+        return b;
     }
 
 }
