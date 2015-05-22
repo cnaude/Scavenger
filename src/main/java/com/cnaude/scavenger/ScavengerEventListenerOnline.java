@@ -110,8 +110,8 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         World world = player.getWorld();
         String worldName = world.getName().toLowerCase();
-        plugin.logDebug("[isScavengeAllowed]: Player: " + player + "World: " + worldName + " DamageCause: " + dcString);
-        
+        plugin.logDebug("[isScavengeAllowed]: Player: " + player + " World: " + worldName + " DamageCause: " + dcString);
+
         Location location = player.getLocation();
         if (plugin.config.blacklistedWorlds().contains(worldName)) {
             plugin.logDebug("[isScavengeAllowed]: Blacklisted world: " + worldName);
@@ -138,7 +138,7 @@ public class ScavengerEventListenerOnline implements Listener {
             plugin.logDebug("[isScavengeAllowed]: Permissions are disabled. Enabling restore for " + player.getName());
             return true;
         }
-        
+
         if (hasPermission(player, "scavenger.scavenge")) {
             return true;
         }
@@ -150,11 +150,11 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         if (player.hasPermission("scavenger.scavenge." + dcString)) {
             return true;
-        } 
+        }
         if (hasPermission(player, "scavenger.inv")) {
             return true;
         }
-        if (hasPermission(player, "scavenger.armour")) {            
+        if (hasPermission(player, "scavenger.armour")) {
             return true;
         }
         if (player.isOp() && plugin.config.opsAllPerms()) {
@@ -164,7 +164,7 @@ public class ScavengerEventListenerOnline implements Listener {
         plugin.logDebug("[isScavengeAllowed]: No scavenge will occur.");
         return false;
     }
-    
+
     private boolean hasPermission(Player player, String perm) {
         boolean b = player.hasPermission(perm);
         plugin.logDebug("[isScavengeAllowed]: " + player.getName() + " : " + perm + " : " + b);
