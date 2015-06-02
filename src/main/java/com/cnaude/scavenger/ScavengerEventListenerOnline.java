@@ -64,7 +64,7 @@ public class ScavengerEventListenerOnline implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        plugin.logInfo("Player respawn " + player.getName());
+        plugin.logDebug("Player respawn " + player.getName());
         delayedRestore(player);
     }
 
@@ -84,14 +84,14 @@ public class ScavengerEventListenerOnline implements Listener {
         Player player = event.getPlayer();
         World world = player.getWorld();
         World fromWorld = event.getFrom();
-        plugin.logInfo("Player " + player.getName() + " changed from " + fromWorld.getName() + " to " + world.getName());
+        plugin.logDebug("Player " + player.getName() + " changed from " + fromWorld.getName() + " to " + world.getName());
         if (plugin.config.blackListWarn()) {
             if (plugin.config.blacklistedWorlds().contains(world.getName().toLowerCase())) {
-                plugin.logInfo("Blacklisted world: " + world.getName());
+                plugin.logDebug("Blacklisted world: " + world.getName());
                 player.sendMessage(plugin.config.MsgBlacklistedWorld());
                 return;
             } else {
-                plugin.logInfo("Non-blacklisted world: " + world.getName());
+                plugin.logDebug("Non-blacklisted world: " + world.getName());
             }
         }
         delayedRestore(player);
