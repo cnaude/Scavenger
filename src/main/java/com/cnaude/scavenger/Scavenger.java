@@ -7,6 +7,8 @@ import com.cnaude.scavenger.Commands.ScavengerList;
 import com.cnaude.scavenger.Commands.ScavengerOff;
 import com.cnaude.scavenger.Commands.ScavengerOn;
 import com.cnaude.scavenger.Commands.ScavengerReload;
+import com.cnaude.scavenger.Commands.ScavengerRestoreInv;
+import com.cnaude.scavenger.Commands.ScavengerSaveInv;
 import com.cnaude.scavenger.Hooks.ScavengerDungeonMaze;
 import com.cnaude.scavenger.Hooks.ScavengerFactions;
 import com.cnaude.scavenger.Hooks.ScavengerMinigames;
@@ -110,6 +112,8 @@ public class Scavenger extends JavaPlugin {
         getCommand("scvroff").setExecutor(new ScavengerOff(this));
         getCommand("scvron").setExecutor(new ScavengerOn(this));
         getCommand("scavengerreload").setExecutor(new ScavengerReload(this));
+        getCommand("saveinv").setExecutor(new ScavengerSaveInv(this));
+        getCommand("restoreinv").setExecutor(new ScavengerRestoreInv(this));
     }
 
     private void checkForWorldGuard() {

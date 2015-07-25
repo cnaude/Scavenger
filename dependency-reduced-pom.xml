@@ -37,7 +37,6 @@
               <minimizeJar>true</minimizeJar>
               <artifactSet>
                 <includes>
-                  <include>snakeyaml</include>
                   <include>org.yaml</include>
                 </includes>
               </artifactSet>

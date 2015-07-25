@@ -49,6 +49,12 @@ commands:
     description: Enable Scavenger plugin.
     usage: /scvrenable
     aliases: scavengerenable    
+  saveinv:
+    description: Manually save inventory.
+    alias: /saveinv
+  restoreinv:
+    description: Manually restore inventory.
+    alias: /restoreinv
 permissions:
   scavenger.scavenge:
     description: Allows players to automatically recover items on death.
@@ -88,4 +94,10 @@ permissions:
     default: false
   scavenger.nochance:
     description: Override chance to drop
+    default: false
+  scavenger.saveinv:
+    description: Allows players to use /saveinv command
+    default: false
+  scavenger.restoreinv:
+    description: Allows players to use /restoreinv command
     default: false

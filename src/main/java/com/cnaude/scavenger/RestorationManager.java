@@ -39,6 +39,8 @@ public final class RestorationManager implements Serializable {
     final String PERM_NO_CHANCE = PERM_PREFIX + "nochance";
     final String PERM_LEVEL = PERM_PREFIX + "level";
     final String PERM_EXP = PERM_PREFIX + "exp";
+    final String PERM_SAVE_INV = PERM_PREFIX + "saveinv";
+    final String PERM_RESTORE_INV = PERM_PREFIX + "restoreinv";
 
     public RestorationManager(Scavenger plugin) {
         this.plugin = plugin;
@@ -190,6 +192,27 @@ public final class RestorationManager implements Serializable {
             }
         }
         return restoration;
+    }
+
+    public void cmdCollect(Player player) {
+        if (player.hasPermission(PERM_SAVE_INV)) {
+            if (plugin.config.shouldNotify()) {
+                plugin.message(player, plugin.config.msgSaving());
+            }
+            Restoration restoration = new Restoration();
+            restoration.enabled = false;
+            restoration.inventory = player.getInventory().getContents();
+            restoration.armour = player.getInventory().getArmorContents();
+            restoration.playerName = player.getDisplayName();
+            restoration.level = player.getLevel();
+            restoration.exp = player.getExp();
+            player.setLevel(0);
+            player.setExp(0f);
+            player.getInventory().clear();
+            addRestoration(player, restoration);
+        } else {
+            plugin.message(player, plugin.config.msgNoPerm());
+        }
     }
 
     public void collect(Player player, List<ItemStack> itemDrops, EntityDeathEvent event) {
@@ -616,6 +639,24 @@ public final class RestorationManager implements Serializable {
         }
     }
 
+    public void cmdRestore(Player player) {
+        if (player.hasPermission(PERM_RESTORE_INV)) {
+            if (hasRestoration(player)) {
+                Restoration restoration = getRestoration(player);
+                player.getInventory().clear();
+                player.getInventory().setContents(restoration.inventory);
+                player.getInventory().setArmorContents(restoration.armour);
+                player.setLevel(restoration.level);
+                player.setExp(restoration.exp);
+                removeRestoration(player);
+            } else {
+                plugin.message(player, "Nothing to restore.");
+            }
+        } else {
+            plugin.message(player, plugin.config.msgNoPerm());
+        }
+    }
+
     public void restore(Player player) {
         if (!player.isOnline()) {
             plugin.logDebug("Player " + player.getName() + " is offline. Skipping restore...");
@@ -655,7 +696,6 @@ public final class RestorationManager implements Serializable {
                 plugin.message(player, "Restore exists!!!");
             }
         }
-
     }
 
     public boolean hasRestoration(UUID uuid) {
