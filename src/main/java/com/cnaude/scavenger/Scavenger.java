@@ -9,6 +9,8 @@ import com.cnaude.scavenger.Commands.ScavengerOn;
 import com.cnaude.scavenger.Commands.ScavengerReload;
 import com.cnaude.scavenger.Commands.ScavengerRestoreInv;
 import com.cnaude.scavenger.Commands.ScavengerSaveInv;
+import com.cnaude.scavenger.Hooks.ScavengerAuthMeReloaded;
+import com.cnaude.scavenger.Hooks.ScavengerAuthenticator;
 import com.cnaude.scavenger.Hooks.ScavengerDungeonMaze;
 import com.cnaude.scavenger.Hooks.ScavengerFactions;
 import com.cnaude.scavenger.Hooks.ScavengerMinigames;
@@ -49,13 +51,19 @@ public class Scavenger extends JavaPlugin {
     public ScavengerMinigames minigames;
     public ScavengerIgnoreList ignoreList;
     public boolean configLoaded = false;
-    static final Logger log = Logger.getLogger("Minecraft");
+    static final Logger LOG = Logger.getLogger("Minecraft");
     public ScavengerConfig config;
-    private ScavengerEventListenerOffline eventListener;
+    protected ScavengerEventListenerOffline eventListenerOffline;
     private ScavengerEventListenerOnline eventListenerOnline;
     public ScavengerFactions factionHook = null;
     public ScavengerDungeonMaze dmHook = null;
     public ScavengerMyWorlds myWorldsHook = null;
+
+    private ScavengerAuthMeReloaded scavengerAuthMeReloaded = null;
+    private ScavengerAuthenticator scavengerAuthenticator = null;
+
+    public AuthMeListener authMeListener = null;
+    public AuthenticatorListener authenticatorListener = null;
 
     public boolean hasPermission(CommandSender sender, String perm) {
         return sender.hasPermission(perm) || (sender.isOp() && config.opsAllPerms());
@@ -81,25 +89,37 @@ public class Scavenger extends JavaPlugin {
         setupMinigames();
 
         rm = new RestorationManager(this);
-        eventListener = new ScavengerEventListenerOffline(this, rm);
+
         eventListenerOnline = new ScavengerEventListenerOnline(this, rm);
         ignoreList = new ScavengerIgnoreList(this);
 
         if (config.offlineMode()) {
-            Plugin p = Bukkit.getServer().getPluginManager().getPlugin("Authenticator");
-            {
-                if (p != null) { //if Authenticator is present..
-                    if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) { // .. and has detected a auth plugin ..
-                        getServer().getPluginManager().registerEvents(eventListener, this); // ..register the listener
-                        logInfo("Hook to Authenticator's API and your auth plugin.");
-                    } else {
-                        logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
-                        getServer().getPluginManager().registerEvents(eventListenerOnline, this);
-                    }
+            if (Bukkit.getServer().getPluginManager().getPlugin("Authenticator") != null) {
+                if (fr.areku.Authenticator.Authenticator.isUsingOfflineModePlugin()) {
+                    eventListenerOffline = new ScavengerEventListenerOffline(this, rm);
+                    getServer().getPluginManager().registerEvents(eventListenerOffline, this);
+
+                    authenticatorListener = new AuthenticatorListener(this);
+                    getServer().getPluginManager().registerEvents(authenticatorListener, this);
+
+                    scavengerAuthenticator = new ScavengerAuthenticator();
+                    logInfo("Hooked into Authenticator.");
                 } else {
-                    logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator.");
+                    logInfo("No Auth plugin detected. Set offline-mode to false or add an auth plugin.");
                     getServer().getPluginManager().registerEvents(eventListenerOnline, this);
                 }
+            } else if (Bukkit.getServer().getPluginManager().getPlugin("AuthMe") != null) {
+                eventListenerOffline = new ScavengerEventListenerOffline(this, rm);
+                getServer().getPluginManager().registerEvents(eventListenerOffline, this);
+
+                authMeListener = new AuthMeListener(this);
+                getServer().getPluginManager().registerEvents(authMeListener, this);
+
+                scavengerAuthMeReloaded = new ScavengerAuthMeReloaded(this);
+                logInfo("Hooked into AuthMe.");
+            } else {
+                logInfo("Authenticator not detected. Set offline-mode to false or add Authenticator or AuthMe.");
+                getServer().getPluginManager().registerEvents(eventListenerOnline, this);
             }
         } else {
             getServer().getPluginManager().registerEvents(eventListenerOnline, this);
@@ -284,17 +304,17 @@ public class Scavenger extends JavaPlugin {
     }
 
     public void logInfo(String _message) {
-        log.log(Level.INFO, String.format("%s %s", LOG_HEADER, _message));
+        LOG.log(Level.INFO, String.format("%s %s", LOG_HEADER, _message));
     }
 
     public void logDebug(String _message) {
         if (config.debugEnabled()) {
-            log.log(Level.INFO, String.format("%s [DEBUG] %s", LOG_HEADER, _message));
+            LOG.log(Level.INFO, String.format("%s [DEBUG] %s", LOG_HEADER, _message));
         }
     }
 
     public void logError(String _message) {
-        log.log(Level.SEVERE, String.format("%s %s", LOG_HEADER, _message));
+        LOG.log(Level.SEVERE, String.format("%s %s", LOG_HEADER, _message));
     }
 
     public void loadConfig() {
@@ -409,6 +429,16 @@ public class Scavenger extends JavaPlugin {
             player.sendMessage(headerStr() + ChatColor.RED + "Error: " + message);
         } else {
             logError(message);
+        }
+    }
+
+    public boolean isAuthenticated(Player player) {
+        if (scavengerAuthenticator != null) {
+            return scavengerAuthenticator.isAuthenticated(player);
+        } else if (scavengerAuthMeReloaded != null) {
+            return scavengerAuthMeReloaded.isAuthenticated(player);
+        } else {
+            return false;
         }
     }
 }

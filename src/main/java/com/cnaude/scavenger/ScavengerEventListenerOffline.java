@@ -1,6 +1,5 @@
 package com.cnaude.scavenger;
 
-import fr.areku.Authenticator.Authenticator;
 import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,7 +37,7 @@ public class ScavengerEventListenerOffline implements Listener {
             @Override
             public void run() {
                 if (rm.hasRestoration(player)) {
-                    if (Authenticator.isPlayerLoggedIn(player)) {
+                    if (plugin.isAuthenticated(player)) {
                         if (isScavengeAllowed(player)) {
                             rm.enable(player);
                             rm.restore(player);
@@ -70,24 +69,19 @@ public class ScavengerEventListenerOffline implements Listener {
         delayedRestore(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerOfflineModeLogin(PlayerOfflineModeLogin event) {
-        if ((event.getPlayer() instanceof Player)) {
-            plugin.logDebug("Offline login " + event.getPlayer().getName());
-            if (isScavengeAllowed(event.getPlayer())) {
-                rm.enable(event.getPlayer());
-            }
+    public void playerLoggedOn(Player player) {
+        plugin.logDebug("Player logged on " + player.getName());
+        if (isScavengeAllowed(player)) {
+            rm.enable(player);
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (rm.hasRestoration(event.getPlayer())) {
-            if (Authenticator.isPlayerLoggedIn(event.getPlayer())) {
-                //if (isScavengeAllowed(event.getPlayer())) {
+            if (plugin.isAuthenticated(event.getPlayer())) {
                 rm.enable(event.getPlayer());
                 rm.restore(event.getPlayer());
-                //}
             }
         }
     }
@@ -134,7 +128,7 @@ public class ScavengerEventListenerOffline implements Listener {
         }
         plugin.logDebug("Player: " + player + "World: "
                 + player.getWorld().getName().toLowerCase() + " DamageCause: " + dcString);
-        if (!Authenticator.isPlayerLoggedIn(player)) {
+        if (!plugin.isAuthenticated(player)) {
             plugin.logDebug("[isScavengeAllowed]: Player is not logged in " + player.getName());
             return false;
         }

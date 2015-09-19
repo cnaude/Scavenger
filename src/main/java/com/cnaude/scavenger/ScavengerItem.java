@@ -15,13 +15,12 @@ import org.bukkit.material.MaterialData;
 
 public class ScavengerItem implements Serializable {
 
-    private static final long serialVersionUID = 9218747208794761041L;
     private final int materialId;
     private final byte data;
     private final short durability;
     private final int amount;
     private Map<String, Object> meta;
-
+    
     public ScavengerItem(ItemStack i) {
 
         this.materialId = i.getTypeId();

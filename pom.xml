@@ -51,6 +51,12 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
+        
+        <!-- AuthMe Reloaded -->
+        <repository>
+            <id>xephi-repo</id>
+            <url>http://ci.xephi.fr/plugin/repository/everything/</url>
+        </repository>
 
     </repositories>
 
@@ -244,6 +250,14 @@
             <artifactId>snakeyaml</artifactId>
             <version>1.15</version>
         </dependency>
+        
+        <!-- AuthMe Reloaded -->
+        <dependency>
+            <groupId>fr.xephi</groupId>
+            <artifactId>authme</artifactId>
+            <version>5.0-SNAPSHOT</version>
+        </dependency>
+        
     </dependencies>
 
     <build>
