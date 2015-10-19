@@ -26,7 +26,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 public final class RestorationManager implements Serializable {
 
     Scavenger plugin;
-    private static final HashMap<String, Restoration> restorations = new HashMap<>();
+    private static final HashMap<String, Restoration> RESTORATIONS = new HashMap<>();    
 
     final String PERM_PREFIX = "scavenger.";
     final String PERM_DROP_PREFIX = PERM_PREFIX + "drop.";
@@ -49,7 +49,7 @@ public final class RestorationManager implements Serializable {
 
     public void save() {
         HashMap<String, RestorationObject> restorationsForDisk = new HashMap<>();
-        for (Map.Entry<String, Restoration> entry : restorations.entrySet()) {
+        for (Map.Entry<String, Restoration> entry : RESTORATIONS.entrySet()) {
             String key = entry.getKey();
             Restoration value = entry.getValue();
             RestorationObject tmpRestoration = new RestorationObject();
@@ -153,7 +153,7 @@ public final class RestorationManager implements Serializable {
             tmpRestoration.exp = value.exp;
             tmpRestoration.playerName = value.playerName;
 
-            restorations.put(key, tmpRestoration);
+            RESTORATIONS.put(key, tmpRestoration);
             plugin.logInfo("Loading " + tmpRestoration.playerName + "'s inventory from disk.");
         }
     }
@@ -168,9 +168,9 @@ public final class RestorationManager implements Serializable {
     public boolean hasRestoration(Player player) {
         UUID uuid = player.getUniqueId();
         if (multipleInventories()) {
-            return restorations.containsKey(uuid + "." + getWorldGroups(player));
+            return RESTORATIONS.containsKey(uuid + "." + getWorldGroups(player));
         }
-        return restorations.containsKey(uuid.toString());
+        return RESTORATIONS.containsKey(uuid.toString());
     }
 
     public Restoration getRestoration(Player player) {
@@ -179,16 +179,16 @@ public final class RestorationManager implements Serializable {
         restoration.enabled = false;
         if (multipleInventories()) {
             String keyName = uuid + "." + getWorldGroups(player);
-            if (restorations.containsKey(keyName)) {
+            if (RESTORATIONS.containsKey(keyName)) {
                 plugin.logDebug("Getting: " + keyName);
-                restoration = restorations.get(keyName);
+                restoration = RESTORATIONS.get(keyName);
             }
         }
         if (!restoration.enabled) {
             String keyName = player.getUniqueId().toString();
-            if (restorations.containsKey(keyName)) {
+            if (RESTORATIONS.containsKey(keyName)) {
                 plugin.logDebug("Getting: " + keyName + ":" + player.getName());
-                restoration = restorations.get(keyName);
+                restoration = RESTORATIONS.get(keyName);
             }
         }
         return restoration;
@@ -612,7 +612,7 @@ public final class RestorationManager implements Serializable {
 
     public void printRestorations(CommandSender sender) {
         plugin.message(sender, "Restorations:");
-        for (String key : restorations.keySet()) {
+        for (String key : RESTORATIONS.keySet()) {
             plugin.message(sender, "  " + key);
         }
     }
@@ -621,10 +621,10 @@ public final class RestorationManager implements Serializable {
         UUID uuid = player.getUniqueId();
         if (multipleInventories()) {
             String keyName = uuid + "." + getWorldGroups(player);
-            restorations.put(keyName, restoration);
+            RESTORATIONS.put(keyName, restoration);
             plugin.logDebug("Adding: " + player.getDisplayName() + ":" + keyName);
         } else {
-            restorations.put(uuid.toString(), restoration);
+            RESTORATIONS.put(uuid.toString(), restoration);
             plugin.logDebug("Adding: " + player.getDisplayName() + ":" + uuid);
         }
     }
@@ -699,12 +699,12 @@ public final class RestorationManager implements Serializable {
     }
 
     public boolean hasRestoration(UUID uuid) {
-        return restorations.containsKey(uuid.toString());
+        return RESTORATIONS.containsKey(uuid.toString());
     }
 
     public void removeRestoration(UUID uuid) {
         if (hasRestoration(uuid)) {
-            restorations.remove(uuid.toString());
+            RESTORATIONS.remove(uuid.toString());
             plugin.logDebug("Removing: " + uuid);
         }
     }
@@ -713,8 +713,8 @@ public final class RestorationManager implements Serializable {
         UUID uuid = player.getUniqueId();
         if (multipleInventories()) {
             String keyName = uuid + "." + getWorldGroups(player);
-            if (restorations.containsKey(keyName)) {
-                restorations.remove(keyName);
+            if (RESTORATIONS.containsKey(keyName)) {
+                RESTORATIONS.remove(keyName);
                 plugin.logDebug("Removing: " + keyName);
             }
         }

@@ -1,12 +1,10 @@
 package com.cnaude.scavenger;
 
-import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -54,7 +52,6 @@ public class ScavengerEventListenerOffline implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
@@ -65,25 +62,9 @@ public class ScavengerEventListenerOffline implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        plugin.logDebug("Offline respawn " + event.getPlayer().getName());
-        delayedRestore(event.getPlayer());
-    }
-
-    public void playerLoggedOn(Player player) {
-        plugin.logDebug("Player logged on " + player.getName());
-        if (isScavengeAllowed(player)) {
-            rm.enable(player);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (rm.hasRestoration(event.getPlayer())) {
-            if (plugin.isAuthenticated(event.getPlayer())) {
-                rm.enable(event.getPlayer());
-                rm.restore(event.getPlayer());
-            }
-        }
+        Player player = event.getPlayer();
+        plugin.logDebug("Player respawn " + player.getName());
+        delayedRestore(player);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -173,6 +154,13 @@ public class ScavengerEventListenerOffline implements Listener {
         boolean b = player.hasPermission(perm);
         plugin.logDebug("[isScavengeAllowed]: " + player.getName() + " : " + perm + " : " + b);
         return b;
+    }
+    
+    public void playerLoggedOn(Player player) {
+        plugin.logDebug("Player logged on " + player.getName());
+        if (isScavengeAllowed(player)) {
+            rm.enable(player);
+        }
     }
 
 }
