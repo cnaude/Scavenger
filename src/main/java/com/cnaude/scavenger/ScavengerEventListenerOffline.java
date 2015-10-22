@@ -10,12 +10,14 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 public class ScavengerEventListenerOffline implements Listener {
 
     Scavenger plugin;
     RestorationManager rm;
     CopyOnWriteArrayList list;
+    int onMoveCount = 0;
 
     public ScavengerEventListenerOffline(Scavenger plugin, RestorationManager restorationManager) {
         this.plugin = plugin;
@@ -96,6 +98,21 @@ public class ScavengerEventListenerOffline implements Listener {
         delayedRestore(player);
     }
 
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (onMoveCount >= 20) {
+            if (rm.hasRestoration(event.getPlayer())) {
+                if (plugin.isAuthenticated(event.getPlayer())) {
+                    rm.enable(event.getPlayer());
+                    rm.restore(event.getPlayer());
+                }
+            }
+            onMoveCount = 0;
+        } else {
+            onMoveCount++;
+        }
+    }
+
     private boolean isScavengeAllowed(Player player) {
         if (!plugin.config.isScavengerEnabled()) {
             plugin.logDebug("Scavenger is disabled. Not saving inventory for " + player.getDisplayName());
@@ -155,7 +172,7 @@ public class ScavengerEventListenerOffline implements Listener {
         plugin.logDebug("[isScavengeAllowed]: " + player.getName() + " : " + perm + " : " + b);
         return b;
     }
-    
+
     public void playerLoggedOn(Player player) {
         plugin.logDebug("Player logged on " + player.getName());
         if (isScavengeAllowed(player)) {
