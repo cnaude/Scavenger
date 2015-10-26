@@ -23,7 +23,7 @@ public class ScavengerOn implements CommandExecutor {
         if (sender instanceof Player) {
             if (plugin.hasPermission(sender, "scavenger.self.on")) {
                 plugin.ignoreList.removePlayer(sender.getName());
-                plugin.message(sender, plugin.config.msgSelfRecoveryDisabled());
+                plugin.message(sender, plugin.config.MsgSelfRecoveryEnabled());
             } else {
                 plugin.message(sender, plugin.config.msgNoPerm());
             }
