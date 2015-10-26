@@ -60,6 +60,8 @@ Messages:
   MsgPVPDeath: Killed by another player! Dropping items.
   MsgBlacklistedWorld: Scavenger is disabled in this world. Be careful.
   MsgNoPerm: You do not have permissions to do this!
+  MsgSelfRecoveryEnabled: You have enabled item recovery for yourself!
+  MsgSelfRecoveryDisabled: You have disabled item recovery for yourself!
 Economy:
     # Whether or not to use an economy system with the plugin.
     Enabled: false

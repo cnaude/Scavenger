@@ -23,7 +23,7 @@ public class ScavengerOff implements CommandExecutor {
         if (sender instanceof Player) {
             if (plugin.hasPermission(sender, "scavenger.self.off")) {
                 plugin.ignoreList.addPlayer(sender.getName());
-                plugin.message(sender, "You have disabled item recovery for yourself!");
+                plugin.message(sender, plugin.config.msgSelfRecoveryDisabled());
             } else {
                 plugin.message(sender, plugin.config.msgNoPerm());
             }

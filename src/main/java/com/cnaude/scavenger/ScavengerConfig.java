@@ -18,7 +18,7 @@ public final class ScavengerConfig {
 
     private final Configuration config;
     private final Scavenger plugin;
-    private static final String langDir = "plugins/Scavenger/Languages";
+    private static final String LANG_DIR = "plugins/Scavenger/Languages";
     private static final String SHOULD_NOTIFY = "Global.Notify";
     private static final String ECONOMY_ENABLED = "Economy.Enabled";
     private static final String ECONOMY_RESTORECOST = "Economy.RestoreCost";
@@ -67,6 +67,8 @@ public final class ScavengerConfig {
     private static final String MSG_HEADER = "MsgHeader";
     private static final String MSG_INSIDEENEMYFACTION = "MsgInsideEnemyFaction";
     private static final String MSG_INSIDEDUNGEONMAZE = "MsgInsideDungeonMaze";
+    private static final String MSG_SELFRECOVERYENABLED = "MsgSelfRecoveryEnabled";
+    private static final String MSG_SELFRECOVERYDISABLED = "MsgSelfRecoveryDisabled";
     private static final String MSG_INSIDERES = "MsgInsideRes";
     private static final String MSG_PVPDEATH = "PVPDeath";
     private static final String MSG_HEADER_DEF = "Scavenger";
@@ -83,6 +85,8 @@ public final class ScavengerConfig {
     private static final String MSG_INSIDEWGPVPONLY_DEF = "You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.";
     private static final String MSG_INSIDEENEMYFACTION_DEF = "You died in enemy territory. Your items will be dropped!";
     private static final String MSG_INSIDEDUNGEONMAZE_DEF = "You died in a DungeonMaze. Your items will be dropped!";
+    private static final String MSG_SELFRECOVERYENABLED_DEF = "You have enabled item recovery for yourself!";
+    private static final String MSG_SELFRECOVERYDISABLED_DEF = "You have disabled item recovery for yourself!";
     private static final String MSG_INSIDERES_DEF = "This residence does not allow item recovery! Dropping items!";
     private static final String MSG_PVPDEATH_DEF = "Killed by another player! Dropping items.";
     private static final String MSG_BLACKLISTEDWORLD_DEF = "Scavenger is disabled in this world. Be careful.";
@@ -122,6 +126,8 @@ public final class ScavengerConfig {
     private int chanceToDrop;
     private String msgInsideEnemyFaction;
     private String msgInsideDungeonMaze;
+    private String msgSelfRecoveryEnabled;
+    private String msgSelfRecoveryDisabled;
     private boolean factionEnemyDrops;
     private boolean offlineMode;
     private boolean dungeonMaze;
@@ -194,7 +200,7 @@ public final class ScavengerConfig {
     }
 
     private void initLangFiles(Scavenger plug) {
-        File dataFolder = new File(langDir);
+        File dataFolder = new File(LANG_DIR);
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
@@ -212,7 +218,7 @@ public final class ScavengerConfig {
         
 
         for (String fName : langFiles) {
-            File file = new File(langDir + "/" + fName);
+            File file = new File(LANG_DIR + "/" + fName);
             if (!file.exists()) {
                 try {
                     InputStream in = Scavenger.class.getResourceAsStream("/" + fName);
@@ -233,7 +239,7 @@ public final class ScavengerConfig {
     private void loadLanguage(Scavenger plug) {
         boolean success = false;
 
-        File file = new File(langDir + "/" + languageFileName);
+        File file = new File(LANG_DIR + "/" + languageFileName);
         if (file.exists()) {
             Yaml yaml = new Yaml();
             try {
@@ -255,6 +261,16 @@ public final class ScavengerConfig {
                         msgInsideDungeonMaze = map.get(MSG_INSIDEDUNGEONMAZE);
                     } else {
                         msgInsideDungeonMaze = config.getString("Messages." + MSG_INSIDEDUNGEONMAZE, MSG_INSIDEDUNGEONMAZE_DEF);
+                    }
+                    if (map.containsKey(MSG_SELFRECOVERYENABLED)) {
+                        msgSelfRecoveryEnabled = map.get(MSG_SELFRECOVERYENABLED);
+                    } else {
+                        msgSelfRecoveryEnabled = config.getString("Messages." + MSG_SELFRECOVERYENABLED, MSG_SELFRECOVERYENABLED_DEF);
+                    }
+                    if (map.containsKey(MSG_SELFRECOVERYDISABLED)) {
+                        msgSelfRecoveryDisabled = map.get(MSG_SELFRECOVERYDISABLED);
+                    } else {
+                        msgSelfRecoveryDisabled = config.getString("Messages." + MSG_SELFRECOVERYDISABLED, MSG_SELFRECOVERYDISABLED_DEF);
                     }
                     if (map.containsKey(MSG_INSIDERES)) {
                         msgInsideRes = map.get(MSG_INSIDERES);
@@ -338,6 +354,8 @@ public final class ScavengerConfig {
             msgHeader = config.getString("Messages." + MSG_HEADER, MSG_HEADER_DEF);
             msgInsideEnemyFaction = config.getString("Messages." + MSG_INSIDEENEMYFACTION, MSG_INSIDEENEMYFACTION_DEF);
             msgInsideDungeonMaze = config.getString("Messages." + MSG_INSIDEDUNGEONMAZE, MSG_INSIDEDUNGEONMAZE_DEF);
+            msgSelfRecoveryEnabled = config.getString("Messages." + MSG_SELFRECOVERYENABLED, MSG_SELFRECOVERYENABLED_DEF);
+            msgSelfRecoveryDisabled = config.getString("Messages." + MSG_SELFRECOVERYDISABLED, MSG_SELFRECOVERYDISABLED_DEF);
             msgInsideRes = config.getString("Messages." + MSG_INSIDERES, MSG_INSIDERES_DEF);
             msgPVPDeath = config.getString("Messages." + MSG_PVPDEATH, MSG_PVPDEATH_DEF);
             msgRecovered = config.getString("Messages." + MSG_RECOVERED, MSG_RECOVERED_DEF);
@@ -485,6 +503,14 @@ public final class ScavengerConfig {
     
     public String msgInsideDungeonMaze() {
     	return msgInsideDungeonMaze;
+    }
+    
+    public String msgSelfRecoveryEnabled() {
+        return msgSelfRecoveryEnabled;
+    }
+    
+    public String msgSelfRecoveryDisabled() {
+        return msgSelfRecoveryDisabled;
     }
     
     public boolean dungeonMazeDrops() {
