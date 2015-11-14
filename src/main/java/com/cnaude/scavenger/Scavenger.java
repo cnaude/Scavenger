@@ -17,6 +17,8 @@ import com.cnaude.scavenger.Hooks.ScavengerMinigames;
 import com.cnaude.scavenger.Hooks.ScavengerMyWorlds;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -202,6 +204,18 @@ public class Scavenger extends JavaPlugin {
         } catch (NoClassDefFoundError ex) {
         }
         return multiInvAPI;
+    }
+
+    public GroupManager getMultiverseGroupManager() {
+        GroupManager gm = null;
+    
+        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
+        
+        if (plugin != null) {
+            gm = ((MultiverseInventories)plugin).getGroupManager();
+        }
+        
+        return gm;        
     }
 
     public Main getXInventories() {

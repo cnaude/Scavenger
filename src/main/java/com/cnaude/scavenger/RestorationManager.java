@@ -3,6 +3,7 @@ package com.cnaude.scavenger;
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -162,7 +163,8 @@ public final class RestorationManager implements Serializable {
         return plugin.getMultiInvAPI() != null
                 || plugin.myWorldsHook != null
                 || plugin.getWorldInvAPI()
-                || plugin.getXInventories() != null;
+                || plugin.getXInventories() != null
+                || plugin.getMultiverseGroupManager() != null;
     }
 
     public boolean hasRestoration(Player player) {
@@ -753,6 +755,13 @@ public final class RestorationManager implements Serializable {
         if (plugin.myWorldsHook != null) {
             if (plugin.myWorldsHook.isEnabled()) {
                 returnData.add(plugin.myWorldsHook.getLocationName(player.getLocation()));
+            }
+        }
+        if (plugin.getMultiverseGroupManager() != null) {
+            if (plugin.getMultiverseGroupManager().hasGroup(world.getName())) {
+                for (WorldGroupProfile wgp : plugin.getMultiverseGroupManager().getGroupsForWorld(world.getName())) {
+                    returnData.add(wgp.getName());
+                }
             }
         }
         if (returnData.isEmpty()) {
