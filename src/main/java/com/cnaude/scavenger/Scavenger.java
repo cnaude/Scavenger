@@ -21,6 +21,7 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.lang.reflect.Method;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -161,8 +162,18 @@ public class Scavenger extends JavaPlugin {
 
     private void checkForFactions() {
         if (isFactionsLoaded() && config.factionEnemyDrops()) {
-            factionHook = new ScavengerFactions(this);
-            logInfo("Factions detected. Players will drop items in enemy teritory!");
+            Class cls = null;
+            try {
+                cls = Class.forName("com.massivecraft.factions.entity.UPlayer");
+            } catch (ClassNotFoundException ex) {
+                logDebug(ex.getMessage());
+            }
+            if (cls != null) {
+                factionHook = new ScavengerFactions(this);
+                logInfo("Factions detected. Players will drop items in enemy teritory!");
+            } else {
+                logError("Unable to hook into Factions.");
+            }
         }
     }
 
@@ -208,14 +219,14 @@ public class Scavenger extends JavaPlugin {
 
     public GroupManager getMultiverseGroupManager() {
         GroupManager gm = null;
-    
+
         Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
-        
+
         if (plugin != null) {
-            gm = ((MultiverseInventories)plugin).getGroupManager();
+            gm = ((MultiverseInventories) plugin).getGroupManager();
         }
-        
-        return gm;        
+
+        return gm;
     }
 
     public Main getXInventories() {
