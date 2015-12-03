@@ -21,7 +21,6 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import java.lang.reflect.Method;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -164,7 +163,7 @@ public class Scavenger extends JavaPlugin {
         if (isFactionsLoaded() && config.factionEnemyDrops()) {
             Class cls = null;
             try {
-                cls = Class.forName("com.massivecraft.factions.entity.UPlayer");
+                cls = Class.forName("com.massivecraft.factions.entity.MPlayer");
             } catch (ClassNotFoundException ex) {
                 logDebug(ex.getMessage());
             }
