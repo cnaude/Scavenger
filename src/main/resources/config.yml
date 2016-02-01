@@ -43,6 +43,7 @@ Global:
   RestoreDelayTicks: 10
   # Warn players they enter a blacklisted world
   BlackListWarn: false
+# To split a message into multiple lines use the %NL% token.
 Messages:
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.

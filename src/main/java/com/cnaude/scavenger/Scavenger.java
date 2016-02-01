@@ -430,12 +430,15 @@ public class Scavenger extends JavaPlugin {
 
     public void message(Player player, String message) {
         if (player instanceof Player) {
-            message = message.replaceAll("%PLAYER%", player.getName());
-            message = message.replaceAll("%DPLAYER%", player.getDisplayName());
+            message = message.replace("%PLAYER%", player.getName());
+            message = message.replace("%DPLAYER%", player.getDisplayName());
             if (config.shouldNotify()) {
-                player.sendMessage(headerStr() + message);
+                String[] splitMessage = (headerStr() + message).split("%NL%");
+                player.sendMessage(splitMessage);
             } else {
-                logInfo(message);
+                for (String s : message.split("%NL%")) {
+                    logInfo(s);
+                }
             }
         }
     }
