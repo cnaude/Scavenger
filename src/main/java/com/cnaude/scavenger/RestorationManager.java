@@ -420,9 +420,10 @@ public final class RestorationManager implements Serializable {
                 }
                 String x = plugin.config.msgNotEnoughMoney();
                 if (!x.isEmpty()) {
-                    x = x.replaceAll("%BALANCE%", String.format("%.2f", playerBalance));
-                    x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
-                    x = x.replaceAll("%CURRENCY%", currency);
+                    x = x.replace("%BALANCE%", String.format("%.2f", playerBalance));
+                    x = x.replace("%COST%", String.format("%.2f", withdrawAmount));
+                    x = x.replace("%CURRENCY%", currency);
+                    x = x.replace("%ERRORMESSAGE%", er.errorMessage);
                     plugin.message(player, x);
                 }
                 return;

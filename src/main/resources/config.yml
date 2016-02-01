@@ -47,7 +47,7 @@ Messages:
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.
   MsgSaveForFee: Saving your inventory for a small fee of %COST% %CURRENCY%.
-  MsgNotEnoughMoney: Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%.
+  MsgNotEnoughMoney: Item recovery cost is %COST% and you only have %BALANCE% %CURRENCY%. (%ERRORMESSAGE%)
   MsgInsidePA: You are inside PVP Arena %ARENA%. Scavenger will not save your inventory.
   MsgInsideBA: You are inside a Battle Arena. Scavenger will not save your inventory.
   MsgInsideMA: You are inside a Mob Arena. Scavenger will not save your inventory.
