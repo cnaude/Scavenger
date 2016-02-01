@@ -9,6 +9,7 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.*;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
@@ -343,9 +344,10 @@ public final class RestorationManager implements Serializable {
                 && !(player.hasPermission(PERM_FREE)
                 || (player.isOp() && plugin.config.opsAllPerms()))
                 && plugin.config.economyEnabled()) {
+            DecimalFormat formatter = new DecimalFormat(plugin.config.decimalFormat());
             double restoreCost = plugin.config.restoreCost();
             double withdrawAmount;
-            double playerBalance = plugin.getEconomy().getBalance(player.getName());
+            double playerBalance = plugin.getEconomy().getBalance(player);
             double percentCost = plugin.config.percentCost();
             double minCost = plugin.config.minCost();
             double maxCost = plugin.config.maxCost();
@@ -382,7 +384,7 @@ public final class RestorationManager implements Serializable {
                 }
                 String x = plugin.config.msgSaveForFee();
                 if (!x.isEmpty()) {
-                    x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
+                    x = x.replaceAll("%COST%", formatter.format(withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
                     plugin.message(player, x);
                 }
@@ -420,8 +422,8 @@ public final class RestorationManager implements Serializable {
                 }
                 String x = plugin.config.msgNotEnoughMoney();
                 if (!x.isEmpty()) {
-                    x = x.replace("%BALANCE%", String.format("%.2f", playerBalance));
-                    x = x.replace("%COST%", String.format("%.2f", withdrawAmount));
+                    x = x.replace("%BALANCE%", formatter.format(playerBalance));
+                    x = x.replace("%COST%", formatter.format(withdrawAmount));
                     x = x.replace("%CURRENCY%", currency);
                     x = x.replace("%ERRORMESSAGE%", er.errorMessage);
                     plugin.message(player, x);

@@ -30,6 +30,7 @@ public final class ScavengerConfig {
     private static final String ECONOMY_DROP_CHANCE = "Economy.ChanceToDrop";
     private static final String ECONOMY_DEPOSIT_TYPE = "Economy.DepositType";
     private static final String ECONOMY_DEPOSIT_DESTINATION = "Economy.DepositDestination";
+    private static final String ECONOMY_DECIMAL_FORMAT = "Economy.DecimalFormat";
     private static final String GLOBAL_COLOR = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR = "Global.TextColor";
     private static final String DEBUG_ENABLED = "Global.Debug";
@@ -143,6 +144,7 @@ public final class ScavengerConfig {
     private int restoreDelayTicks;
     private String depositType;
     private String depositDestination;
+    private String decimalFormat;
     private boolean blackListWarn;
     private boolean scvrEnabled;
 
@@ -167,6 +169,7 @@ public final class ScavengerConfig {
         slotBasedRecovery = config.getBoolean(GLOBAL_SLOT_RECOVERY,false);
         depositType = config.getString(ECONOMY_DEPOSIT_TYPE,"none");
         depositDestination = config.getString(ECONOMY_DEPOSIT_DESTINATION,"");
+        decimalFormat = config.getString(ECONOMY_DECIMAL_FORMAT, "#,###.00");
 
         shouldNotify = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops = config.getBoolean(GLOBAL_SIDROPS, false);
@@ -567,6 +570,10 @@ public final class ScavengerConfig {
     
     public String depositDestination() {
         return depositDestination;
+    }
+    
+    public String decimalFormat() {
+        return decimalFormat;
     }
     
     public String MsgBlacklistedWorld() {
