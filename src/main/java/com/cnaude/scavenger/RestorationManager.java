@@ -27,7 +27,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInvAPI;
 public final class RestorationManager implements Serializable {
 
     Scavenger plugin;
-    private static final HashMap<String, Restoration> RESTORATIONS = new HashMap<>();    
+    private static final HashMap<String, Restoration> RESTORATIONS = new HashMap<>();
 
     final String PERM_PREFIX = "scavenger.";
     final String PERM_DROP_PREFIX = PERM_PREFIX + "drop.";
@@ -345,16 +345,24 @@ public final class RestorationManager implements Serializable {
                 && plugin.config.economyEnabled()) {
             double restoreCost = plugin.config.restoreCost();
             double withdrawAmount;
-            double playeBalance = plugin.getEconomy().getBalance(player.getName());
+            double playerBalance = plugin.getEconomy().getBalance(player.getName());
             double percentCost = plugin.config.percentCost();
             double minCost = plugin.config.minCost();
             double maxCost = plugin.config.maxCost();
             EconomyResponse er;
             String currency;
             if (plugin.config.percent()) {
-                withdrawAmount = playeBalance * (percentCost / 100.0);
+                withdrawAmount = playerBalance * (percentCost / 100.0);
+                plugin.logDebug("withdrawAmount: " + withdrawAmount);
+                plugin.logDebug("playeBalance: " + playerBalance);
+                plugin.logDebug("percentCost: " + percentCost + "(" + (percentCost / 100.0) + ")");
+                if (withdrawAmount < 0) {
+                    withdrawAmount = withdrawAmount * -1;
+                    plugin.logDebug("withdrawAmount (rem neg): " + withdrawAmount);
+                }
                 if (plugin.config.addMin()) {
                     withdrawAmount = withdrawAmount + minCost;
+                    plugin.logDebug("withdrawAmount (addMin): " + withdrawAmount);
                 } else if (withdrawAmount < minCost) {
                     withdrawAmount = minCost;
                 }
@@ -364,8 +372,9 @@ public final class RestorationManager implements Serializable {
             } else {
                 withdrawAmount = restoreCost;
             }
-            er = plugin.getEconomy().withdrawPlayer(player.getName(), withdrawAmount);
+            er = plugin.getEconomy().withdrawPlayer(player, withdrawAmount);
             if (er.transactionSuccess()) {
+                plugin.logDebug("Withdraw success!");
                 if (withdrawAmount == 1) {
                     currency = plugin.getEconomy().currencyNameSingular();
                 } else {
@@ -403,14 +412,15 @@ public final class RestorationManager implements Serializable {
                     plugin.logDebug("No deposit destination!");
                 }
             } else {
-                if (playeBalance == 1) {
+                plugin.logDebug("Withdraw fail! "  + er.errorMessage);
+                if (playerBalance == 1) {
                     currency = plugin.getEconomy().currencyNameSingular();
                 } else {
                     currency = plugin.getEconomy().currencyNamePlural();
                 }
                 String x = plugin.config.msgNotEnoughMoney();
                 if (!x.isEmpty()) {
-                    x = x.replaceAll("%BALANCE%", String.format("%.2f", playeBalance));
+                    x = x.replaceAll("%BALANCE%", String.format("%.2f", playerBalance));
                     x = x.replaceAll("%COST%", String.format("%.2f", withdrawAmount));
                     x = x.replaceAll("%CURRENCY%", currency);
                     plugin.message(player, x);
