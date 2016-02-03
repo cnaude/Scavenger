@@ -84,8 +84,8 @@ Economy:
     DepositType: none
     # Name of bank or player to deposit money taken from player
     DepositDestination: '' 
-    # Decimal format
-    DecimalFormat: '#,###.00'
+    # Number format
+    CountryCode: ''
 # Drop item in these worlds
 BlacklistedWorlds:
 - put_here_worlds

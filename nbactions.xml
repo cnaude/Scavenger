@@ -6,8 +6,8 @@
                 <packaging>*</packaging>
             </packagings>
             <goals>
-                <goal>clean</goal>
                 <goal>install</goal>
+                <goal>-offline</goal>
             </goals>
         </action>
     </actions>

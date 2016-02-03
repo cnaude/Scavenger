@@ -21,6 +21,7 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import java.util.Locale;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -136,6 +137,7 @@ public class Scavenger extends JavaPlugin {
         getCommand("scavengerreload").setExecutor(new ScavengerReload(this));
         getCommand("saveinv").setExecutor(new ScavengerSaveInv(this));
         getCommand("restoreinv").setExecutor(new ScavengerRestoreInv(this));
+
     }
 
     private void checkForWorldGuard() {

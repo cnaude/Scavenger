@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
@@ -30,7 +31,7 @@ public final class ScavengerConfig {
     private static final String ECONOMY_DROP_CHANCE = "Economy.ChanceToDrop";
     private static final String ECONOMY_DEPOSIT_TYPE = "Economy.DepositType";
     private static final String ECONOMY_DEPOSIT_DESTINATION = "Economy.DepositDestination";
-    private static final String ECONOMY_DECIMAL_FORMAT = "Economy.DecimalFormat";
+    private static final String ECONOMY_COUNTRY_CODE = "Economy.CountryCode";
     private static final String GLOBAL_COLOR = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR = "Global.TextColor";
     private static final String DEBUG_ENABLED = "Global.Debug";
@@ -144,7 +145,7 @@ public final class ScavengerConfig {
     private int restoreDelayTicks;
     private String depositType;
     private String depositDestination;
-    private String decimalFormat;
+    private String countryCode;
     private boolean blackListWarn;
     private boolean scvrEnabled;
 
@@ -169,7 +170,7 @@ public final class ScavengerConfig {
         slotBasedRecovery = config.getBoolean(GLOBAL_SLOT_RECOVERY,false);
         depositType = config.getString(ECONOMY_DEPOSIT_TYPE,"none");
         depositDestination = config.getString(ECONOMY_DEPOSIT_DESTINATION,"");
-        decimalFormat = config.getString(ECONOMY_DECIMAL_FORMAT, "#,###.00");
+        countryCode = config.getString(ECONOMY_COUNTRY_CODE, Locale.getDefault().getCountry());
 
         shouldNotify = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops = config.getBoolean(GLOBAL_SIDROPS, false);
@@ -572,8 +573,8 @@ public final class ScavengerConfig {
         return depositDestination;
     }
     
-    public String decimalFormat() {
-        return decimalFormat;
+    public String countryCode() {
+        return countryCode;
     }
     
     public String MsgBlacklistedWorld() {

@@ -10,6 +10,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import mc.alk.arena.BattleArena;
 import mc.alk.arena.competition.match.Match;
@@ -344,7 +345,7 @@ public final class RestorationManager implements Serializable {
                 && !(player.hasPermission(PERM_FREE)
                 || (player.isOp() && plugin.config.opsAllPerms()))
                 && plugin.config.economyEnabled()) {
-            DecimalFormat formatter = new DecimalFormat(plugin.config.decimalFormat());
+            NumberFormat formatter = NumberFormat.getInstance(new Locale(plugin.config.countryCode()));
             double restoreCost = plugin.config.restoreCost();
             double withdrawAmount;
             double playerBalance = plugin.getEconomy().getBalance(player);
@@ -354,14 +355,14 @@ public final class RestorationManager implements Serializable {
             EconomyResponse er;
             String currency;
             if (plugin.config.percent()) {
-                withdrawAmount = playerBalance * (percentCost / 100.0);
+                if (playerBalance < 0) {
+                    withdrawAmount = 0;
+                } else {
+                    withdrawAmount = playerBalance * (percentCost / 100.0);
+                }
                 plugin.logDebug("withdrawAmount: " + withdrawAmount);
                 plugin.logDebug("playeBalance: " + playerBalance);
                 plugin.logDebug("percentCost: " + percentCost + "(" + (percentCost / 100.0) + ")");
-                if (withdrawAmount < 0) {
-                    withdrawAmount = withdrawAmount * -1;
-                    plugin.logDebug("withdrawAmount (rem neg): " + withdrawAmount);
-                }
                 if (plugin.config.addMin()) {
                     withdrawAmount = withdrawAmount + minCost;
                     plugin.logDebug("withdrawAmount (addMin): " + withdrawAmount);
@@ -414,7 +415,7 @@ public final class RestorationManager implements Serializable {
                     plugin.logDebug("No deposit destination!");
                 }
             } else {
-                plugin.logDebug("Withdraw fail! "  + er.errorMessage);
+                plugin.logDebug("Withdraw fail! " + er.errorMessage);
                 if (playerBalance == 1) {
                     currency = plugin.getEconomy().currencyNameSingular();
                 } else {
