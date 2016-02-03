@@ -32,6 +32,7 @@ public final class ScavengerConfig {
     private static final String ECONOMY_DEPOSIT_TYPE = "Economy.DepositType";
     private static final String ECONOMY_DEPOSIT_DESTINATION = "Economy.DepositDestination";
     private static final String ECONOMY_COUNTRY_CODE = "Economy.CountryCode";
+    private static final String ECONOMY_DECIMAL_PLACES = "Economy.DecimalPlaces";
     private static final String GLOBAL_COLOR = "Global.Color";
     private static final String GLOBAL_TEXTCOLOR = "Global.TextColor";
     private static final String DEBUG_ENABLED = "Global.Debug";
@@ -53,8 +54,8 @@ public final class ScavengerConfig {
     private static final String BLACKLISTED_WGREGIONS = "BlacklistedWGRegions";
     private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
     private static final String GLOBAL_USE_OR_METHOD = "Global.UseTheOrMethod";
-    private static final String GLOBAL_RESTOREDELAY = "Global.RestoreDelayTicks";    
-    private static final String GLOBAL_BLACKLISTWARN = "Global.BlackListWarn";   
+    private static final String GLOBAL_RESTOREDELAY = "Global.RestoreDelayTicks";
+    private static final String GLOBAL_BLACKLISTWARN = "Global.BlackListWarn";
     //private static final String ECONOMY_GROUPS      = "Economy.Groups";
     private static final String MSG_RECOVERED = "MsgRecovered";
     private static final String MSG_SAVING = "MsgSaving";
@@ -146,6 +147,7 @@ public final class ScavengerConfig {
     private String depositType;
     private String depositDestination;
     private String countryCode;
+    private int decimalPlaces;
     private boolean blackListWarn;
     private boolean scvrEnabled;
 
@@ -167,10 +169,11 @@ public final class ScavengerConfig {
         percentCost = config.getDouble(ECONOMY_PERCENTCOST, 5.0);
         addMin = config.getBoolean(ECONOMY_ADDMIN, false);
         chanceToDrop = config.getInt(ECONOMY_DROP_CHANCE, 0);
-        slotBasedRecovery = config.getBoolean(GLOBAL_SLOT_RECOVERY,false);
-        depositType = config.getString(ECONOMY_DEPOSIT_TYPE,"none");
-        depositDestination = config.getString(ECONOMY_DEPOSIT_DESTINATION,"");
+        slotBasedRecovery = config.getBoolean(GLOBAL_SLOT_RECOVERY, false);
+        depositType = config.getString(ECONOMY_DEPOSIT_TYPE, "none");
+        depositDestination = config.getString(ECONOMY_DEPOSIT_DESTINATION, "");
         countryCode = config.getString(ECONOMY_COUNTRY_CODE, Locale.getDefault().getCountry());
+        decimalPlaces = config.getInt(ECONOMY_DECIMAL_PLACES, 2);
 
         shouldNotify = config.getBoolean(SHOULD_NOTIFY, true);
         singleItemDrops = config.getBoolean(GLOBAL_SIDROPS, false);
@@ -190,14 +193,14 @@ public final class ScavengerConfig {
         headerColor = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
         textColor = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
         languageFileName = config.getString(GLOBAL_LANGUAGE, "English.yml");
-        for (String s : config.getStringList(BLACKLISTED_WORLDS)) {            
-            blacklistedworlds.add(s.toLowerCase());                            
+        for (String s : config.getStringList(BLACKLISTED_WORLDS)) {
+            blacklistedworlds.add(s.toLowerCase());
         }
-        for (String s : config.getStringList(BLACKLISTED_WGREGIONS)) {            
-            blacklistedWGRegions.add(s.toLowerCase());                            
-        }        
+        for (String s : config.getStringList(BLACKLISTED_WGREGIONS)) {
+            blacklistedWGRegions.add(s.toLowerCase());
+        }
         restoreDelayTicks = config.getInt(GLOBAL_RESTOREDELAY, 10);
-    
+
         initLangFiles(plugin);
         loadLanguage(plugin);
 
@@ -215,11 +218,10 @@ public final class ScavengerConfig {
         langFiles.add("french.yml");
         langFiles.add("german.yml");
         langFiles.add("italian.yml");
-        langFiles.add("korean.yml");        
+        langFiles.add("korean.yml");
         langFiles.add("portugues.yml");
         langFiles.add("russian.yml");
         langFiles.add("spanish.yml");
-        
 
         for (String fName : langFiles) {
             File file = new File(LANG_DIR + "/" + fName);
@@ -250,7 +252,7 @@ public final class ScavengerConfig {
                 plug.logInfo("Loading language file: " + file.getAbsolutePath());
                 try (Reader reader = new FileReader(file)) {
                     @SuppressWarnings("unchecked")
-                            Map<String, String> map = (Map<String, String>) yaml.load(reader);
+                    Map<String, String> map = (Map<String, String>) yaml.load(reader);
                     if (map.containsKey(MSG_HEADER)) {
                         msgHeader = map.get(MSG_HEADER);
                     } else {
@@ -428,10 +430,10 @@ public final class ScavengerConfig {
     public boolean singleItemKeeps() {
         return singleItemKeeps;
     }
-    
+
     public boolean useTheOrMethod() {
         return useTheOrMethod;
-    }   
+    }
 
     public boolean permsEnabled() {
         return permsEnabled;
@@ -456,7 +458,7 @@ public final class ScavengerConfig {
     public String msgInsidePA() {
         return msgInsidePA;
     }
-    
+
     public String msgInsideBA() {
         return msgInsideBA;
     }
@@ -476,7 +478,7 @@ public final class ScavengerConfig {
     public String msgInsideWGPVPOnly() {
         return msgInsideWGPVPOnly;
     }
-    
+
     public String msgNoPerm() {
         return msgNoPerm;
     }
@@ -504,21 +506,21 @@ public final class ScavengerConfig {
     public String msgInsideEnemyFaction() {
         return msgInsideEnemyFaction;
     }
-    
+
     public String msgInsideDungeonMaze() {
-    	return msgInsideDungeonMaze;
+        return msgInsideDungeonMaze;
     }
-    
+
     public String msgSelfRecoveryEnabled() {
         return msgSelfRecoveryEnabled;
     }
-    
+
     public String msgSelfRecoveryDisabled() {
         return msgSelfRecoveryDisabled;
     }
-    
+
     public boolean dungeonMazeDrops() {
-    	return dungeonMaze;
+        return dungeonMaze;
     }
 
     public boolean factionEnemyDrops() {
@@ -552,39 +554,43 @@ public final class ScavengerConfig {
     public List<String> blacklistedWorlds() {
         return blacklistedworlds;
     }
-    
+
     public List<String> blacklistedWGRegions() {
         return blacklistedWGRegions;
-    }    
-    
+    }
+
     public boolean slotBasedRecovery() {
         return slotBasedRecovery;
     }
-    
+
     public int restoreDelayTicks() {
         return restoreDelayTicks;
     }
-    
+
     public String depositType() {
         return depositType;
     }
-    
+
     public String depositDestination() {
         return depositDestination;
     }
-    
+
     public String countryCode() {
         return countryCode;
     }
-    
+
+    public int decimalPlaces() {
+        return decimalPlaces;
+    }
+
     public String MsgBlacklistedWorld() {
         return msgBlacklistedWorld;
     }
-    
+
     public boolean blackListWarn() {
         return blackListWarn;
     }
-    
+
     public void setEnabled(boolean enabled) {
         scvrEnabled = enabled;
         config.set(GLOBAL_ENABLED, enabled);
@@ -594,5 +600,5 @@ public final class ScavengerConfig {
     public boolean isScavengerEnabled() {
         return scvrEnabled;
     }
-            
+
 }

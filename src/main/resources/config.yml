@@ -86,6 +86,8 @@ Economy:
     DepositDestination: '' 
     # Number format
     CountryCode: ''
+    # Number of decimal places to display
+    DecimalPlaces: 2
 # Drop item in these worlds
 BlacklistedWorlds:
 - put_here_worlds

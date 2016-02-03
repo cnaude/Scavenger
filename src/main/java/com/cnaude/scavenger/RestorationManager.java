@@ -346,6 +346,7 @@ public final class RestorationManager implements Serializable {
                 || (player.isOp() && plugin.config.opsAllPerms()))
                 && plugin.config.economyEnabled()) {
             NumberFormat formatter = NumberFormat.getInstance(new Locale(plugin.config.countryCode()));
+            formatter.setMaximumFractionDigits(plugin.config.decimalPlaces());
             double restoreCost = plugin.config.restoreCost();
             double withdrawAmount;
             double playerBalance = plugin.getEconomy().getBalance(player);
