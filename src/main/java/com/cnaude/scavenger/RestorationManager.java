@@ -117,7 +117,7 @@ public final class RestorationManager implements Serializable {
                 if (value.inventory.get(i) instanceof ScavengerItem) {
                     boolean error = false;
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.logDebug("Deserializing: " + value.inventory.get(i));
+                    plugin.logDebug("Deserializing inventory: " + value.inventory.get(i));
                     try {
                         tmpStack = value.inventory.get(i).getItemStack();
                     } catch (Exception e) {
@@ -139,7 +139,7 @@ public final class RestorationManager implements Serializable {
             for (int i = 0; i < value.armour.size(); i++) {
                 if (value.armour.get(i) instanceof ScavengerItem) {
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.logDebug("Deserializing: " + value.armour.get(i));
+                    plugin.logDebug("Deserializing armour: " + value.armour.get(i));
                     try {
                         tmpStack = value.armour.get(i).getItemStack();
                     } catch (Exception e) {
@@ -152,6 +152,22 @@ public final class RestorationManager implements Serializable {
                     }
                     plugin.logDebug("Done: " + tmpRestoration.armour[i].toString());
                 }
+            }
+
+            if (value.offHand instanceof ScavengerItem) {
+                ItemStack tmpStack = new ItemStack(Material.AIR);
+                plugin.logDebug("Deserializing offhand: " + value.offHand);
+                try {
+                    tmpStack = value.offHand.getItemStack();
+                } catch (Exception e) {
+                    plugin.logError(e.getMessage());
+                }
+                if (tmpStack == null) {
+                    tmpRestoration.offHand = new ItemStack(Material.AIR);
+                } else {
+                    tmpRestoration.offHand = tmpStack;
+                }
+                plugin.logDebug("Done: " + tmpRestoration.offHand.toString());
             }
 
             tmpRestoration.enabled = value.enabled;
