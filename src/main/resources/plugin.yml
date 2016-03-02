@@ -91,7 +91,7 @@ permissions:
     default: false
   scavenger.saveinv:
     description: Allows players to use /saveinv command
-    default: false
+    default: op
   scavenger.restoreinv:
     description: Allows players to use /restoreinv command
-    default: false
+    default: op
