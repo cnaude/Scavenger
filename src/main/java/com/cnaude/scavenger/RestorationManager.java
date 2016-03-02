@@ -9,7 +9,6 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 
 import java.io.*;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import mc.alk.arena.BattleArena;
@@ -58,15 +57,19 @@ public final class RestorationManager implements Serializable {
             RestorationObject tmpRestoration = new RestorationObject();
             for (ItemStack i : value.inventory) {
                 if (i instanceof ItemStack) {
-                    plugin.logDebug("Serializing: " + i.toString());
+                    plugin.logDebug("Serializing inventory: " + i.toString());
                     tmpRestoration.inventory.add(new ScavengerItem(i));
                 }
             }
             for (ItemStack i : value.armour) {
                 if (i instanceof ItemStack) {
-                    plugin.logDebug("Serializing: " + i.toString());
+                    plugin.logDebug("Serializing armour: " + i.toString());
                     tmpRestoration.armour.add(new ScavengerItem(i));
                 }
+            }
+            if (value.offHand instanceof ItemStack) {
+                plugin.logDebug("Serializing offhand: " + value.offHand.toString());
+                tmpRestoration.offHand = new ScavengerItem(value.offHand);
             }
             tmpRestoration.enabled = value.enabled;
             tmpRestoration.level = value.level;
@@ -205,8 +208,9 @@ public final class RestorationManager implements Serializable {
             }
             Restoration restoration = new Restoration();
             restoration.enabled = false;
-            restoration.inventory = player.getInventory().getContents();
+            restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 35);
             restoration.armour = player.getInventory().getArmorContents();
+            restoration.offHand = player.getInventory().getItemInOffHand();
             restoration.playerName = player.getDisplayName();
             restoration.level = player.getLevel();
             restoration.exp = player.getExp();
@@ -439,8 +443,10 @@ public final class RestorationManager implements Serializable {
         Restoration restoration = new Restoration();
         restoration.enabled = false;
 
-        restoration.inventory = player.getInventory().getContents();
+        // temporary fix for 1.9
+        restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 35);
         restoration.armour = player.getInventory().getArmorContents();
+        restoration.offHand = player.getInventory().getItemInOffHand();
         restoration.playerName = player.getDisplayName();
         itemDrops.clear();
 
@@ -468,16 +474,20 @@ public final class RestorationManager implements Serializable {
             if (plugin.config.chanceToDrop() > 0 && !player.hasPermission(PERM_NO_CHANCE)) {
                 checkChanceToDropItems(restoration.armour, itemDrops);
                 checkChanceToDropItems(restoration.inventory, itemDrops);
+                checkChanceToDropItems(restoration.offHand, itemDrops);
             }
             if (plugin.config.singleItemDrops()) {
                 checkSingleItemDrops(player, restoration.armour, itemDrops);
                 checkSingleItemDrops(player, restoration.inventory, itemDrops);
+                checkSingleItemDrops(player, restoration.offHand, itemDrops);
             } else if (plugin.config.singleItemKeeps()) {
                 checkSingleItemKeeps(player, "armour", restoration.armour, itemDrops);
                 checkSingleItemKeeps(player, "inv", restoration.inventory, itemDrops);
+                checkSingleItemKeeps(player, "offhand", restoration.offHand, itemDrops, 1);
             } else if (plugin.config.slotBasedRecovery()) {
                 checkSlots(player, "armour", restoration.armour, itemDrops);
                 checkSlots(player, "inv", restoration.inventory, itemDrops);
+                checkSlots(player, "offhand", restoration.offHand, itemDrops, 1);
             }
         } else {
             plugin.logDebug("Permissions are NOT okay. Dropping items...");
@@ -507,16 +517,20 @@ public final class RestorationManager implements Serializable {
 
     private void checkChanceToDropItems(ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         for (ItemStack itemStack : itemStackArray) {
-            if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
-                Random randomGenerator = new Random();
-                int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
-                plugin.logDebug("Random number is " + randomInt);
-                if (randomInt == plugin.config.chanceToDrop()) {
-                    plugin.logDebug("Randomly dropping item " + itemStack.getType());
-                    dropItem(itemStack, itemDrops);
-                } else {
-                    plugin.logDebug("Randomly keeping item " + itemStack.getType());
-                }
+            checkChanceToDropItems(itemStack, itemDrops);
+        }
+    }
+
+    private void checkChanceToDropItems(ItemStack itemStack, List<ItemStack> itemDrops) {
+        if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+            Random randomGenerator = new Random();
+            int randomInt = randomGenerator.nextInt(plugin.config.chanceToDrop()) + 1;
+            plugin.logDebug("Random number is " + randomInt);
+            if (randomInt == plugin.config.chanceToDrop()) {
+                plugin.logDebug("Randomly dropping item " + itemStack.getType());
+                dropItem(itemStack, itemDrops);
+            } else {
+                plugin.logDebug("Randomly keeping item " + itemStack.getType());
             }
         }
     }
@@ -529,18 +543,22 @@ public final class RestorationManager implements Serializable {
 
     private void checkSlots(Player player, String invType, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         for (int slot = 0; slot < itemStackArray.length; slot++) {
-            String itemType;
-            if (itemStackArray[slot] != null) {
-                itemType = itemStackArray[slot].getType().name();
-            } else {
-                itemType = "NULL";
-            }
-            if (!checkSlot(player, invType, slot, itemType)) {
-                plugin.logDebug("[cs]Dropping slot " + slot + ": " + itemType);
-                dropItem(itemStackArray[slot], itemDrops);
-            } else {
-                plugin.logDebug("[cs]Keeping slot " + slot + ": " + itemType);
-            }
+            checkSlots(player, invType, itemStackArray[slot], itemDrops, slot);
+        }
+    }
+
+    private void checkSlots(Player player, String invType, ItemStack itemStack, List<ItemStack> itemDrops, int slot) {
+        String itemType;
+        if (itemStack != null) {
+            itemType = itemStack.getType().name();
+        } else {
+            itemType = "NULL";
+        }
+        if (!checkSlot(player, invType, slot, itemType)) {
+            plugin.logDebug("[cs]Dropping slot " + slot + ": " + itemType);
+            dropItem(itemStack, itemDrops);
+        } else {
+            plugin.logDebug("[cs]Keeping slot " + slot + ": " + itemType);
         }
     }
 
@@ -568,18 +586,23 @@ public final class RestorationManager implements Serializable {
         return checkPerms(player, perms);
     }
 
+    private void checkSingleItemDrops(Player player, ItemStack itemStack, List<ItemStack> itemDrops) {
+        plugin.logDebug("checkSingleItemDrops()");
+        if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+            String itemType = itemStack.getType().name();
+            if (checkSingleItemDrop(player, itemStack)) {
+                plugin.logDebug("[sd]Dropping item: " + itemType);
+                dropItem(itemStack, itemDrops);
+            } else {
+                plugin.logDebug("[sd]Keeping item: " + itemType);
+            }
+        }
+    }
+
     private void checkSingleItemDrops(Player player, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         plugin.logDebug("checkSingleItemDrops()");
         for (ItemStack itemStack : itemStackArray) {
-            if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
-                String itemType = itemStack.getType().name();
-                if (checkSingleItemDrop(player, itemStack)) {
-                    plugin.logDebug("[sd]Dropping item: " + itemType);
-                    dropItem(itemStack, itemDrops);
-                } else {
-                    plugin.logDebug("[sd]Keeping item: " + itemType);
-                }
-            }
+            checkSingleItemDrops(player, itemStack, itemDrops);
         }
     }
 
@@ -597,21 +620,26 @@ public final class RestorationManager implements Serializable {
     private void checkSingleItemKeeps(Player player, String invType, ItemStack[] itemStackArray, List<ItemStack> itemDrops) {
         plugin.logDebug("checkSingleItemKeeps(" + invType + ")");
         for (int slot = 0; slot < itemStackArray.length; slot++) {
-            if (itemStackArray[slot] instanceof ItemStack && !itemStackArray[slot].getType().equals(Material.AIR)) {
-                String itemType = itemStackArray[slot].getType().name();
-                if (checkSingleItemKeep(player, itemStackArray[slot])) {
-                    plugin.logDebug("[sk]Keeping item: " + itemType);
-                    continue;
-                }
-                if (plugin.config.slotBasedRecovery() && plugin.config.useTheOrMethod()) {
-                    if (checkSlot(player, invType, slot, itemType)) {
-                        plugin.logDebug("[cs]Keeping item: " + itemType);
-                        continue;
-                    }
-                }
-                plugin.logDebug("[sk]Dropping item: " + itemType);
-                dropItem(itemStackArray[slot], itemDrops);
+            checkSingleItemKeeps(player, invType, itemStackArray[slot], itemDrops, slot);
+        }
+    }
+
+    private void checkSingleItemKeeps(Player player, String invType, ItemStack itemStack, List<ItemStack> itemDrops, int slot) {
+        plugin.logDebug("checkSingleItemKeeps(" + invType + ")");
+        if (itemStack instanceof ItemStack && !itemStack.getType().equals(Material.AIR)) {
+            String itemType = itemStack.getType().name();
+            if (checkSingleItemKeep(player, itemStack)) {
+                plugin.logDebug("[sk]Keeping item: " + itemType);
+                return;
             }
+            if (plugin.config.slotBasedRecovery() && plugin.config.useTheOrMethod()) {
+                if (checkSlot(player, invType, slot, itemType)) {
+                    plugin.logDebug("[cs]Keeping item: " + itemType);
+                    return;
+                }
+            }
+            plugin.logDebug("[sk]Dropping item: " + itemType);
+            dropItem(itemStack, itemDrops);
         }
     }
 
@@ -663,6 +691,7 @@ public final class RestorationManager implements Serializable {
                 player.getInventory().clear();
                 player.getInventory().setContents(restoration.inventory);
                 player.getInventory().setArmorContents(restoration.armour);
+                player.getInventory().setItemInOffHand(restoration.offHand);
                 player.setLevel(restoration.level);
                 player.setExp(restoration.exp);
                 removeRestoration(player);
@@ -687,6 +716,7 @@ public final class RestorationManager implements Serializable {
 
             player.getInventory().setContents(restoration.inventory);
             player.getInventory().setArmorContents(restoration.armour);
+            player.getInventory().setItemInOffHand(restoration.offHand);
             if (player.hasPermission(PERM_LEVEL)
                     || !plugin.config.permsEnabled()
                     || (player.isOp() && plugin.config.opsAllPerms())) {

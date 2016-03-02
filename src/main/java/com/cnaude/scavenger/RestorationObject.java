@@ -12,6 +12,7 @@ public class RestorationObject implements Serializable {
     public boolean enabled;
     public List<ScavengerItem> inventory = new ArrayList<>();
     public List<ScavengerItem> armour = new ArrayList<>();
+    public ScavengerItem offHand;
     public int level;
     public float exp;
     public String deathCause;

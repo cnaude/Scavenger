@@ -86,12 +86,6 @@ permissions:
   scavenger.list:
     description: Allows players to list all pending recoveries.
     default: op
-  scavenger.dropinv:
-    description: Inventory recovery
-    default: false
-  scavenger.droparmour:
-    description: Armour recovery
-    default: false
   scavenger.nochance:
     description: Override chance to drop
     default: false
