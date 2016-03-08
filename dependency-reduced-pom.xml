@@ -4,7 +4,7 @@
   <groupId>com.cnaude</groupId>
   <artifactId>Scavenger</artifactId>
   <name>Scavenger</name>
-  <version>1.6-${build.number}</version>
+  <version>1.7-${build.number}</version>
   <description>Item recovery on death. Based on SirHedgehog's code.</description>
   <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
   <build>

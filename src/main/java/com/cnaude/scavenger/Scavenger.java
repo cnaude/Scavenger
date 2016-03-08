@@ -21,7 +21,6 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import java.util.Locale;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -470,4 +469,9 @@ public class Scavenger extends JavaPlugin {
             return false;
         }
     }
+    
+    protected boolean isMc19() {
+        return getServer().getVersion().contains("MC: 1.9");
+    }
+    
 }
