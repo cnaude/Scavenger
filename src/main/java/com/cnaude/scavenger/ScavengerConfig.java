@@ -222,6 +222,7 @@ public final class ScavengerConfig {
         langFiles.add("portugues.yml");
         langFiles.add("russian.yml");
         langFiles.add("spanish.yml");
+        langFiles.add("ukrainian.yml");
 
         for (String fName : langFiles) {
             File file = new File(LANG_DIR + "/" + fName);

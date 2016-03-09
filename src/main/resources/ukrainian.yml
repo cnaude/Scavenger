@@ -1,0 +1,18 @@
+MsgRecovered: Ваш інвентар було відновлено.
+MsgSaving: Інвентар збережено.
+MsgSaveForFee: Вилучено %COST% %CURRENCY% за збереження вашого інвентаря.
+MsgNotEnoughMoney: Вартість збереження інвентаря: %COST% %NL%На вашому рахунку лише %BALANCE% %CURRENCY%. (%ERRORMESSAGE%)
+MsgInsidePA: Ви всередині PvP Арени %ARENA%. Збереження інвентаря тут не актуальне!
+MsgInsideBA: Ви всередині Battle Арени. Збереження інвентаря тут не актуальне!
+MsgInsideMA: Ви всередині Mob Арени. Збереження інвентаря тут не актуальне!
+MsgInsideWGPVP: Ви всередині WorldGuard PvP регіону. Збереження інвентаря тут не актуальне!
+MsgInsideWGPVPOnly: Ви поза зоною WorldGuard PvP регіону. Збереження інвентаря тут не актуальне!
+MsgInsideEnemyFaction: Ви вмерли на ворожій території. Ваші предмети було дропнуто.
+MsgInsideDungeonMaze: Ви вмерли у зоні DungeonMaze. Ваші предмети було дропнуто.
+MsgHeader: Scavenger
+MsgInsideRes: В цій резиденції не дозволене збереження інвентаря! Ваші предмети було дропнуто.
+MsgPVPDeath: Ви вмерли від руки іншого гравця! Ваші предмети було дропнуто.
+MsgBlacklistedWorld: Збереження інвентаря вимкнене у цьому світі. Будьте обережні!
+MsgNoPerm: У вас немає прав, щоб зробити це!
+MsgSelfRecoveryEnabled: Автозбереження інвентаря для вас тепер увімкнено.
+MsgSelfRecoveryDisabled: Автозбереження інвентаря для вас тепер вимкнено.
