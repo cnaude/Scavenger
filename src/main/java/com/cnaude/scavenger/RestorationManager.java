@@ -523,6 +523,7 @@ public final class RestorationManager implements Serializable {
             plugin.logDebug("Permissions are NOT okay. Dropping items...");
             dropItems(restoration.armour, itemDrops);
             dropItems(restoration.inventory, itemDrops);
+            dropItem(restoration.offHand, itemDrops);
         }
         addRestoration(player, restoration);
     }

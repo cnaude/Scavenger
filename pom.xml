@@ -251,7 +251,6 @@
             <version>6.0.0</version>
         </dependency>
 
-
         <!-- MyWorlds -->
         <dependency>
             <groupId>com.cnaude.myworlds</groupId>
@@ -259,10 +258,12 @@
             <version>1.67</version>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- Snakeyaml -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.15</version>
+            <version>1.17</version>
         </dependency>
         
         <!-- AuthMe Reloaded -->
@@ -297,7 +298,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.2</version>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -327,7 +328,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.1</version>
                 <configuration>
                     <!-- Minimum Minecraft requirement -->
                     <source>1.7</source>
@@ -337,6 +338,7 @@
 
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
