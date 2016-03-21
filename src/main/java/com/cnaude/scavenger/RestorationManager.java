@@ -837,12 +837,16 @@ public final class RestorationManager implements Serializable {
                 returnData.add(plugin.myWorldsHook.getLocationName(player.getLocation()));
             }
         }
-        if (plugin.getMultiverseGroupManager() != null) {
-            if (plugin.getMultiverseGroupManager().hasGroup(world.getName())) {
-                for (WorldGroupProfile wgp : plugin.getMultiverseGroupManager().getGroupsForWorld(world.getName())) {
-                    returnData.add(wgp.getName());
+        try {
+            if (plugin.getMultiverseGroupManager() != null) {
+                if (plugin.getMultiverseGroupManager().hasGroup(world.getName())) {
+                    for (WorldGroupProfile wgp : plugin.getMultiverseGroupManager().getGroupsForWorld(world.getName())) {
+                        returnData.add(wgp.getName());
+                    }
                 }
             }
+        } catch (Exception ex) {
+            plugin.logError(ex.getMessage());
         }
         if (returnData.isEmpty()) {
             returnData.add("");
