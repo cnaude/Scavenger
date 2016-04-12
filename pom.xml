@@ -43,7 +43,7 @@
             </releases>
             <snapshots>
                 <enabled>true</enabled>
-            </snapshots>
+            </snapshots> 
         </repository>
 
         <!-- bukkit -->
@@ -56,6 +56,11 @@
         <repository>
             <id>xephi-repo</id>
             <url>http://ci.xephi.fr/plugin/repository/everything/</url>
+        </repository>
+        
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
 
     </repositories>
@@ -145,9 +150,9 @@
 
         <!-- Ultimate Arena -->
         <dependency>
-            <groupId>com.cnaude.ultimatearena</groupId>
-            <artifactId>UltimateArena</artifactId>
-            <version>2.5.2</version>
+            <groupId>net.dmulloy2</groupId>
+            <artifactId>ultimatearena</artifactId>
+            <version>3.0-SNAPSHOT</version>
         </dependency>
 
         <!-- WorldGuard -->
