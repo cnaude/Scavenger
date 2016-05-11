@@ -395,7 +395,7 @@ public class Scavenger extends JavaPlugin {
 
         return UltimateArenaAPI.hookIntoUA(this);
     }
-
+    
     public void setupMobArenaHandler() {
         Plugin maPlugin = (MobArena) getServer().getPluginManager().getPlugin("MobArena");
 
