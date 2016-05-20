@@ -228,7 +228,7 @@ public final class RestorationManager implements Serializable {
             }
             Restoration restoration = new Restoration();
             restoration.enabled = false;
-            restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 35);
+            restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 36);
             restoration.armour = player.getInventory().getArmorContents();
             if (plugin.isMc19()) {
                 restoration.offHand = player.getInventory().getItemInOffHand();
@@ -465,7 +465,7 @@ public final class RestorationManager implements Serializable {
         restoration.enabled = false;
 
         // temporary fix for 1.9
-        restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 35);
+        restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 36);
         restoration.armour = player.getInventory().getArmorContents();
         if (plugin.isMc19()) {
             restoration.offHand = player.getInventory().getItemInOffHand();
