@@ -186,6 +186,7 @@ public final class RestorationManager implements Serializable {
 
     public boolean multipleInventories() {
         return plugin.getMultiInvAPI() != null
+                || plugin.pwiHook != null
                 || plugin.myWorldsHook != null
                 || plugin.getWorldInvAPI()
                 || plugin.getXInventories() != null
@@ -846,6 +847,9 @@ public final class RestorationManager implements Serializable {
             }
         } catch (Exception ex) {
             plugin.logError(ex.getMessage());
+        }
+        if (plugin.pwiHook != null) {
+            returnData.add(plugin.pwiHook.getLocationName(world.getName()));
         }
         if (returnData.isEmpty()) {
             returnData.add("");

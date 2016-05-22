@@ -24,6 +24,7 @@ softdepend:
   - Minigames
   - MyWorlds
   - xInventories
+  - PerWorldInventory
 commands:
   scavengerreload:
     description: Reload config

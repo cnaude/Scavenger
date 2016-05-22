@@ -15,6 +15,7 @@ import com.cnaude.scavenger.Hooks.ScavengerDungeonMaze;
 import com.cnaude.scavenger.Hooks.ScavengerFactions;
 import com.cnaude.scavenger.Hooks.ScavengerMinigames;
 import com.cnaude.scavenger.Hooks.ScavengerMyWorlds;
+import com.cnaude.scavenger.Hooks.ScavengerPerWorldInventory;
 import com.garbagemule.MobArena.MobArena;
 import com.garbagemule.MobArena.MobArenaHandler;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -24,6 +25,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.gnat008.perworldinventory.PerWorldInventory;
 import me.x128.xInventories.Main;
 import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.Vault;
@@ -60,6 +62,7 @@ public class Scavenger extends JavaPlugin {
     public ScavengerFactions factionHook = null;
     public ScavengerDungeonMaze dmHook = null;
     public ScavengerMyWorlds myWorldsHook = null;
+    public ScavengerPerWorldInventory pwiHook = null;
 
     private ScavengerAuthMeReloaded scavengerAuthMeReloaded = null;
     private ScavengerAuthenticator scavengerAuthenticator = null;
@@ -87,6 +90,7 @@ public class Scavenger extends JavaPlugin {
         checkForFactions();
         checkForDungeonMaze();
         checkForMyWorlds();
+        checkForPerWorldInventory();
         setupResidence();
         setupMinigames();
 
@@ -282,6 +286,14 @@ public class Scavenger extends JavaPlugin {
         if (plugin != null) {
             myWorldsHook = new ScavengerMyWorlds();
             logInfo("MyWorlds detected.");
+        }
+    }
+    
+    public void checkForPerWorldInventory() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("PerWorldInventory");
+        if (plugin != null) {
+            pwiHook = new ScavengerPerWorldInventory((PerWorldInventory)plugin);
+            logInfo("PerWorldInventory detected.");
         }
     }
 
