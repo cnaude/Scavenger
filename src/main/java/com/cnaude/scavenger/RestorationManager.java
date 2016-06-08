@@ -17,6 +17,7 @@ import me.drayshak.WorldInventories.api.WorldInventoriesAPI;
 import me.x128.xInventories.Main;
 import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.economy.EconomyResponse;
+import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -330,10 +331,10 @@ public final class RestorationManager implements Serializable {
             return;
         }
 
-        if (plugin.pvpHandler != null && !net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(player).equals("")) {
+        if (plugin.pvpHandler != null && !PVPArenaAPI.getArenaName(player).equals("")) {
             String x = plugin.config.msgInsidePA();
             if (!x.isEmpty()) {
-                x = x.replaceAll("%ARENA%", net.slipcor.pvparena.api.PVPArenaAPI.getArenaName(player));
+                x = x.replaceAll("%ARENA%", PVPArenaAPI.getArenaName(player));
                 plugin.message(player, x);
             }
             return;

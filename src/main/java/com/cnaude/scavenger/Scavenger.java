@@ -426,7 +426,7 @@ public class Scavenger extends JavaPlugin {
             return;
         }
 
-        pvpHandler = net.slipcor.pvparena.PVPArena.instance;
+        pvpHandler = PVPArena.instance;
 
         logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
