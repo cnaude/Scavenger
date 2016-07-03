@@ -288,11 +288,11 @@ public class Scavenger extends JavaPlugin {
             logInfo("MyWorlds detected.");
         }
     }
-    
+
     public void checkForPerWorldInventory() {
         Plugin plugin = getServer().getPluginManager().getPlugin("PerWorldInventory");
         if (plugin != null) {
-            pwiHook = new ScavengerPerWorldInventory((PerWorldInventory)plugin);
+            pwiHook = new ScavengerPerWorldInventory((PerWorldInventory) plugin);
             logInfo("PerWorldInventory detected.");
         }
     }
@@ -407,7 +407,7 @@ public class Scavenger extends JavaPlugin {
 
         return UltimateArenaAPI.hookIntoUA(this);
     }
-    
+
     public void setupMobArenaHandler() {
         Plugin maPlugin = (MobArena) getServer().getPluginManager().getPlugin("MobArena");
 
@@ -481,9 +481,10 @@ public class Scavenger extends JavaPlugin {
             return false;
         }
     }
-    
-    protected boolean isMc19() {
-        return getServer().getVersion().contains("MC: 1.9");
+
+    protected boolean isMc19or110() {
+        return (getServer().getVersion().contains("MC: 1.9")
+                || getServer().getVersion().contains("MC: 1.10"));
     }
-    
+
 }
