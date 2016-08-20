@@ -27,11 +27,11 @@
             </snapshots>
         </repository>
 
-        <!-- Vault 
+        <!-- Vault -->
         <repository>
             <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-        </repository> -->
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+        </repository>
 
         <repository>
             <id>sonatype-nexus-public</id>
@@ -85,9 +85,9 @@
 
         <!-- Use Vault Economy API interface -->
         <dependency>
-            <groupId>com.cnaude.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.5.6</version>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.6</version>
             <scope>provided</scope>
         </dependency>
 
@@ -153,6 +153,12 @@
             <groupId>net.dmulloy2</groupId>
             <artifactId>ultimatearena</artifactId>
             <version>3.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.milkbowl.net</groupId>
+                    <artifactId>Vault</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <!-- WorldGuard -->
