@@ -334,7 +334,7 @@ public final class RestorationManager implements Serializable {
         if (plugin.pvpHandler != null && !PVPArenaAPI.getArenaName(player).equals("")) {
             String x = plugin.config.msgInsidePA();
             if (!x.isEmpty()) {
-                x = x.replaceAll("%ARENA%", PVPArenaAPI.getArenaName(player));
+                x = x.replace("%ARENA%", PVPArenaAPI.getArenaName(player));
                 plugin.message(player, x);
             }
             return;
@@ -413,8 +413,8 @@ public final class RestorationManager implements Serializable {
                 }
                 String x = plugin.config.msgSaveForFee();
                 if (!x.isEmpty()) {
-                    x = x.replaceAll("%COST%", formatter.format(withdrawAmount));
-                    x = x.replaceAll("%CURRENCY%", currency);
+                    x = x.replace("%COST%", formatter.format(withdrawAmount));
+                    x = x.replace("%CURRENCY%", currency);
                     plugin.message(player, x);
                 }
                 if (!plugin.config.depositDestination().isEmpty()) {
