@@ -287,7 +287,7 @@
         <dependency>
             <groupId>me.gnat008.perworldinventory</groupId>
             <artifactId>PerWorldInventory</artifactId>
-            <version>1.5.8</version>
+            <version>1.7.5</version>
         </dependency>
         
     </dependencies>
