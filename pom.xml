@@ -152,6 +152,10 @@
                     <groupId>net.milkbowl.net</groupId>
                     <artifactId>Vault</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.comphenix.protocol</groupId>
+                    <artifactId>ProtocolLib-API</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         
@@ -225,8 +229,6 @@
             </exclusions>
         </dependency>
         -->
-
-        <!-- ProtocolLib -->
 
         <!-- MultiInv -->
         <dependency>
