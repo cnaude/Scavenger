@@ -482,9 +482,9 @@ public class Scavenger extends JavaPlugin {
         }
     }
 
-    protected boolean isMc19or110() {
+    protected boolean isMc19or11x() {
         return (getServer().getVersion().contains("MC: 1.9")
-                || getServer().getVersion().contains("MC: 1.10"));
-    }
+                || getServer().getVersion().contains("MC: 1.1"));
+}
 
 }
