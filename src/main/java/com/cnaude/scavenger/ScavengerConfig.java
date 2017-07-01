@@ -33,8 +33,6 @@ public final class ScavengerConfig {
     private static final String ECONOMY_DEPOSIT_DESTINATION = "Economy.DepositDestination";
     private static final String ECONOMY_COUNTRY_CODE = "Economy.CountryCode";
     private static final String ECONOMY_DECIMAL_PLACES = "Economy.DecimalPlaces";
-    private static final String GLOBAL_COLOR = "Global.Color";
-    private static final String GLOBAL_TEXTCOLOR = "Global.TextColor";
     private static final String DEBUG_ENABLED = "Global.Debug";
     private static final String GLOBAL_SIDROPS = "Global.SingleItemDrops";
     private static final String GLOBAL_SIKEEPS = "Global.SingleItemKeeps";
@@ -74,7 +72,7 @@ public final class ScavengerConfig {
     private static final String MSG_SELFRECOVERYDISABLED = "MsgSelfRecoveryDisabled";
     private static final String MSG_INSIDERES = "MsgInsideRes";
     private static final String MSG_PVPDEATH = "PVPDeath";
-    private static final String MSG_HEADER_DEF = "Scavenger";
+    private static final String MSG_HEADER_DEF = "&7[&6Scavenger&7] &f";
     private static final String MSG_BLACKLISTEDWORLD = "MsgBlacklistedWorld";
     private static final String MSG_RECOVERED_DEF = "Your inventory has been restored.";
     private static final String MSG_SAVING_DEF = "Saving your inventory.";
@@ -104,8 +102,6 @@ public final class ScavengerConfig {
     private double maxCost;
     private double percentCost;
     private boolean addMin;
-    private ChatColor headerColor;
-    private ChatColor textColor;
     private boolean singleItemDrops;
     private boolean singleItemKeeps;
     private boolean useTheOrMethod;
@@ -190,8 +186,6 @@ public final class ScavengerConfig {
         residence = config.getBoolean(GLOBAL_RESIDENCE, false);
         resFlag = config.getString(GLOBAL_RESFLAG, "noscv");
         dropOnPVPDeath = config.getBoolean(GLOBAL_DROPONPVPDEATH, false);
-        headerColor = ChatColor.valueOf(config.getString(GLOBAL_COLOR, "GOLD").toUpperCase());
-        textColor = ChatColor.valueOf(config.getString(GLOBAL_TEXTCOLOR, "WHITE").toUpperCase());
         languageFileName = config.getString(GLOBAL_LANGUAGE, "English.yml");
         for (String s : config.getStringList(BLACKLISTED_WORLDS)) {
             blacklistedworlds.add(s.toLowerCase());
@@ -414,14 +408,6 @@ public final class ScavengerConfig {
 
     public double percentCost() {
         return percentCost;
-    }
-
-    public ChatColor headerColor() {
-        return headerColor;
-    }
-
-    public ChatColor textColor() {
-        return textColor;
     }
 
     public boolean singleItemDrops() {

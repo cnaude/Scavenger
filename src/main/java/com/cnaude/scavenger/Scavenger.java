@@ -432,13 +432,7 @@ public class Scavenger extends JavaPlugin {
     }
 
     private String headerStr() {
-        ChatColor headerColor = config.headerColor();
-        ChatColor textColor = config.textColor();
-        if (config.msgHeader().isEmpty()) {
-            return textColor + "[" + headerColor + PLUGIN_NAME + textColor + "] " + textColor;
-        } else {
-            return textColor + "[" + headerColor + config.msgHeader() + textColor + "] " + textColor;
-        }
+        return ChatColor.translateAlternateColorCodes('&', config.msgHeader());
     }
 
     public void message(Player player, String message) {
@@ -457,10 +451,11 @@ public class Scavenger extends JavaPlugin {
     }
 
     public void message(CommandSender sender, String message) {
+        String colorizedMessage = ChatColor.translateAlternateColorCodes('&', message);
         if (config.shouldNotify()) {
-            sender.sendMessage(headerStr() + message);
+            sender.sendMessage(headerStr() + colorizedMessage);
         } else {
-            logInfo(message);
+            logInfo(colorizedMessage);
         }
     }
 

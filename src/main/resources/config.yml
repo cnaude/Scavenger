@@ -4,10 +4,6 @@ Global:
   Enabled: true
   # Whether or not to notify the player when their items are gathered and restored.
   Notify: true
-  # Message header color
-  Color: gold
-  # Message text color
-  TextColor: white
   # Enable this for permission based drops. Players that have scavenger.drop.[ITEM_NAME] or scavenger.drop.[ITEM_NUMBER] will drop the item.
   SingleItemDrops: false
   # Enable this for permission based keeps. Players that have scavenger.keep.[ITEM_NAME] or scavenger.keep.[ITEM_NUMBER] will keep the item.
@@ -45,6 +41,7 @@ Global:
   BlackListWarn: false
 # To split a message into multiple lines use the %NL% token.
 Messages:
+  MsgHeader: '&7[&6Scavenger&7] &f'
   MsgRecovered: Your inventory has been restored.
   MsgSaving: Saving your inventory.
   MsgSaveForFee: Saving your inventory for a small fee of %COST% %CURRENCY%.
@@ -56,7 +53,6 @@ Messages:
   MsgInsideWGPVPOnly: You are not inside a WorldGuard PVP region. Scavenger will not save your inventory.
   MsgInsideEnemyFaction: You died in enemy territory. Your items will be dropped!
   MsgInsideDungeonMaze: You died in a DungeonMaze. Your items will be dropped!
-  MsgHeader: Scavenger
   MsgInsideRes: This residence does not allow item recovery! Dropping items!
   MsgPVPDeath: Killed by another player! Dropping items.
   MsgBlacklistedWorld: Scavenger is disabled in this world. Be careful.
