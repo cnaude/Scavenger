@@ -1,7 +1,7 @@
 package com.cnaude.scavenger.Hooks;
 
-import me.gnat008.perworldinventory.PerWorldInventory;
-import me.gnat008.perworldinventory.api.PerWorldInventoryAPI;
+import me.ebonjaeger.perworldinventory.PerWorldInventory;
+import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI;
 
 /**
  *
@@ -14,7 +14,7 @@ public class ScavengerPerWorldInventory {
 
     public ScavengerPerWorldInventory(PerWorldInventory plugin) {
         this.plugin = plugin;
-        pwiApi = plugin.getAPI();
+        pwiApi = plugin.getApi();
     }
 
     public String getLocationName(String world) {

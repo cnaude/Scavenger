@@ -22,10 +22,9 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.pauldavdesign.mineauz.minigames.Minigames;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import me.gnat008.perworldinventory.PerWorldInventory;
+import me.ebonjaeger.perworldinventory.PerWorldInventory;
 import me.x128.xInventories.Main;
 import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.Vault;
