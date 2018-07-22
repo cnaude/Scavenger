@@ -60,19 +60,23 @@ public final class RestorationManager implements Serializable {
                 if (i instanceof ItemStack) {
                     plugin.logDebug("Serializing inventory: " + i.toString());
                     tmpRestoration.inventory.add(new ScavengerItem(i));
+                } else {
+                    tmpRestoration.inventory.add(new ScavengerItem(new ItemStack(Material.AIR)));
                 }
             }
             for (ItemStack i : value.armour) {
                 if (i instanceof ItemStack) {
-                    plugin.logDebug("Serializing armour: " + i.toString());
+                    plugin.logDebug("Serializing armour:" + i.toString());
                     tmpRestoration.armour.add(new ScavengerItem(i));
+                } else {                    
+                    tmpRestoration.inventory.add(new ScavengerItem(new ItemStack(Material.AIR)));
                 }
             }
-            if (plugin.isMc19or11x()) {
-                if (value.offHand instanceof ItemStack) {
-                    plugin.logDebug("Serializing offhand: " + value.offHand.toString());
-                    tmpRestoration.offHand = new ScavengerItem(value.offHand);
-                }
+            if (value.offHand instanceof ItemStack) {
+                plugin.logDebug("Serializing offhand: " + value.offHand.toString());
+                tmpRestoration.offHand = new ScavengerItem(value.offHand);
+            } else {
+                tmpRestoration.inventory.add(new ScavengerItem(new ItemStack(Material.AIR)));
             }
             tmpRestoration.enabled = value.enabled;
             tmpRestoration.level = value.level;
@@ -82,7 +86,7 @@ public final class RestorationManager implements Serializable {
             plugin.logInfo("Saving " + tmpRestoration.playerName + "'s inventory to disk.");
         }
         try {
-            File file = new File("plugins/Scavenger/inv3.ser");
+            File file = new File("plugins/Scavenger/inv4.ser");
             FileOutputStream f_out = new FileOutputStream(file);
             try (ObjectOutputStream obj_out = new ObjectOutputStream(f_out)) {
                 obj_out.writeObject(restorationsForDisk);
@@ -94,7 +98,7 @@ public final class RestorationManager implements Serializable {
 
     public void load() {
         Map<String, RestorationObject> restorationsFromDisk;
-        File file = new File("plugins/Scavenger/inv3.ser");
+        File file = new File("plugins/Scavenger/inv4.ser");
         if (!file.exists()) {
             plugin.logDebug("Recovery file '" + file.getAbsolutePath() + "' does not exist.");
             return;
@@ -120,7 +124,7 @@ public final class RestorationManager implements Serializable {
                 if (value.inventory.get(i) instanceof ScavengerItem) {
                     boolean error = false;
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.logDebug("Deserializing inventory: " + value.inventory.get(i));
+                    plugin.logDebug("Deserializing inventory [" + i + "]: " + value.inventory.get(i));
                     try {
                         tmpStack = value.inventory.get(i).getItemStack();
                     } catch (Exception e) {
@@ -142,7 +146,7 @@ public final class RestorationManager implements Serializable {
             for (int i = 0; i < value.armour.size(); i++) {
                 if (value.armour.get(i) instanceof ScavengerItem) {
                     ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.logDebug("Deserializing armour: " + value.armour.get(i));
+                    plugin.logDebug("Deserializing armour[ " + i + "]: " + value.armour.get(i));
                     try {
                         tmpStack = value.armour.get(i).getItemStack();
                     } catch (Exception e) {
@@ -154,25 +158,25 @@ public final class RestorationManager implements Serializable {
                         tmpRestoration.armour[i] = tmpStack;
                     }
                     plugin.logDebug("Done: " + tmpRestoration.armour[i].toString());
+                } else {
+                    plugin.logDebug("Unknown armour [" + i + "]: " + value.armour.get(i));
                 }
             }
 
-            if (plugin.isMc19or11x()) {
-                if (value.offHand instanceof ScavengerItem) {
-                    ItemStack tmpStack = new ItemStack(Material.AIR);
-                    plugin.logDebug("Deserializing offhand: " + value.offHand);
-                    try {
-                        tmpStack = value.offHand.getItemStack();
-                    } catch (Exception e) {
-                        plugin.logError(e.getMessage());
-                    }
-                    if (tmpStack == null) {
-                        tmpRestoration.offHand = new ItemStack(Material.AIR);
-                    } else {
-                        tmpRestoration.offHand = tmpStack;
-                    }
-                    plugin.logDebug("Done: " + tmpRestoration.offHand.toString());
+            if (value.offHand instanceof ScavengerItem) {
+                ItemStack tmpStack = new ItemStack(Material.AIR);
+                plugin.logDebug("Deserializing offhand: " + value.offHand);
+                try {
+                    tmpStack = value.offHand.getItemStack();
+                } catch (Exception e) {
+                    plugin.logError(e.getMessage());
                 }
+                if (tmpStack == null) {
+                    tmpRestoration.offHand = new ItemStack(Material.AIR);
+                } else {
+                    tmpRestoration.offHand = tmpStack;
+                }
+                plugin.logDebug("Done: " + tmpRestoration.offHand.toString());
             }
 
             tmpRestoration.enabled = value.enabled;
@@ -232,9 +236,7 @@ public final class RestorationManager implements Serializable {
             restoration.enabled = false;
             restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 36);
             restoration.armour = player.getInventory().getArmorContents();
-            if (plugin.isMc19or11x()) {
-                restoration.offHand = player.getInventory().getItemInOffHand();
-            }
+            restoration.offHand = player.getInventory().getItemInOffHand();
             restoration.playerName = player.getDisplayName();
             restoration.level = player.getLevel();
             restoration.exp = player.getExp();
@@ -469,9 +471,7 @@ public final class RestorationManager implements Serializable {
         // temporary fix for 1.9
         restoration.inventory = Arrays.copyOfRange(player.getInventory().getContents(), 0, 36);
         restoration.armour = player.getInventory().getArmorContents();
-        if (plugin.isMc19or11x()) {
-            restoration.offHand = player.getInventory().getItemInOffHand();
-        }
+        restoration.offHand = player.getInventory().getItemInOffHand();
         restoration.playerName = player.getDisplayName();
         itemDrops.clear();
 
@@ -499,9 +499,7 @@ public final class RestorationManager implements Serializable {
             if (plugin.config.chanceToDrop() > 0 && !player.hasPermission(PERM_NO_CHANCE)) {
                 checkChanceToDropItems(restoration.armour, itemDrops);
                 checkChanceToDropItems(restoration.inventory, itemDrops);
-                if (plugin.isMc19or11x()) {
-                    checkChanceToDropItems(restoration.offHand, itemDrops);
-                }
+                checkChanceToDropItems(restoration.offHand, itemDrops);
             }
             if (plugin.config.singleItemDrops()) {
                 checkSingleItemDrops(player, restoration.armour, itemDrops);
@@ -510,15 +508,15 @@ public final class RestorationManager implements Serializable {
             } else if (plugin.config.singleItemKeeps()) {
                 checkSingleItemKeeps(player, "armour", restoration.armour, itemDrops);
                 checkSingleItemKeeps(player, "inv", restoration.inventory, itemDrops);
-                if (plugin.isMc19or11x()) {
-                    checkSingleItemKeeps(player, "offhand", restoration.offHand, itemDrops, 1);
-                }
+
+                checkSingleItemKeeps(player, "offhand", restoration.offHand, itemDrops, 1);
+
             } else if (plugin.config.slotBasedRecovery()) {
                 checkSlots(player, "armour", restoration.armour, itemDrops);
                 checkSlots(player, "inv", restoration.inventory, itemDrops);
-                if (plugin.isMc19or11x()) {
-                    checkSlots(player, "offhand", restoration.offHand, itemDrops, 1);
-                }
+
+                checkSlots(player, "offhand", restoration.offHand, itemDrops, 1);
+
             }
         } else {
             plugin.logDebug("Permissions are NOT okay. Dropping items...");
@@ -609,9 +607,9 @@ public final class RestorationManager implements Serializable {
 
     private boolean checkSingleItemDrop(Player player, ItemStack itemStack) {
         String itemType = itemStack.getType().name();
-        int itemTypeId = itemStack.getTypeId();
+        Material material = itemStack.getType();
         List<String> perms = new ArrayList<>();
-        perms.add(PERM_DROP_PREFIX + itemTypeId);
+        perms.add(PERM_DROP_PREFIX + material.name());
         perms.add(PERM_DROP_PREFIX + itemType.toLowerCase());
         perms.add(PERM_DROP_PREFIX + itemType);
         perms.add(PERM_DROP_ALL);
@@ -640,9 +638,9 @@ public final class RestorationManager implements Serializable {
 
     private boolean checkSingleItemKeep(Player player, ItemStack itemStack) {
         String itemType = itemStack.getType().toString();
-        int itemTypeId = itemStack.getTypeId();
+        Material material = itemStack.getType();
         List<String> perms = new ArrayList<>();
-        perms.add(PERM_KEEP_PREFIX + itemTypeId);
+        perms.add(PERM_KEEP_PREFIX + material.name());
         perms.add(PERM_KEEP_PREFIX + itemType.toLowerCase());
         perms.add(PERM_KEEP_PREFIX + itemType);
         perms.add(PERM_DROP_ALL);
@@ -723,9 +721,9 @@ public final class RestorationManager implements Serializable {
                 player.getInventory().clear();
                 player.getInventory().setContents(restoration.inventory);
                 player.getInventory().setArmorContents(restoration.armour);
-                if (plugin.isMc19or11x()) {
-                    player.getInventory().setItemInOffHand(restoration.offHand);
-                }
+
+                player.getInventory().setItemInOffHand(restoration.offHand);
+
                 player.setLevel(restoration.level);
                 player.setExp(restoration.exp);
                 removeRestoration(player);
@@ -750,9 +748,8 @@ public final class RestorationManager implements Serializable {
 
             player.getInventory().setContents(restoration.inventory);
             player.getInventory().setArmorContents(restoration.armour);
-            if (plugin.isMc19or11x()) {
-                player.getInventory().setItemInOffHand(restoration.offHand);
-            }
+            player.getInventory().setItemInOffHand(restoration.offHand);
+
             if (player.hasPermission(PERM_LEVEL)
                     || !plugin.config.permsEnabled()
                     || (player.isOp() && plugin.config.opsAllPerms())) {
