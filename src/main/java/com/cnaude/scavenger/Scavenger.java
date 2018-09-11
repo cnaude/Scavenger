@@ -26,10 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.ebonjaeger.perworldinventory.PerWorldInventory;
 import me.x128.xInventories.Main;
-import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
-import net.slipcor.pvparena.PVPArena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -47,7 +45,6 @@ public class Scavenger extends JavaPlugin {
     public static final String LOG_HEADER = "[" + PLUGIN_NAME + "]";
     private Economy economy = null;
     public MobArenaHandler maHandler;
-    public PVPArena pvpHandler;
     public MultiInv multiinvHandler;
     public RestorationManager rm;
     public boolean battleArena = false;
@@ -82,8 +79,6 @@ public class Scavenger extends JavaPlugin {
         }
 
         setupMobArenaHandler();
-        setupPVPArenaHandler();
-        checkForUltimateArena();
         checkForBattleArena();
         checkForWorldGuard();
         checkForFactions();
@@ -145,12 +140,6 @@ public class Scavenger extends JavaPlugin {
     private void checkForWorldGuard() {
         if (getWorldGuard() != null && config.wgPVPIgnore()) {
             logInfo("WorldGuard detected. Scavenger will not recover items in PVP regions.");
-        }
-    }
-
-    private void checkForUltimateArena() {
-        if (getUltimateArena() != null) {
-            logInfo("UltimateArena detected. Scavenger will not recover items in an arena.");
         }
     }
 
@@ -397,16 +386,6 @@ public class Scavenger extends JavaPlugin {
         configLoaded = true;
     }
 
-    public UltimateArenaAPI getUltimateArena() {
-        Plugin uaPlugin = getServer().getPluginManager().getPlugin("UltimateArena");
-
-        if (uaPlugin == null) {
-            return null;
-        }
-
-        return UltimateArenaAPI.hookIntoUA(this);
-    }
-
     public void setupMobArenaHandler() {
         Plugin maPlugin = (MobArena) getServer().getPluginManager().getPlugin("MobArena");
 
@@ -416,18 +395,6 @@ public class Scavenger extends JavaPlugin {
 
         maHandler = new MobArenaHandler();
         logInfo("MobArena detected. Player inventory restores ignored inside arenas.");
-    }
-
-    public void setupPVPArenaHandler() {
-        Plugin pvpPlugin = (PVPArena) getServer().getPluginManager().getPlugin("pvparena");
-
-        if (pvpPlugin == null) {
-            return;
-        }
-
-        pvpHandler = PVPArena.instance;
-
-        logInfo("PVPArena detected. Player inventory restores ignored inside arenas.");
     }
 
     private String headerStr() {

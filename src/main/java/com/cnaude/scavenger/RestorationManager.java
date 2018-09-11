@@ -4,20 +4,20 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.onarandombox.multiverseinventories.WorldGroup;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 
 import java.io.*;
 import java.text.NumberFormat;
 import java.util.*;
-import mc.alk.arena.BattleArena;
-import mc.alk.arena.competition.match.Match;
 import me.drayshak.WorldInventories.api.WorldInventoriesAPI;
 import me.x128.xInventories.Main;
-import net.dmulloy2.ultimatearena.UltimateArenaAPI;
 import net.milkbowl.vault.economy.EconomyResponse;
-import net.slipcor.pvparena.api.PVPArenaAPI;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -66,9 +66,9 @@ public final class RestorationManager implements Serializable {
             }
             for (ItemStack i : value.armour) {
                 if (i instanceof ItemStack) {
-                    plugin.logDebug("Serializing armour:" + i.toString());
+                    plugin.logDebug("Serializing armour: " + i.toString());
                     tmpRestoration.armour.add(new ScavengerItem(i));
-                } else {                    
+                } else {
                     tmpRestoration.inventory.add(new ScavengerItem(new ItemStack(Material.AIR)));
                 }
             }
@@ -291,24 +291,30 @@ public final class RestorationManager implements Serializable {
 
         if (plugin.getWorldGuard() != null) {
             plugin.logDebug("Checking region support for '" + player.getWorld().getName() + "'");
-            if (plugin.getWorldGuard().getRegionManager(player.getWorld()) != null) {
+            RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(player.getWorld()));
+
+            if (regionManager != null) {
                 try {
-                    RegionManager regionManager = plugin.getWorldGuard().getRegionManager(player.getWorld());
-                    ApplicableRegionSet set = regionManager.getApplicableRegions(player.getLocation());
-                    if (set.allows(DefaultFlag.PVP) && plugin.config.wgPVPIgnore()) {
-                        plugin.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + plugin.config.wgPVPIgnore());
-                        if (!plugin.config.msgInsideWGPVP().isEmpty()) {
-                            plugin.message(player, plugin.config.msgInsideWGPVP());
+
+                    ApplicableRegionSet set = regionManager.getApplicableRegions(BukkitAdapter.asVector(player.getLocation()));
+                    for (ProtectedRegion region : set.getRegions()) {
+                        if (region.getFlags().containsValue(Flags.PVP) && plugin.config.wgPVPIgnore()) {
+                            plugin.logDebug("This is a WorldGuard PVP zone and WorldGuardPVPIgnore is " + plugin.config.wgPVPIgnore());
+                            if (!plugin.config.msgInsideWGPVP().isEmpty()) {
+                                plugin.message(player, plugin.config.msgInsideWGPVP());
+                            }
+                            return;
                         }
-                        return;
                     }
-                    if (!set.allows(DefaultFlag.PVP) && plugin.config.wgGuardPVPOnly()) {
+                    if (plugin.config.wgGuardPVPOnly()) {
                         plugin.logDebug("This is NOT a WorldGuard PVP zone and WorldGuardPVPOnly is " + plugin.config.wgGuardPVPOnly());
                         if (!plugin.config.msgInsideWGPVP().isEmpty()) {
                             plugin.message(player, plugin.config.msgInsideWGPVPOnly());
                         }
                         return;
                     }
+
                 } catch (NullPointerException ex) {
                     plugin.logDebug(ex.getMessage());
                 }
@@ -317,45 +323,11 @@ public final class RestorationManager implements Serializable {
             }
         }
 
-        if (plugin.getUltimateArena() != null) {
-            if (UltimateArenaAPI.hookIntoUA(plugin).isInArena(player)) {
-                if (!plugin.config.msgInsideUA().isEmpty()) {
-                    plugin.message(player, plugin.config.msgInsideUA());
-                }
-                return;
-            }
-        }
-
         if (plugin.maHandler != null && plugin.maHandler.isPlayerInArena(player)) {
             if (!plugin.config.msgInsideMA().isEmpty()) {
                 plugin.message(player, plugin.config.msgInsideMA());
             }
             return;
-        }
-
-        if (plugin.pvpHandler != null && !PVPArenaAPI.getArenaName(player).equals("")) {
-            String x = plugin.config.msgInsidePA();
-            if (!x.isEmpty()) {
-                x = x.replace("%ARENA%", PVPArenaAPI.getArenaName(player));
-                plugin.message(player, x);
-            }
-            return;
-        }
-
-        if (plugin.battleArena) {
-            mc.alk.arena.objects.ArenaPlayer ap = mc.alk.arena.BattleArena.toArenaPlayer(player);
-            if (ap != null) {
-                Match match = BattleArena.getBAController().getMatch(ap);
-                if (match != null) {
-                    if (match.isInMatch(ap)) {
-                        String x = plugin.config.msgInsideBA();
-                        if (!x.isEmpty()) {
-                            plugin.message(player, x);
-                        }
-                        return;
-                    }
-                }
-            }
         }
 
         if (plugin.minigames != null) {

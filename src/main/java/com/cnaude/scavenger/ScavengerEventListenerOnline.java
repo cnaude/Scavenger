@@ -1,5 +1,7 @@
 package com.cnaude.scavenger;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -7,9 +9,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -119,12 +122,16 @@ public class ScavengerEventListenerOnline implements Listener {
         }
         if (plugin.getWorldGuard() != null) {
             try {
-                ApplicableRegionSet set = WGBukkit.getRegionManager(world).getApplicableRegions(location);
-                for (ProtectedRegion region : set) {
-                    plugin.logDebug("[isScavengeAllowed]: Region ID: " + region.getId());
-                    if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
-                        plugin.logDebug("[isScavengeAllowed]: Region ID " + region.getId() + " is blacklisted. Dropping items.");
-                        return false;
+                RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
+                RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(player.getWorld()));
+                if (regionManager != null) {
+                    ApplicableRegionSet set = regionManager.getApplicableRegions(BukkitAdapter.asVector(location));
+                    for (ProtectedRegion region : set) {
+                        plugin.logDebug("[isScavengeAllowed]: Region ID: " + region.getId());
+                        if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
+                            plugin.logDebug("[isScavengeAllowed]: Region ID " + region.getId() + " is blacklisted. Dropping items.");
+                            return false;
+                        }
                     }
                 }
             } catch (NullPointerException ex) {

@@ -59,9 +59,7 @@ public class ScavengerItem implements Serializable {
 
     public ItemStack getItemStack() {
 
-        ItemStack i = new ItemStack(Material.getMaterial(type));
-        i.setAmount(this.amount);
-        i.setDurability(this.durability);
+        ItemStack i = new ItemStack(Material.getMaterial(type), this.amount, this.durability);
         i.setData(new MaterialData(Material.getMaterial(type), this.data));
 
         if (this.meta != null && !this.meta.isEmpty()) {
