@@ -3,6 +3,14 @@ MsgSaving: Dein Inventar wird gerade gesichert.
 MsgSaveForFee: Dein Inventar wird gerade fuer eine kleine Gebuehr von %COST% %CURRENCY% gesichert.
 MsgNotEnoughMoney: Die Inventar Wiederherstellung kostet %COST% %CURRENCY% und du hast leider nur %BALANCE% %CURRENCY%.
 MsgInsidePA: Du bist in der %ARENA% PVP Arena. Scavenger wird dein Inventar nicht wiederherstellen.
+MsgInsideBA: Du bist in der Battle Arena. Scavenger wird dein Inventar nicht wiederherstellen.
 MsgInsideMA: Du bist in einer Mob Arena. Scavenger wird dein Inventar nicht wiederherstellen.
 MsgInsideWGPVP: Du bist in einer WorldGuard PVP Region. Scavenger wird dein Inventar nicht wiederherstellen.
 MsgInsideWGPVPOnly: Du bist nicht in einer WorldGuard PVP Region. Scavenger wird dein Inventar nicht wiederherstellen.
+MsgInsideEnemyFaction: Du bist auf feindlichem Gebiet gestorben. Dein Inventar wurde nicht gesichert.
+MsgInsideDungeonMaze: Du bist im DungeonMaze gestorben. Dein Inventar wurde nicht gesichert.
+MsgHeader: Scavenger
+MsgInsideRes: Dieser Ort erlaubt keine Inventarsicherung. Dein Inventar wurde nicht gesichert.
+MsgPVPDeath: Du wurdest von einem anderen Spieler getötet. Dein Inventar wurde nicht gesichert.
+MsgBlacklistedWorld: Scavenger ist in dieser Welt deaktiviert. Sei vorsichtig!
+MsgNoPerm: Du hast keine Berechtigung für diesen Befehl.
