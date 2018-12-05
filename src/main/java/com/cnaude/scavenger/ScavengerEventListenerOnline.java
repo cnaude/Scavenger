@@ -125,7 +125,7 @@ public class ScavengerEventListenerOnline implements Listener {
                 RegionContainer regionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
                 RegionManager regionManager = regionContainer.get(BukkitAdapter.adapt(player.getWorld()));
                 if (regionManager != null) {
-                    ApplicableRegionSet set = regionManager.getApplicableRegions(BukkitAdapter.asVector(location));
+                    ApplicableRegionSet set = regionManager.getApplicableRegions(BukkitAdapter.asVector(location).toBlockPoint());
                     for (ProtectedRegion region : set) {
                         plugin.logDebug("[isScavengeAllowed]: Region ID: " + region.getId());
                         if (plugin.config.blacklistedWGRegions().contains(region.getId())) {
