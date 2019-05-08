@@ -7,7 +7,8 @@
             </packagings>
             <goals>
                 <goal>install</goal>
-                <goal>-offline</goal>
+                <goal>-T</goal>
+                <goal>1C</goal>
             </goals>
         </action>
     </actions>
