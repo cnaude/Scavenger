@@ -6,7 +6,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.14</bukkit.version>
+        <bukkit.version>1.15.1</bukkit.version>
         <build.number>SNAPSHOT</build.number>
     </properties>
 
@@ -15,7 +15,7 @@
     <version>1.8-${build.number}</version>
     <name>Scavenger</name>
     <description>Item recovery on death. Based on SirHedgehog's code.</description>
-    <url>http://dev.bukkit.org/server-mods/Scavenger/</url>
+    <url>https://dev.bukkit.org/projects/scavenger</url>
 
     <repositories>
         <!-- Cnaude's Repo -->
