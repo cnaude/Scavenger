@@ -5,7 +5,6 @@ import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.onarandombox.multiverseinventories.WorldGroup;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
@@ -297,7 +296,7 @@ public final class RestorationManager implements Serializable {
 
             if (regionManager != null) {
                 try {
-                    
+
                     ApplicableRegionSet set = regionManager.getApplicableRegions(BukkitAdapter.asVector(player.getLocation()).toBlockPoint());
                     for (ProtectedRegion region : set.getRegions()) {
                         if (region.getFlags().containsValue(Flags.PVP) && plugin.config.wgPVPIgnore()) {

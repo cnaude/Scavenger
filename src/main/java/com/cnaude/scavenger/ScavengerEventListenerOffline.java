@@ -118,6 +118,15 @@ public class ScavengerEventListenerOffline implements Listener {
             plugin.logDebug("Scavenger is disabled. Not saving inventory for " + player.getDisplayName());
             return false;
         }
+
+        World world = player.getWorld();
+        String worldName = world.getName().toLowerCase();
+
+        if (plugin.config.whitelistedWorlds().contains(world.getName().toLowerCase())) {
+            plugin.logDebug("[WhiteListedWorld]: Player: " + player + " World: " + worldName);
+            return true;
+        }
+
         String dcString = "NULL";
         if (player.getLastDamageCause() != null) {
             if (player.getLastDamageCause().getCause() != null) {

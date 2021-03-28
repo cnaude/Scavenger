@@ -5,3 +5,6 @@
 /build.xml
 /target/
 /.nb-gradle/
+dependency-reduced-pom.xml
+nb-configuration.xml
+*iml

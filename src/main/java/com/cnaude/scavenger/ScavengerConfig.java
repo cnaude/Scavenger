@@ -49,6 +49,7 @@ public final class ScavengerConfig {
     private static final String GLOBAL_LANGUAGE = "Global.LanguageFile";
     private static final String GLOBAL_ENABLED = "Global.Enabled";
     private static final String BLACKLISTED_WORLDS = "BlacklistedWorlds";
+    private static final String WHITELISTED_WORLDS = "WhiteListedWorlds";
     private static final String BLACKLISTED_WGREGIONS = "BlacklistedWGRegions";
     private static final String GLOBAL_SLOT_RECOVERY = "Global.SlotBasedRecovery";
     private static final String GLOBAL_USE_OR_METHOD = "Global.UseTheOrMethod";
@@ -137,6 +138,7 @@ public final class ScavengerConfig {
     private String msgPVPDeath;
     private String languageFileName;
     private final List<String> blacklistedworlds = new ArrayList<>();
+    private final List<String> whitelistedworlds = new ArrayList<>();
     private final List<String> blacklistedWGRegions = new ArrayList<>();
     private boolean slotBasedRecovery;
     private int restoreDelayTicks;
@@ -189,6 +191,9 @@ public final class ScavengerConfig {
         languageFileName = config.getString(GLOBAL_LANGUAGE, "English.yml");
         for (String s : config.getStringList(BLACKLISTED_WORLDS)) {
             blacklistedworlds.add(s.toLowerCase());
+        }
+        for (String s : config.getStringList(WHITELISTED_WORLDS)) {
+            whitelistedworlds.add(s.toLowerCase());
         }
         for (String s : config.getStringList(BLACKLISTED_WGREGIONS)) {
             blacklistedWGRegions.add(s.toLowerCase());
@@ -538,6 +543,10 @@ public final class ScavengerConfig {
         return msgPVPDeath;
     }
 
+    public List<String> whitelistedWorlds() {
+        return whitelistedworlds;
+    }    
+    
     public List<String> blacklistedWorlds() {
         return blacklistedworlds;
     }
