@@ -125,6 +125,8 @@ public class ScavengerEventListenerOffline implements Listener {
         if (plugin.config.whitelistedWorlds().contains(world.getName().toLowerCase())) {
             plugin.logDebug("[WhiteListedWorld]: Player: " + player + " World: " + worldName);
             return true;
+        } else {
+            plugin.logDebug("[NotWhiteListedWorld]: Player: " + player + " World: " + worldName);
         }
 
         String dcString = "NULL";

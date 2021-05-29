@@ -78,6 +78,10 @@ public class Scavenger extends JavaPlugin {
             logDebug("BlackListedWorld: " + s);
         }
 
+        for (String s : config.whitelistedWorlds()) {
+            logDebug("WhiteListedWorld: " + s);
+        }
+
         setupMobArenaHandler();
         checkForBattleArena();
         checkForWorldGuard();
