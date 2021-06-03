@@ -2,6 +2,7 @@ package com.cnaude.scavenger;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,7 +60,9 @@ public class ScavengerEventListenerOnline implements Listener {
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
-                rm.collect(event.getEntity(), event.getDrops(), event);
+                World world = event.getEntity().getWorld();
+                Boolean whitelist = (plugin.config.whitelistedWorlds().contains(world.getName().toLowerCase()));
+                rm.collect(event.getEntity(), event.getDrops(), event, whitelist);
             }
         }
     }

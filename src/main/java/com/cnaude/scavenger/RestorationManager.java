@@ -249,12 +249,12 @@ public final class RestorationManager implements Serializable {
         }
     }
 
-    public void collect(Player player, List<ItemStack> itemDrops, EntityDeathEvent event) {
+    public void collect(Player player, List<ItemStack> itemDrops, EntityDeathEvent event, Boolean whitelist) {
         if (itemDrops.isEmpty() && !levelAllow(player) && !expAllow(player)) {
             return;
         }
 
-        if (plugin.config.dropOnPVPDeath() && player.getKiller() instanceof Player) {
+        if (plugin.config.dropOnPVPDeath() && player.getKiller() instanceof Player && !whitelist) {
             plugin.message(player, plugin.config.msgPVPDeath());
             return;
         }
@@ -342,10 +342,12 @@ public final class RestorationManager implements Serializable {
             return;
         }
 
-        if (plugin.getEconomy() != null
-                && !(player.hasPermission(PERM_FREE)
-                || (player.isOp() && plugin.config.opsAllPerms()))
-                && plugin.config.economyEnabled()) {
+        if (
+                plugin.getEconomy() != null
+                && !(player.hasPermission(PERM_FREE) || (player.isOp() && plugin.config.opsAllPerms()))
+                && plugin.config.economyEnabled()
+                && !whitelist
+        ) {
             NumberFormat formatter = NumberFormat.getInstance(new Locale(plugin.config.countryCode()));
             formatter.setMaximumFractionDigits(plugin.config.decimalPlaces());
             double restoreCost = plugin.config.restoreCost();
@@ -447,11 +449,11 @@ public final class RestorationManager implements Serializable {
         restoration.playerName = player.getDisplayName();
         itemDrops.clear();
 
-        if (levelAllow(player)) {
+        if (levelAllow(player) || whitelist) {
             plugin.logDebug("Collecting level " + player.getLevel() + " for " + player.getName());
             restoration.level = player.getLevel();
         }
-        if (expAllow(player)) {
+        if (expAllow(player) || whitelist) {
             plugin.logDebug("Collecting exp " + player.getExp() + " for " + player.getName());
             restoration.exp = player.getExp();
             event.setDroppedExp(0);
@@ -466,7 +468,7 @@ public final class RestorationManager implements Serializable {
         String deathCausePermission = PERM_SCAVENGE_PREFIX + deathCause;
         plugin.logDebug("[p:" + player.getName() + "] [" + PERM_SCAVENGE + ":" + player.hasPermission(PERM_SCAVENGE) + "]"
                 + " [" + deathCausePermission + ":" + player.hasPermission(deathCausePermission) + "]");
-        if (player.hasPermission(PERM_SCAVENGE) || player.hasPermission(deathCausePermission)) {
+        if (player.hasPermission(PERM_SCAVENGE) || player.hasPermission(deathCausePermission) || whitelist) {
             plugin.logDebug("Permissions are okay. Time to scavenge...");
             if (plugin.config.chanceToDrop() > 0 && !player.hasPermission(PERM_NO_CHANCE)) {
                 checkChanceToDropItems(restoration.armour, itemDrops);

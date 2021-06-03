@@ -57,7 +57,9 @@ public class ScavengerEventListenerOffline implements Listener {
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         if ((event.getEntity() instanceof Player)) {
             if (isScavengeAllowed(event.getEntity())) {
-                rm.collect(event.getEntity(), event.getDrops(), event);
+                World world = event.getEntity().getWorld();
+                Boolean whitelist = (plugin.config.whitelistedWorlds().contains(world.getName().toLowerCase()));
+                rm.collect(event.getEntity(), event.getDrops(), event, whitelist);
             }
         }
     }
