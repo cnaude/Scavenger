@@ -448,6 +448,7 @@ public final class RestorationManager implements Serializable {
         restoration.offHand = player.getInventory().getItemInOffHand();
         restoration.playerName = player.getDisplayName();
         itemDrops.clear();
+        restoration.whitelist = whitelist;
 
         if (levelAllow(player) || whitelist) {
             plugin.logDebug("Collecting level " + player.getLevel() + " for " + player.getName());
@@ -726,6 +727,7 @@ public final class RestorationManager implements Serializable {
 
             if (player.hasPermission(PERM_LEVEL)
                     || !plugin.config.permsEnabled()
+                    || restoration.whitelist
                     || (player.isOp() && plugin.config.opsAllPerms())) {
                 plugin.logDebug("Player " + player.getName() + " does have " + PERM_LEVEL + " permission.");
                 player.setLevel(restoration.level);
@@ -735,6 +737,7 @@ public final class RestorationManager implements Serializable {
             }
             if (player.hasPermission(PERM_EXP)
                     || !plugin.config.permsEnabled()
+                    || restoration.whitelist
                     || (player.isOp() && plugin.config.opsAllPerms())) {
                 plugin.logDebug("Player " + player.getName() + " does have " + PERM_EXP + " permission.");
                 player.setExp(restoration.exp);
