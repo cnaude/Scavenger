@@ -6,7 +6,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Bukkit API Version, change if out dated -->
-        <bukkit.version>1.16.5</bukkit.version>
+        <bukkit.version>1.18</bukkit.version>
         <build.number>SNAPSHOT</build.number>
     </properties>
 
@@ -21,7 +21,7 @@
         <!-- Cnaude's Repo -->
         <repository>
             <id>cnaude-repo</id>
-            <url>http://repo.chrisnaude.com</url>
+            <url>https://repo.chrisnaude.com</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -30,7 +30,7 @@
         <!-- Vault -->
         <repository>
             <id>vault-repo</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+            <url>https://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
 
         <repository>
@@ -55,7 +55,7 @@
         
         <repository>
             <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
+            <url>https://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
 
     </repositories>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
-            <version>1.7.2</version>
+            <version>1.7.3</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -135,14 +135,14 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.carrotsearch</groupId>
             <artifactId>junit-benchmarks</artifactId>
-            <version>0.4.0</version>
+            <version>0.7.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -244,7 +244,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
+            <version>1.30</version>
         </dependency>
         
         <!-- AuthMe Reloaded -->
@@ -285,7 +285,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -311,15 +311,30 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>                                                                                             
+                                <copy file="../${project.name}/target/Scavenger-${project.version}.jar" tofile="../${project.name}/target/Scavenger.jar"/>                         
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin> 
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.9.0-SNAPSHOT</version>
                 <configuration>
-                    <!-- Minimum Minecraft requirement -->
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>
